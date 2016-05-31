@@ -1,0 +1,53 @@
+<?php
+
+namespace LibuBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * ProductoVendido
+ *
+ * @ORM\Table(name="producto_vendido", indexes={@ORM\Index(name="id_venta", columns={"id_venta"}), @ORM\Index(name="id_prod", columns={"id_prod"})})
+ * @ORM\Entity
+ */
+class ProductoVendido
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="cantidad", type="integer", nullable=true)
+     */
+    private $cantidad;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_pv", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idPv;
+
+    /**
+     * @var \LibuBundle\Entity\Producto
+     *
+     * @ORM\ManyToOne(targetEntity="LibuBundle\Entity\Producto")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_prod", referencedColumnName="id_prod")
+     * })
+     */
+    private $idProd;
+
+    /**
+     * @var \LibuBundle\Entity\Venta
+     *
+     * @ORM\ManyToOne(targetEntity="LibuBundle\Entity\Venta")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_venta", referencedColumnName="id")
+     * })
+     */
+    private $idVenta;
+
+
+}
+

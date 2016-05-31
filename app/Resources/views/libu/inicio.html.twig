@@ -1,0 +1,51 @@
+{# libu/Resources/views/libu/venta.html.twig #}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{# {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %} #}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+
+    <div>
+        {{ form_label(form.factura) }}
+        {{ form_errors(form.factura) }}
+        {{ form_widget(form.factura) }}
+    </div>
+
+    <div>
+        {{ form_label(form.cantidad) }}
+        {{ form_errors(form.cantidad) }}
+        {{ form_widget(form.cantidad) }}
+    </div>
+
+    <div>
+        {{ form_label(form.ingreso) }}
+        {{ form_errors(form.ingreso) }}
+        {{ form_widget(form.ingreso) }}
+    </div>
+
+    <div>
+        {{ form_label(form.responsable) }}
+        {{ form_errors(form.responsable) }}
+        {{ form_widget(form.responsable) }}
+    </div>
+
+    <div>
+        {{ form_label(form.cliente) }}
+        {{ form_errors(form.cliente) }}
+        {{ form_widget(form.cliente) }}
+    </div>
+
+    <div>
+        {{ form_label(form.tipo) }}
+        {{ form_errors(form.tipo) }}
+        {{ form_widget(form.tipo) }}
+    </div>
+
+    <div>
+        {{ form_widget(form.save) }}
+    </div>
+
+{{ form_end(form) }}

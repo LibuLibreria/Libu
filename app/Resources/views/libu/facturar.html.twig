@@ -1,0 +1,73 @@
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
+<!-- Inline CSS based on choices in "Settings" tab -->
+<style TYPE="text/css">
+    .asteriskField{color: red;}
+    .elemento {
+        border:0px solid black; 
+        border-radius: 5px;
+        line-height:40px;
+        font-size: 1.8em;
+        background-color: #ccc;
+    }
+    .elemento-opc {
+        border:0px solid black; 
+        border-radius: 5px;
+        line-height:60px;
+        font-size: 1.8em;
+        background-color: #afc;
+    }
+    .radio-toolbar input[type="radio"] {
+        display:none;
+    }
+
+    .radio-toolbar label {
+        display:inline-block;
+        background-color:#afc;
+        padding-right: 50px;
+        border-radius: 20px;
+        line-height:60px;
+        font-size: 1.8em;
+    }
+
+    .radio-toolbar input[type="radio"]:checked + label {
+        background-color:#bbb;
+    }
+
+    .radio-toolbar-num input[type="radio"] {
+        display:none;
+    }
+
+    .radio-toolbar-num label {
+        display:inline-block;
+        background-color:#bfc;
+        padding-right: 30px;
+        padding-left: 30px;
+        border-radius: 5px;
+        line-height:60px;
+        font-size: 1.8em;
+    }
+
+    .radio-toolbar-num input[type="radio"]:checked + label {
+        background-color:#bbb;
+    }
+</style>
+
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+
+TOTAL:
+<h1>18 euros</h1>
+
+<p>&nbsp;</p>
+<a href="{{ url('muestra') }}">
+<button type="button" class="btn btn-primary"><h3>Ejecutar</h3></button>
+</a>
+<a href="{{ url('muestra') }}">
+<button type="button" class="btn btn-warning"><h3>Deshacer</h3></button>
+</a>
+<a href="{{ url('muestra') }}">
+<button type="button" class="btn btn-info"><h3>Imprimir<br>Factura</h3></button>
+</a>

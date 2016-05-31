@@ -1,0 +1,42 @@
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<form name="venta" method="post" class="form-inline">
+    {{ form_errors(form) }}
+
+    <div>
+        {{ form_label(form.libros3) }}
+        {{ form_errors(form.libros3) }}
+        {{ form_widget(form.libros3) }}
+    </div>
+
+    <div>
+        {{ form_label(form.libros1) }}
+        {{ form_errors(form.libros1) }}
+        {{ form_widget(form.libros1) }}
+    </div>
+
+    <div>
+        {{ form_label(form.cliente) }}
+        {{ form_errors(form.cliente) }}
+        {{ form_widget(form.cliente) }}
+    </div>
+
+    <div>
+        {{ form_label(form.tematica) }}
+        {{ form_errors(form.tematica) }}
+        {{ form_widget(form.tematica) }}
+    </div>
+
+
+    <div>
+        {{ form_label(form.product) }}
+        {{ form_errors(form.product) }}
+        {{ form_widget(form.product) }}
+    </div>
+
+    <div>
+        {{ form_widget(form.save) }}
+    </div>
+
+{{ form_end(form) }}

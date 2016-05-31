@@ -1,0 +1,331 @@
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
+<!-- Inline CSS based on choices in "Settings" tab -->
+<style TYPE="text/css">
+    .asteriskField{color: red;}
+    .elemento {
+        border:0px solid black; 
+        border-radius: 5px;
+        line-height:40px;
+        font-size: 1.8em;
+        background-color: #ccc;
+    }
+    .elemento-opc {
+        border:0px solid black; 
+        border-radius: 5px;
+        line-height:60px;
+        font-size: 1.8em;
+        background-color: #afc;
+    }
+    .radio-toolbar input[type="radio"] {
+        display:none;
+    }
+
+    .radio-toolbar label {
+        display:inline-block;
+        background-color:#afc;
+        padding-right: 50px;
+        border-radius: 20px;
+        line-height:60px;
+        font-size: 1.8em;
+    }
+
+    .radio-toolbar input[type="radio"]:checked + label {
+        background-color:#bbb;
+    }
+
+    .radio-toolbar-num input[type="radio"] {
+        display:none;
+    }
+
+    .radio-toolbar-num label {
+        display:inline-block;
+        background-color:#bfc;
+        padding-right: 30px;
+        padding-left: 30px;
+        border-radius: 5px;
+        line-height:60px;
+        font-size: 1.8em;
+    }
+
+    .radio-toolbar-num input[type="radio"]:checked + label {
+        background-color:#bbb;
+    }
+</style>
+
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+
+
+
+		<div class="row">
+            <div class="form-group" id="div_cantidad">
+                <label class="control-label requiredField" for="cantidad">
+                    <h3>&nbsp;&nbsp;Libros a 3 euros:</h3>
+                    <span class="asteriskField">
+                        *
+                    </span>
+                </label>
+                <div  id="venta_cantidad">                    
+                    <div class="radio-toolbar-num" >
+
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_1" name="venta[cantidad]" value="1" checked>
+                                <label for="venta_cantidad_1">1</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_2" name="venta[cantidad]" value="2" checked>
+                                <label for="venta_cantidad_2">2</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">                        
+                                <input type="radio" id="venta_cantidad_3" name="venta[cantidad]" value="3" checked>
+                                <label for="venta_cantidad_3">3</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_4" name="venta[cantidad]" value="4" checked>
+                                <label for="venta_cantidad_4">4</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_5" name="venta[cantidad]" value="5" checked>
+                                <label for="venta_cantidad_5">5</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_6" name="venta[cantidad]" value="6" checked>
+                                <label for="venta_cantidad_6">6</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_7" name="venta[cantidad]" value="7" checked>
+                                <label for="venta_cantidad_7">7</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_8" name="venta[cantidad]" value="8" checked>
+                                <label for="venta_cantidad_8">8</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_9" name="venta[cantidad]" value="9" checked>
+                                <label for="venta_cantidad_9">9</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_10" name="venta[cantidad]" value="10" checked>
+                                <label for="venta_cantidad_10">10</label>
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+                <!-- <label class="col-md-2 col-xs-4 col-sm-4" class="control-label " for="Otra:">
+                    Otra cantidad:
+                    <input class="form-control" id="Otra" name="Otra" type="text"/>  
+                </label>   -->
+            
+            </div>
+        {{ form_row(form._token) }}
+    </div>
+
+
+
+        <div class="row">
+            <div class="form-group" id="div_cantidad">
+                <label class="control-label requiredField" for="cantidad">
+                    <h3>&nbsp;&nbsp;Libros a 1 euro:</h3>
+                    <span class="asteriskField">
+                        *
+                    </span>
+                </label>
+                <div  id="venta_cantidad">                    
+                    <div class="radio-toolbar-num" >
+
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_1a" name="venta[barato]" value="1" checked>
+                                <label for="venta_cantidad_1a">1</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_2a" name="venta[barato]" value="2" checked>
+                                <label for="venta_cantidad_2a">2</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">                        
+                                <input type="radio" id="venta_cantidad_3a" name="venta[barato]" value="3" checked>
+                                <label for="venta_cantidad_3a">3</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_4a" name="venta[barato]" value="4" checked>
+                                <label for="venta_cantidad_4a">4</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_5a" name="venta[barato]" value="5" checked>
+                                <label for="venta_cantidad_5a">5</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_6a" name="venta[barato]" value="6" checked>
+                                <label for="venta_cantidad_6a">6</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_7a" name="venta[barato]" value="7" checked>
+                                <label for="venta_cantidad_7a">7</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_8a" name="venta[barato]" value="8" checked>
+                                <label for="venta_cantidad_8a">8</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_9a" name="venta[barato]" value="9" checked>
+                                <label for="venta_cantidad_9a">9</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-xs-2 col-sm-1" >
+                            <div class="radio">
+                                <input type="radio" id="venta_cantidad_10a" name="venta[barato]" value="10" checked>
+                                <label for="venta_cantidad_10a">10</label>
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+                <!-- <label class="col-md-2 col-xs-4 col-sm-4" class="control-label " for="Otra:">
+                    Otra cantidad:
+                    <input class="form-control" id="Otra" name="Otra" type="text"/>  
+                </label>   -->
+            
+            </div>
+        {{ form_row(form._token) }}
+    </div>
+
+        <div class="row">
+            <div class="col-md-3 col-sm-4 col-xs-4">
+                <div class="form-group ">
+                    <label class="control-label ">
+                        Libro:
+                    </label>
+                    <div class="radio-toolbar">
+                        <div class="radio">
+                            <input type="radio" id="radio1a" name="venta[tematica]" value="1" checked>
+                            <label for="radio1a">Novela</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" id="radio2a" name="venta[tematica]" value="2" checked>
+                            <label for="radio2a">Tema</label>
+                        </div>
+                <!--    <div class="radio">
+                            <input type="radio" id="radio3a" name="venta[tematica]" value="3" checked>
+                            <label for="radio3a">Infantil</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" id="radio4a" name="venta[tematica]" value="4" checked>
+                            <label for="radio4a">Idioma</label>
+                        </div>   -->
+                    </div>
+
+                    </div>
+                 {{ form_row(form._token) }}                   
+            </div>
+
+            <div class="col-md-3 col-sm-4 col-xs-4">
+                <div class="form-group ">
+                    <label class="control-label ">
+                        Sexo:
+                    </label>
+                     <div class="radio-toolbar">
+                        <div class="radio">
+                            <input type="radio" id="radio1b" name="venta[cliente]" value="1" checked>
+                            <label for="radio1b">Mujer</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" id="radio2b" name="venta[cliente]" value="2" checked>
+                            <label for="radio2b">Hombre</label>
+                        </div>
+                    </div>
+
+                 {{ form_row(form._token) }}                   
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-4 col-xs-4">
+                <div class="form-group ">
+                    <label class="control-label ">
+                        Atiende:
+                    </label>
+                    <div class="radio-toolbar">
+                        <div class="radio">
+                            <input type="radio" id="radio1c" name="venta[responsable]" value="1" checked>
+                            <label for="radio1c">Geri</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" id="radio2c" name="venta[responsable]" value="2" checked>
+                            <label for="radio2c">María</label>
+                        </div>
+                 <!--       <div class="radio">
+                            <input type="radio" id="radio3c" name="responsable" value="3" checked>
+                            <label for="radio3c">Otro</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" id="radio4c" name="responsable" value="4" checked>
+                            <label for="radio4c">Otra</label>
+                        </div>    -->
+                    </div>
+
+                 {{ form_row(form._token) }}                   
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-4 col-xs-4">
+                <div class="form-group ">
+                    <label class="control-label ">
+                        &nbsp;
+                    </label>
+                    <div class="radio-toolbar">
+                        <div class="radio">
+                            <a href="{{ url('productos') }}">
+                                <button type="button" class="btn btn-primary"><h3>Artesanía</h3></button>
+
+                            </a>
+                        </div>
+                    </div>
+
+                 {{ form_row(form._token) }}                   
+                </div>
+            </div>            
+
+        </div>
+<p>&nbsp;</p>
+<a href="{{ url('facturar') }}">
+<button type="button" class="btn btn-primary"><h3>Venta</h3></button>
+</a>
+<a href="{{ url('muestra') }}">
+<button type="button" class="btn btn-warning"><h3>Reset</h3></button>
+</a>
