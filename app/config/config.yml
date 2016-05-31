@@ -67,3 +67,14 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+easy_admin:
+    entities:
+        - LibuBundle\Entity\Cliente
+        - LibuBundle\Entity\Libro
+        - LibuBundle\Entity\Producto
+        - LibuBundle\Entity\Tematica
+        - LibuBundle\Entity\Responsable
+        - LibuBundle\Entity\ProductoVendido
+        - LibuBundle\Entity\Tipo
+        - LibuBundle\Entity\Venta
