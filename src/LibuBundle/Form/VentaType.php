@@ -55,7 +55,7 @@ class VentaType extends AbstractType
                 // each entry in the array will be an "integer" field
                 'entry_type'   => IntegerType::class,
                 // these options are passed to each "integer" type
-                'entry_options'  => array(),
+                'entry_options'  => array('attr' => array('style' => 'width: 80px')),
 //                    'label'      =>   $options['datos']['titulo'])) 
                 'label' => ' '
                 ))

@@ -4,48 +4,89 @@
 {# {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %} #}
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
+<div class='container'>
 
-{{ form_start(form) }}
-    {{ form_errors(form) }}
+    {{ form_start(form) }}
+    <div class = 'col-sm-4 form-inline'> 
 
-    <div>
-        {{ form_label(form.factura) }}
-        {{ form_errors(form.factura) }}
-        {{ form_widget(form.factura) }}
+        <hr class="hr-dark"> 
+        <div class="row-fluid">
+            <h4 class=""><i class="icon-plus-sign-alt"></i>Libros</h4>
+            <hr>
+            <div class="clearfix">
+                <div>
+                    {{ form_label(form.libros3) }}
+                    {{ form_errors(form.libros3) }}
+                    {{ form_widget(form.libros3) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.libros1) }}
+                    {{ form_errors(form.libros1) }}
+                    {{ form_widget(form.libros1) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.tematica) }}
+                    {{ form_errors(form.tematica) }}
+                    {{ form_widget(form.tematica) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.responsable) }}
+                    {{ form_errors(form.responsable) }}
+                    {{ form_widget(form.responsable) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.cliente) }}
+                    {{ form_errors(form.cliente) }}
+                    {{ form_widget(form.cliente) }}
+                </div>
+                <div>
+                    {{ form_widget(form.save) }}
+                    {{ form_widget(form.menu) }}                
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div>
-        {{ form_label(form.cantidad) }}
-        {{ form_errors(form.cantidad) }}
-        {{ form_widget(form.cantidad) }}
-    </div>
+    <div class = 'col-sm-8 form-inline'>
+        <hr class="hr-dark"> 
+        <h4 class=""><i class="icon-plus-sign-alt"></i>Otros productos</h4>
+        <hr>
+        <div class="clearfix"></div>
+        <div class='col-sm-6'>
+                {{ form_label(form.product) }}
+                {{ form_errors(form.product) }}
 
-    <div>
-        {{ form_label(form.ingreso) }}
-        {{ form_errors(form.ingreso) }}
-        {{ form_widget(form.ingreso) }}
-    </div>
+                {% for productField in form.product[0:8] %}
+                <div class='col-sm-6'>
+                        {{ form_label(productField) }}
+                        {{ form_errors(productField) }}
+                </div>
+                <div class='col-sm-6'>
+                        {{ form_widget(productField) }}
+                        <br>
+                </div>
+                {% endfor %}
 
-    <div>
-        {{ form_label(form.responsable) }}
-        {{ form_errors(form.responsable) }}
-        {{ form_widget(form.responsable) }}
-    </div>
+        </div>
+        <div class = 'col-sm-6 form-inline'>
+            <div class="clearfix"></div>
 
-    <div>
-        {{ form_label(form.cliente) }}
-        {{ form_errors(form.cliente) }}
-        {{ form_widget(form.cliente) }}
+                {% for productField in form.product[8:] %}
+                <div class='col-sm-6'>
+                        {{ form_label(productField) }}
+                        {{ form_errors(productField) }}
+                </div>
+                <div class='col-sm-6'>                       
+                        {{ form_widget(productField) }}
+                        <br>
+                </div>
+                {% endfor %}
+        </div>
     </div>
+    {{ form_row(form._token) }}
 
-    <div>
-        {{ form_label(form.tipo) }}
-        {{ form_errors(form.tipo) }}
-        {{ form_widget(form.tipo) }}
-    </div>
-
-    <div>
-        {{ form_widget(form.save) }}
-    </div>
-
-{{ form_end(form) }}
+</div><!--/.container-->

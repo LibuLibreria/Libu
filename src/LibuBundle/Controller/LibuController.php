@@ -153,7 +153,7 @@ class LibuController extends Controller
             }
                       
 		}
-		return $this->render('libu/simple.html.twig', array(
+		return $this->render('libu/inicio.html.twig', array(
 			'form' => $form->createView(),
 			));    
 	}
