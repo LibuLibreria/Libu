@@ -75,6 +75,15 @@ class LibuController extends Controller
 
                 $resul = ($data['libros3'] * 3) + ($data['libros1'] * 1);
 
+                // Cálculo de la suma
+                $lib3 = $data['libros3'];
+                $lib1 = $data['libros1'];
+                $redondear = (($lib3 / 5) - 0,2);
+                $precio5 = round($redondear);
+                $resto5 = $lib3 % 5;
+                $precio2 = round(($resto5 / 2) -0,2);
+                $resto2 = $resto5 % 2; 
+                $pagos = implode (',', array($lib3, $redondear, $precio5, $resto5, $precio2, $resto2, ($precio5 * 5), ($precio2 * 2), $resto2));
 
 
                 // Abrimos una nueva instancia Venta
@@ -116,6 +125,8 @@ class LibuController extends Controller
                         echo "precio: ".$precio_actual;
                         $resul = $resul + ($precio_actual * $cant);
 
+                        $lista_prod[$m] = $pr;
+                        $cant_prod[$m] = $cant;
                         $vendidos[$m++] = $pv;
 /*
                         try{
@@ -145,11 +156,12 @@ class LibuController extends Controller
                 }
 
                 $session->set('cobro', $resul);
+                $session->set('pagos', $pagos);
                 return $this->redirectToRoute('facturar');
             }
 
             if ($form->get('menu')->isClicked()) {
-                return $this->redirectToRoute('menu');   
+                return $this->redirectToRoute('easyadmin');   
             }
                       
 		}
@@ -238,10 +250,14 @@ class LibuController extends Controller
     public function facturarAction(Request $request)
     {
         $session = $request->getSession();
-        $resul = $session->get('cobro');
-        echo "<h1>Son ".$resul." euros</h1>";
-        
-
+        $resul = $session->get('cobro'); 
+        $pagos = $session->get('pagos');
+        $lista_pagos = explode(',', $pagos);
+/*        echo "<br>".$lista_pagos[0]." a 10 euros/5 libros";
+        echo "<br>".$lista_pagos[1]." a 5 euros/2 libros";
+        echo "<br>".$lista_pagos[2]." a 3 euros/1 libro";
+*/
+        echo "<pre>"; print_r($lista_pagos); echo "</pre>";
         $form = $this->createForm(FacturarType::class, array());
         $form->handleRequest($request);
 
@@ -251,8 +267,9 @@ class LibuController extends Controller
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('menu');
         }
 
-        return $this->render('libu/simple.html.twig',array(
+        return $this->render('libu/facturar.html.twig',array(
             'form' => $form->createView(),
+            'pago' => $resul,
             ));    
     }
 

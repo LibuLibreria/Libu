@@ -29,13 +29,17 @@ class VentaType extends AbstractType
 //            ->add('factura')
 //           ->add('ingreso')
 //            ->add('diahora', DatetimeType::class)
-            ->add('libros3', IntegerType::class, array(
+            ->add('libros3', TextType::class, array(
                 'label' => 'Libros a 3 euros: ',
-                'data' => '0'
+                'data' => '',
+                'attr' => array('style' => 'width: 80px'), 
+                'required' => false,
                 )) 
-            ->add('libros1', IntegerType::class, array(
+            ->add('libros1', TextType::class, array(
                 'label' => 'Libros a 1 euro:',
-                'data' => '0'                
+                'data' => '',
+                'attr' => array('style' => 'width: 80px'),
+                'required' => false,               
                 )) 
             ->add('cliente', EntityType::class, array(
                 'class' => 'LibuBundle:Cliente',
