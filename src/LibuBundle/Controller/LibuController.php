@@ -78,12 +78,12 @@ class LibuController extends Controller
                 // Cálculo de la suma
                 $lib3 = $data['libros3'];
                 $lib1 = $data['libros1'];
-                $redondear = (($lib3 / 5) - 0,2);
-                $precio5 = round($redondear);
                 $resto5 = $lib3 % 5;
-                $precio2 = round(($resto5 / 2) -0,2);
+                $precio5 = $lib3 - $resto5; 
                 $resto2 = $resto5 % 2; 
-                $pagos = implode (',', array($lib3, $redondear, $precio5, $resto5, $precio2, $resto2, ($precio5 * 5), ($precio2 * 2), $resto2));
+                $precio2 = $resto5 - $resto2;
+                $pagos = implode (',', array($precio5, $resto5, $resto2));
+                $pagolibros = (($precio5 * 2) + ($resto5 * 2.5) + ($resto2 * 3) + $lib1);
 
 
                 // Abrimos una nueva instancia Venta
@@ -108,6 +108,7 @@ class LibuController extends Controller
                 }
 */
                 $vendidos = array();
+                $pagoproductos = 0;
                 $m  = 0;
                 // Buscamos los productos cuya venta ha sido mayor que cero
                 foreach($data['product'] as $pr => $cant){
@@ -123,7 +124,7 @@ class LibuController extends Controller
                         // Calculamos el precio total
                         $precio_actual = $prod_actual->getPrecio();
                         echo "precio: ".$precio_actual;
-                        $resul = $resul + ($precio_actual * $cant);
+                        $pagoproductos = $pagoproductos + ($precio_actual * $cant);
 
                         $lista_prod[$m] = $pr;
                         $cant_prod[$m] = $cant;
@@ -141,7 +142,8 @@ class LibuController extends Controller
                     }
                     
                 }
-                $venta->setIngreso($resul);
+                $pagototal = $pagolibros + $pagoproductos;
+                $venta->setIngreso($pagototal);
 
                 try{
 //                    $em = $this->getDoctrine()->getManager();
@@ -157,6 +159,9 @@ class LibuController extends Controller
 
                 $session->set('cobro', $resul);
                 $session->set('pagos', $pagos);
+                $session->set('lib1', $lib1);
+                $session->set('pagoproductos', $pagoproductos);
+                $session->set('pagototal', $pagototal);
                 return $this->redirectToRoute('facturar');
             }
 
@@ -252,12 +257,37 @@ class LibuController extends Controller
         $session = $request->getSession();
         $resul = $session->get('cobro'); 
         $pagos = $session->get('pagos');
+        $pagoproductos = $session->get('pagoproductos');
+        $lib1 = $session->get('lib1');
+        $pagototal = $session->get('pagototal');
+        $textoPagos = "";
+        $total = 0;
         $lista_pagos = explode(',', $pagos);
-/*        echo "<br>".$lista_pagos[0]." a 10 euros/5 libros";
-        echo "<br>".$lista_pagos[1]." a 5 euros/2 libros";
-        echo "<br>".$lista_pagos[2]." a 3 euros/1 libro";
-*/
-        echo "<pre>"; print_r($lista_pagos); echo "</pre>";
+        if ($lista_pagos[0] != 0) {
+            $parcial = ($lista_pagos[0] * 2);            
+            $textoPagos .= "<br><b>".$lista_pagos[0]."</b> libros a 10 euros/5 libros: <b>".$parcial." euros.</b>";
+        }
+
+        if ($lista_pagos[1] != 0) {
+            $parcial = ($lista_pagos[1] * 2.5);
+            $textoPagos .= "<br><b>".$lista_pagos[1]."</b> libros a 5 euros/2 libros: <b>".$parcial." euros.</b>";
+        }
+
+        if ($lista_pagos[2] != 0) {
+            $parcial = ($lista_pagos[2] * 3); 
+            $textoPagos .= "<br><b>".$lista_pagos[2]."</b> libros a 3 euros/1 libro: <b>".$parcial." euros.</b>";
+        }  
+
+        if ($lista_pagos[1] == 4) $textoPagos .= "<br>Puede llevarse un libro más, al mismo precio"; 
+
+        if ($lib1 != 0) {
+            $textoPagos .= "<br><b>".$lib1."</b> libros a 1 euro: <b>".$lib1." euros</b>";
+        } 
+
+        if ($pagoproductos != 0) {; 
+            $textoPagos .= "<br>Ha escogido otros productos por valor de <b>".$pagoproductos." euros.</b>";
+        }  
+
         $form = $this->createForm(FacturarType::class, array());
         $form->handleRequest($request);
 
@@ -269,7 +299,8 @@ class LibuController extends Controller
 
         return $this->render('libu/facturar.html.twig',array(
             'form' => $form->createView(),
-            'pago' => $resul,
+            'pago' => $pagototal,
+            'textopagos' => $textoPagos,
             ));    
     }
 
