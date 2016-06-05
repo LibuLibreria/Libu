@@ -77,7 +77,12 @@ easy_admin:
                 title: 'Lista de clientes'
                 fields: [{ property: 'Id_cli', label: 'Identificador' }, 'Nombre']
  #       - LibuBundle\Entity\Libro
-  #      - LibuBundle\Entity\Producto
+        Producto:
+            class: LibuBundle\Entity\Producto
+            label: 'Productos'
+            list: 
+                title: 'Lista de productos en venta'
+
    #     - LibuBundle\Entity\Tematica
     #    - LibuBundle\Entity\Responsable
      #   - LibuBundle\Entity\ProductoVendido
