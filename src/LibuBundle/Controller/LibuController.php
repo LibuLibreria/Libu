@@ -165,6 +165,7 @@ class LibuController extends Controller
 //                    $em = $this->getDoctrine()->getManager();
                     $em->persist($venta);
                     $em->flush();
+                    $ultimoid = $venta->getId();
                     foreach ($vendidos as $pv){
                         $em->persist($pv);
                         $em->flush();
@@ -178,6 +179,7 @@ class LibuController extends Controller
                 $session->set('lib1', $lib1);
                 $session->set('pagoproductos', $pagoproductos);
                 $session->set('pagototal', $pagototal);
+                $session->set('ultimoid', $ultimoid);
                 return $this->redirectToRoute('facturar');
             }
 
@@ -278,8 +280,11 @@ class LibuController extends Controller
         $pagoproductos = $session->get('pagoproductos');
         $lib1 = $session->get('lib1');
         $pagototal = $session->get('pagototal');
+        $ultimoid = $session->get('ultimoid');
         $textoPagos = "";
         $total = 0;
+
+        $textoPagos .= "<h2>Número de ticket: ".$ultimoid."</h2>";
         $lista_pagos = explode(',', $pagos);
         if ($lista_pagos[0] != 0) {
             $parcial = ($lista_pagos[0] * 2);            
