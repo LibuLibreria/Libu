@@ -166,7 +166,8 @@ class LibuController extends Controller
             }
 
             if ($form->get('menu')->isClicked()) {
-                return $this->redirectToRoute('easyadmin');   
+//                return $this->redirectToRoute('easyadmin');   CAMBIAR BOTÓN CUANDO FUNCIONE EASYADMIN
+                return $this->redirectToRoute('venta');   
             }
                       
 		}
