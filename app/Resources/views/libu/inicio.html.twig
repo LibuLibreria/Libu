@@ -142,10 +142,10 @@
                 {{ form_label(form.product) }}
                 {{ form_errors(form.product) }}
 
-                {% for productField in form.product[0:8] %}
+                {% for key,productField in form.product[0:8] %}
                     <div class='row linea-prod'>                
                         <div class='col-sm-6'>
-                                {{ form_label(productField) }}
+                                {{ form_label(productField, formlabels[productField.vars.name]) }}
                                 {{ form_errors(productField) }}
                         </div>
                         <div class='col-sm-6'>

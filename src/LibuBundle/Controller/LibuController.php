@@ -52,10 +52,13 @@ class LibuController extends Controller
         // Bucle para cada uno de los productos
         foreach ($product as $prod) {
             // Prepara un buscador para utilizar posteriormente
-            $cod[$prod->getCodigo()] = $prod;
+            $cod[$prod->getIdProd()] = $prod;
 
             // Crea la matriz vacía para los subformularios
-            $subform[$prod->getCodigo()] = 0;
+            $subform[$prod->getIdProd()] = 0;
+
+            // Crea la matriz para que se utilicen los labels en Twig
+            $formlabels[$prod->getIdProd()] = $prod->getCodigo();
         }
 
         // Crea el formulario con el esquema VentaType
@@ -63,6 +66,7 @@ class LibuController extends Controller
 
         // Genera el subformulario vacío
         $form->get('product')->setData($subform);
+//        $form->get('formlabels')->setData($formlabels);
 
 
         $form->handleRequest($request);
@@ -173,6 +177,7 @@ class LibuController extends Controller
 		}
 		return $this->render('libu/inicio.html.twig', array(
 			'form' => $form->createView(),
+            'formlabels' => $formlabels,
 			));    
 	}
 
