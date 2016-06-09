@@ -49,6 +49,14 @@ class LibuController extends Controller
         $product = $em->getRepository('LibuBundle:Producto')->findAll();
         $n = 0;
 
+
+        // Abrimos una nueva instancia Venta
+        $venta = new Venta();
+
+
+        $fecha = new \Datetime();
+ //       $venta->setDiahora($fecha);
+
         // Bucle para cada uno de los productos
         foreach ($product as $prod) {
             // Prepara un buscador para utilizar posteriormente
@@ -67,6 +75,9 @@ class LibuController extends Controller
         // Genera el subformulario vacío
         $form->get('product')->setData($subform);
 //        $form->get('formlabels')->setData($formlabels);
+
+        $form->get('diahora')->setData($fecha);
+
 
 
         $form->handleRequest($request);
@@ -102,11 +113,10 @@ class LibuController extends Controller
                 $pagolibros = (($precio5 * 2) + ($resto5 * 2.5) + ($resto2 * 3) + $lib1);
 */
 
-                // Abrimos una nueva instancia Venta
-                $venta = new Venta();
+
 
                 // Guardamos todos los datos de las ventas en la nueva instancia
-                $fecha = new \Datetime();
+                
                 $venta->setDiahora($fecha);
                 $venta->setLibros3($data['libros3']);
                 $venta->setLibros1($data['libros1']);

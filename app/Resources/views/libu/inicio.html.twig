@@ -13,10 +13,10 @@
     margin: 3px;
 }
 .input_venta, .input_venta .form-control {
-    font-size: 24px;
+    font-size: 22px;
 }
 .form-control {
-    font-size: 20px;   
+    font-size: 16px;   
 }
 .boton-grande {
     font-size: 28px; 
@@ -24,6 +24,9 @@
 .linea-prod {
     margin-bottom: 5px;
 }  
+#venta_tematica, #venta_cliente, #venta_diahora {
+    font-size: 16px;
+}
 }
 </style>
 
@@ -100,26 +103,28 @@
                     <input type="button" name="borrar" value="Borrar" class="btn btn-libu btn-danger btn-lg"
                              OnClick="venta.venta_libros1.value = ''">                    
                 </div>
- 
+
                 <div>
                     {{ form_label(form.tematica) }}
                     {{ form_errors(form.tematica) }}
                     {{ form_widget(form.tematica) }}
                 </div>
-                <hr>
-<!--
+                <!--
                 <div>
                     {{ form_label(form.responsable) }}
                     {{ form_errors(form.responsable) }}
                     {{ form_widget(form.responsable) }}
                 </div>
-
+-->
+ 
                 <div>
                     {{ form_label(form.cliente) }}
                     {{ form_errors(form.cliente) }}
                     {{ form_widget(form.cliente) }}
                 </div>
--->
+              
+                <hr>
+
 
                 <div >
                     {{ form_widget(form.save, {'attr': {'class':'btn btn-primary .btn-block  btn-lg'}}) }}
@@ -128,7 +133,12 @@
             </div>
 
     </div>
-
+    
+    <div class='diahora'>
+        {{ form_label(form.diahora) }}
+        {{ form_errors(form.diahora) }}
+        {{ form_widget(form.diahora) }}
+    </div>  
     <br>
     <button class="boton-grande btn btn-primary" type="button" data-toggle="collapse" data-target="#col-productos" aria-expanded="false" aria-controls="col-productos">
       Otros productos
@@ -142,7 +152,7 @@
                 {{ form_label(form.product) }}
                 {{ form_errors(form.product) }}
 
-                {% for key,productField in form.product[0:8] %}
+                {% for key,productField in form.product[0:12] %}
                     <div class='row linea-prod'>                
                         <div class='col-sm-6'>
                                 {{ form_label(productField, formlabels[productField.vars.name]) }}
@@ -160,10 +170,10 @@
         <div class = 'col-sm-6 form-inline'>
             <div class="clearfix"></div>
 
-                {% for productField in form.product[8:] %}
+                {% for productField in form.product[12:] %}
                     <div class='row linea-prod'>                 
                         <div class='col-sm-6'>
-                                {{ form_label(productField) }}
+                                {{ form_label(productField, formlabels[productField.vars.name]) }}
                                 {{ form_errors(productField) }}
                         </div>
                         <div class='col-sm-6'>                       
