@@ -49,13 +49,24 @@ class LibuController extends Controller
         $product = $em->getRepository('LibuBundle:Producto')->findAll();
         $n = 0;
 
+
+        // Abrimos una nueva instancia Venta
+        $venta = new Venta();
+
+
+        $fecha = new \Datetime();
+ //       $venta->setDiahora($fecha);
+
         // Bucle para cada uno de los productos
         foreach ($product as $prod) {
             // Prepara un buscador para utilizar posteriormente
-            $cod[$prod->getCodigo()] = $prod;
+            $cod[$prod->getIdProd()] = $prod;
 
             // Crea la matriz vacía para los subformularios
-            $subform[$prod->getCodigo()] = 0;
+            $subform[$prod->getIdProd()] = 0;
+
+            // Crea la matriz para que se utilicen los labels en Twig
+            $formlabels[$prod->getIdProd()] = $prod->getCodigo();
         }
 
         // Crea el formulario con el esquema VentaType
@@ -63,6 +74,10 @@ class LibuController extends Controller
 
         // Genera el subformulario vacío
         $form->get('product')->setData($subform);
+//        $form->get('formlabels')->setData($formlabels);
+
+        $form->get('diahora')->setData($fecha);
+
 
 
         $form->handleRequest($request);
@@ -78,19 +93,30 @@ class LibuController extends Controller
                 // Cálculo de la suma
                 $lib3 = $data['libros3'];
                 $lib1 = $data['libros1'];
+//                $array_resto10 = array('0'=>'0', '1'=>'3', '2'=>'5', '3'=>'8', '4'=>'10', '5'=>'10',
+//                    '6'=>'13', '7'=>'15', '8'=>'18', '9'=>'20', '10'=>'20');
+//                $array_resto10 = array('0'=>0, '1'=>3, '2'=>5, '3'=>8, '4'=>10, '5'=>10,
+//                    '6'=>13, '7'=>15, '8'=>18, '9'=>20, '10'=>20);
+                $array_resto5 = array('0'=>0, '1'=>3, '2'=>5, '3'=>8, '4'=>10, '5'=>10);
                 $resto5 = $lib3 % 5;
+                $multiplo5 = $lib3 - $resto5;
+                $pagos = implode(',', array($multiplo5, $resto5, $array_resto5[$resto5]));
+                $pagolibros = (($multiplo5 * 2) + ($array_resto5[$resto5]) + $lib1);
+
+
+
+/*                $resto5 = $lib3 % 5;
                 $precio5 = $lib3 - $resto5; 
                 $resto2 = $resto5 % 2; 
                 $precio2 = $resto5 - $resto2;
                 $pagos = implode (',', array($precio5, $resto5, $resto2));
                 $pagolibros = (($precio5 * 2) + ($resto5 * 2.5) + ($resto2 * 3) + $lib1);
+*/
 
 
-                // Abrimos una nueva instancia Venta
-                $venta = new Venta();
 
                 // Guardamos todos los datos de las ventas en la nueva instancia
-                $fecha = new \Datetime();
+                
                 $venta->setDiahora($fecha);
                 $venta->setLibros3($data['libros3']);
                 $venta->setLibros1($data['libros1']);
@@ -149,6 +175,7 @@ class LibuController extends Controller
 //                    $em = $this->getDoctrine()->getManager();
                     $em->persist($venta);
                     $em->flush();
+                    $ultimoid = $venta->getId();
                     foreach ($vendidos as $pv){
                         $em->persist($pv);
                         $em->flush();
@@ -162,6 +189,7 @@ class LibuController extends Controller
                 $session->set('lib1', $lib1);
                 $session->set('pagoproductos', $pagoproductos);
                 $session->set('pagototal', $pagototal);
+                $session->set('ultimoid', $ultimoid);
                 return $this->redirectToRoute('facturar');
             }
 
@@ -173,6 +201,7 @@ class LibuController extends Controller
 		}
 		return $this->render('libu/inicio.html.twig', array(
 			'form' => $form->createView(),
+            'formlabels' => $formlabels,
 			));    
 	}
 
@@ -261,8 +290,11 @@ class LibuController extends Controller
         $pagoproductos = $session->get('pagoproductos');
         $lib1 = $session->get('lib1');
         $pagototal = $session->get('pagototal');
+        $ultimoid = $session->get('ultimoid');
         $textoPagos = "";
         $total = 0;
+
+        $textoPagos .= "<h2>Número de ticket: ".$ultimoid."</h2>";
         $lista_pagos = explode(',', $pagos);
         if ($lista_pagos[0] != 0) {
             $parcial = ($lista_pagos[0] * 2);            
@@ -270,14 +302,9 @@ class LibuController extends Controller
         }
 
         if ($lista_pagos[1] != 0) {
-            $parcial = ($lista_pagos[1] * 2.5);
-            $textoPagos .= "<br><b>".$lista_pagos[1]."</b> libros a 5 euros/2 libros: <b>".$parcial." euros.</b>";
+            $parcial = ($lista_pagos[2]);
+            $textoPagos .= "<br><b>".$lista_pagos[1]."</b> libros a 3 euros (ó 5 euros por 2 libros): <b>".$parcial." euros.</b>";
         }
-
-        if ($lista_pagos[2] != 0) {
-            $parcial = ($lista_pagos[2] * 3); 
-            $textoPagos .= "<br><b>".$lista_pagos[2]."</b> libros a 3 euros/1 libro: <b>".$parcial." euros.</b>";
-        }  
 
         if ($lista_pagos[1] == 4) $textoPagos .= "<br>Puede llevarse un libro más, al mismo precio"; 
 
@@ -286,7 +313,7 @@ class LibuController extends Controller
         } 
 
         if ($pagoproductos != 0) {; 
-            $textoPagos .= "<br>Ha escogido otros productos por valor de <b>".$pagoproductos." euros.</b>";
+            $textoPagos .= "<br>Ha escogido productos por valor de <b>".$pagoproductos." euros.</b>";
         }  
 
         $form = $this->createForm(FacturarType::class, array());
@@ -294,8 +321,8 @@ class LibuController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('finalizar')->isClicked()) return $this->redirectToRoute('venta');
-            if ($form->get('factura')->isClicked()) return $this->redirectToRoute('factura');
-            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('menu');
+//            if ($form->get('factura')->isClicked()) return $this->redirectToRoute('factura');
+//           if ($form->get('menu')->isClicked()) return $this->redirectToRoute('menu');
         }
 
         return $this->render('libu/facturar.html.twig',array(

@@ -28,7 +28,9 @@ class VentaType extends AbstractType
         $builder
 //            ->add('factura')
 //           ->add('ingreso')
-//            ->add('diahora', DatetimeType::class)
+            ->add('diahora', DatetimeType::class, array(
+                'label' => 'Fecha y hora: ',
+                ))
             ->add('libros3', TextType::class, array(
                 'label' => 'Libros a 3 euros: ',
                 'data' => '',
