@@ -199,7 +199,7 @@ class LibuController extends Controller
             }
                       
 		}
-		return $this->render('libu/inicio.html.twig', array(
+		return $this->render('LibuBundle:libu:inicio.html.twig', array(
 			'form' => $form->createView(),
             'formlabels' => $formlabels,
 			));    
@@ -224,7 +224,7 @@ class LibuController extends Controller
             return $this->redirectToRoute('libro');
         }
 
-        return $this->render('libu/simple.html.twig', array(
+        return $this->render('LibuBundle:libu:simple.html.twig', array(
             'form' => $form->createView(),
             ));    
     }
@@ -247,7 +247,7 @@ class LibuController extends Controller
             return $this->redirectToRoute('venta');
         }
 
-        return $this->render('libu/simple.html.twig', array(
+        return $this->render('LibuBundle:libu:simple.html.twig', array(
             'form' => $form->createView(),
             ));    
     }
@@ -273,7 +273,7 @@ class LibuController extends Controller
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('menu');
         }
 
-        return $this->render('libu/simple.html.twig',array(
+        return $this->render('LibuBundle:libu:simple.html.twig',array(
             'form' => $form->createView(),
             ));    
     }
@@ -325,7 +325,7 @@ class LibuController extends Controller
 //           if ($form->get('menu')->isClicked()) return $this->redirectToRoute('menu');
         }
 
-        return $this->render('libu/facturar.html.twig',array(
+        return $this->render('LibuBundle:libu:facturar.html.twig',array(
             'form' => $form->createView(),
             'pago' => $pagototal,
             'textopagos' => $textoPagos,
@@ -348,7 +348,7 @@ class LibuController extends Controller
             if ($form->get('libro')->isClicked()) return $this->redirectToRoute('libro');
         }
 
-        return $this->render('libu/simple.html.twig',array(
+        return $this->render('LibuBundle:libu:simple.html.twig',array(
             'form' => $form->createView(),
             ));     
     }
