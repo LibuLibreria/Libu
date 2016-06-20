@@ -1,0 +1,113 @@
+<?php
+
+namespace Trinity\LibuBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Libro
+ *
+ * @ORM\Table(name="libro", indexes={@ORM\Index(name="id_venta", columns={"id_venta"})})
+ * @ORM\Entity
+ */
+class Libro
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="codigo", type="string", length=10, nullable=true)
+     */
+    private $codigo;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="tipo", type="integer", nullable=true)
+     */
+    private $tipo;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="titulo", type="string", length=40, nullable=true)
+     */
+    private $titulo;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="isbn", type="string", length=20, nullable=true)
+     */
+    private $isbn;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="autor", type="string", length=40, nullable=true)
+     */
+    private $autor;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="editorial", type="string", length=30, nullable=true)
+     */
+    private $editorial;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="anno", type="string", length=6, nullable=true)
+     */
+    private $anno;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="precio", type="float", precision=6, scale=2, nullable=true)
+     */
+    private $precio;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="tapas", type="integer", nullable=true)
+     */
+    private $tapas;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="conservacion", type="integer", nullable=true)
+     */
+    private $conservacion;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="notas", type="string", length=40, nullable=true)
+     */
+    private $notas;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_libro", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idLibro;
+
+    /**
+     * @var \Trinity\LibuBundle\Entity\Venta
+     *
+     * @ORM\ManyToOne(targetEntity="Trinity\LibuBundle\Entity\Venta")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="id_venta", referencedColumnName="id")
+     * })
+     */
+    private $idVenta;
+
+
+}
+

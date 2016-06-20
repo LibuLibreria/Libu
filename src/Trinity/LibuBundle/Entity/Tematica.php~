@@ -1,0 +1,33 @@
+<?php
+
+namespace Trinity\LibuBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Tematica
+ *
+ * @ORM\Table(name="tematica")
+ * @ORM\Entity
+ */
+class Tematica
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nombre", type="string", length=25, nullable=true)
+     */
+    private $nombre;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_tem", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idTem;
+
+
+}
+

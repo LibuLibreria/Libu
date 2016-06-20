@@ -13,4 +13,6 @@
 !var/sessions/.gitkeep
 !var/SymfonyRequirements.php
 /vendor/
+!/vendor/javiereguiluz
+!/vendor/pagerfanta
 /web/bundles/

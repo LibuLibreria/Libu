@@ -1,0 +1,33 @@
+<?php
+
+namespace Trinity\LibuBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Tipo
+ *
+ * @ORM\Table(name="tipo")
+ * @ORM\Entity
+ */
+class Tipo
+{
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="tipo", type="string", length=25, nullable=true)
+     */
+    private $tipo;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id_tipo", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $idTipo;
+
+
+}
+
