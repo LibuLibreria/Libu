@@ -66,3 +66,30 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+easy_admin:
+    entities:
+        Cliente: 
+            class: Trinity\LibuBundle\Entity\Cliente
+            label: 'Clientes'
+            list: 
+                title: 'Lista de clientes'
+                fields: [{ property: 'Id_cli', label: 'Identificador' }, 'Nombre']
+ #       - LibuBundle\Entity\Libro
+        Producto:
+            class: Trinity\LibuBundle\Entity\Producto
+            label: 'Productos'
+            list: 
+                title: 'Lista de productos en venta'
+
+   #     - LibuBundle\Entity\Tematica
+    #    - LibuBundle\Entity\Responsable
+     #   - LibuBundle\Entity\ProductoVendido
+      #  - LibuBundle\Entity\Tipo
+        Venta: 
+            class: Trinity\LibuBundle\Entity\Venta
+    site_name: 'Libu'
+    design:
+        brand_color: 'red'
+        color_scheme: 'light'
+
