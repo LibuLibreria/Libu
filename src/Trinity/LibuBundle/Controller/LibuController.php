@@ -115,7 +115,7 @@ class LibuController extends Controller
 
 
 
-                // Guardamos todos los datos de las ventas en la nueva instancia
+                // Guardamos todos los datos de las ventas en la nueva instancia Venta
                 
                 $venta->setDiahora($fecha);
                 $venta->setLibros3($data['libros3']);
