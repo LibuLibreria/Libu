@@ -1,0 +1,196 @@
+{# libu/Resources/views/libu/venta.html.twig #}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{# {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %} #}
+<!--  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+ Latest compiled and minified JavaScript -->
+
+    <link rel="stylesheet" href="{{ asset('bundles/libu/css/bootstrap.min.css') }}"  />
+
+<!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>    -->
+
+  <script src="{{ asset('bundles/libu/js/jquery-1-12.min.js') }}"></script>   
+ <script src="{{ asset('bundles/libu/js/bootstrap.min.js') }}"></script>
+
+<style type="text/css">
+
+.btn-libu {
+    margin: 3px;
+}
+.input_venta, .input_venta .form-control {
+    font-size: 22px;
+}
+.form-control {
+    font-size: 16px;   
+}
+.boton-grande {
+    font-size: 28px; 
+}
+.linea-prod {
+    margin-bottom: 5px;
+}  
+#venta_tematica, #venta_cliente, #venta_diahora {
+    font-size: 16px;
+}
+}
+</style>
+
+
+<div class='container'>
+
+    {{ form_start(form) }}
+    <div class = 'col-sm-4 form-inline'> 
+<!--            <h4 class=""><i class="icon-plus-sign-alt"></i>Libros</h4>    -->
+            <br>
+            <div class="clearfix">
+                <div>
+                    <div class="input_venta">
+                        {{ form_label(form.libros3) }}
+                        {{ form_errors(form.libros3) }}
+                        {{ form_widget(form.libros3) }}
+                    </div>
+                    <br>
+                    <input type="button" name="1" value="  1  " class="btn btn-libu btn-primary  btn-lg"
+                        OnClick="venta.venta_libros3.value += '1'">
+                    <input type="button" name="2" value="  2  " class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value += '2'">
+                    <input type="button" name="3" value="  3  " class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value += '3'">
+                    <input type="button" name="4" value="  4  " class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value += '4'">
+                    <input type="button" name="5" value="  5  " class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value += '5'">
+                    <br>
+                    <input type="button" name="6" value="  6  " class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value += '6'">
+                    <input type="button" name="7" value="  7  " class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value += '7'">
+                    <input type="button" name="8" value="  8  " class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value += '8'">
+                    <input type="button" name="9" value="  9  " class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value += '9'">
+                    <input type="button" name="0" value="  0  " class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value += '0'">
+                    <br>
+                    <input type="button" name="borrar" value="C" class="btn btn-libu btn-primary btn-lg"
+                         OnClick="venta.venta_libros3.value = ''">
+                </div>
+                <hr>
+                <div>
+                    <div class="input_venta">                    
+                        {{ form_label(form.libros1) }}
+                        {{ form_errors(form.libros1) }}
+                        {{ form_widget(form.libros1) }}
+                    </div>
+                    <br>
+                    <input type="button" name="1" value="  1  " class="btn btn-libu btn-primary btn-lg"
+                            OnClick="venta.venta_libros1.value += '1'">
+                    <input type="button" name="2" value="  2  " class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value += '2'">
+                    <input type="button" name="3" value="  3  " class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value += '3'">
+                    <input type="button" name="4" value="  4  " class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value += '4'">
+                    <input type="button" name="5" value="  5  " class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value += '5'">
+                    <br>
+                    <input type="button" name="6" value="  6  " class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value += '6'">
+                    <input type="button" name="7" value="  7  " class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value += '7'">
+                    <input type="button" name="8" value="  8  " class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value += '8'">
+                    <input type="button" name="9" value="  9  " class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value += '9'">
+                    <input type="button" name="0" value="  0  " class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value += '0'">
+                    <br>
+                    <input type="button" name="borrar" value="C" class="btn btn-libu btn-primary btn-lg"
+                             OnClick="venta.venta_libros1.value = ''">                    
+                </div>
+
+                <div>
+                    {{ form_label(form.tematica) }}
+                    {{ form_errors(form.tematica) }}
+                    {{ form_widget(form.tematica) }}
+                </div>
+                <!--
+                <div>
+                    {{ form_label(form.responsable) }}
+                    {{ form_errors(form.responsable) }}
+                    {{ form_widget(form.responsable) }}
+                </div>
+-->
+ 
+                <div>
+                    {{ form_label(form.cliente) }}
+                    {{ form_errors(form.cliente) }}
+                    {{ form_widget(form.cliente) }}
+                </div>
+              
+                <hr>
+
+
+                <div >
+                    {{ form_widget(form.save, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}}) }}
+                    {{ form_widget(form.menu) }}                
+                </div>
+            </div>
+
+    </div>
+    
+    <div class='diahora'>
+        {{ form_label(form.diahora) }}
+        {{ form_errors(form.diahora) }}
+        {{ form_widget(form.diahora) }}
+    </div>  
+    <br>
+    <button class="boton-grande btn btn-primary" type="button" data-toggle="collapse" data-target="#col-productos" aria-expanded="false" aria-controls="col-productos">
+      Otros productos
+    </button>
+    <div id = 'col-productos' class = 'col-sm-8 form-inline collapse'>
+<!--        <h4 class=""><i class="icon-plus-sign-alt"></i>Otros productos</h4>    -->
+        <hr>
+        <div class="clearfix"></div>
+        <div class='col-sm-6'>
+
+                {{ form_label(form.product) }}
+                {{ form_errors(form.product) }}
+
+                {% for key,productField in form.product[0:12] %}
+                    <div class='row linea-prod'>                
+                        <div class='col-sm-6'>
+                                {{ form_label(productField, formlabels[productField.vars.name]) }}
+                                {{ form_errors(productField) }}
+                        </div>
+                        <div class='col-sm-6'>
+                                {{ form_widget(productField) }}
+                                <br>
+                        </div>
+                    </div>                
+                {% endfor %}
+
+
+        </div>
+        <div class = 'col-sm-6 form-inline'>
+            <div class="clearfix"></div>
+
+                {% for productField in form.product[12:] %}
+                    <div class='row linea-prod'>                 
+                        <div class='col-sm-6'>
+                                {{ form_label(productField, formlabels[productField.vars.name]) }}
+                                {{ form_errors(productField) }}
+                        </div>
+                        <div class='col-sm-6'>                       
+                                {{ form_widget(productField) }}
+                                <br>
+                        </div>
+                    </div>                 
+                {% endfor %}
+        </div>
+    </div>
+    {{ form_row(form._token) }}
+    {{ form_end(form)}}
+
+</div><!--/.container-->

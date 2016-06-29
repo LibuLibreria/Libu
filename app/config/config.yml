@@ -2,7 +2,6 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-    - { resource: "@LibuBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -71,14 +70,14 @@ swiftmailer:
 easy_admin:
     entities:
         Cliente: 
-            class: LibuBundle\Entity\Cliente
+            class: Trinity\LibuBundle\Entity\Cliente
             label: 'Clientes'
             list: 
                 title: 'Lista de clientes'
                 fields: [{ property: 'Id_cli', label: 'Identificador' }, 'Nombre']
  #       - LibuBundle\Entity\Libro
         Producto:
-            class: LibuBundle\Entity\Producto
+            class: Trinity\LibuBundle\Entity\Producto
             label: 'Productos'
             list: 
                 title: 'Lista de productos en venta'
@@ -88,10 +87,9 @@ easy_admin:
      #   - LibuBundle\Entity\ProductoVendido
       #  - LibuBundle\Entity\Tipo
         Venta: 
-            class: LibuBundle\Entity\Venta
+            class: Trinity\LibuBundle\Entity\Venta
     site_name: 'Libu'
     design:
         brand_color: 'red'
         color_scheme: 'light'
-
 
