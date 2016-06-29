@@ -42,25 +42,23 @@ class LibuController extends Controller
     {
         $session = $request->getSession();
 
-
-        $em = $this->getDoctrine()->getManager();
-
-        // La variable $product es un array de todos los objetos Producto
-        $product = $em->getRepository('LibuBundle:Producto')->findAll();
-        $n = 0;
-
-
         // Abrimos una nueva instancia Venta
         $venta = new Venta();
 
-
+        // $fecha actualizada a día de hoy
         $fecha = new \Datetime();
- //       $venta->setDiahora($fecha);
 
-        // Bucle para cada uno de los productos
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+
+        // La variable $product es un array de todos los objetos Producto existentes
+        $product = $em->getRepository('LibuBundle:Producto')->findAll();
+        $n = 0;
+
+        // Bucle para cada uno de los productos: crea varios arrays para utilizar posteriormente.
         foreach ($product as $prod) {
-            // Prepara un buscador para utilizar posteriormente
-            $cod[$prod->getIdProd()] = $prod;
+            // Prepara un buscador $cod para utilizar posteriormente; con el id de producto, nos da el producto. 
+//            $cod[$prod->getIdProd()] = $prod;
 
             // Crea la matriz vacía para los subformularios
             $subform[$prod->getIdProd()] = 0;
@@ -142,7 +140,8 @@ class LibuController extends Controller
 
                         // Creamos una nueva instancia y le damos los valores 
                         $pv = new ProductoVendido();
-                        $prod_actual = $cod[$pr];
+ //                       $prod_actual = $cod[$pr];
+                        $prod_actual = $em->getRepository('LibuBundle:Producto')->findOneByIdProd($pr);
                         $pv->setIdProd($prod_actual);
                         $pv->setCantidad($cant);
                         $pv->setIdVenta($venta);
