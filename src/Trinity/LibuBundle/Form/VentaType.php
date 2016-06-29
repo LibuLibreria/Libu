@@ -58,9 +58,9 @@ class VentaType extends AbstractType
                 'label' => 'Responsable',
                 )) 
             ->add('product', CollectionType::class, array(
-                // each entry in the array will be an "integer" field
+                // es una Collection consistente en un array, en el que cada elemento es un Integer
                 'entry_type'   => IntegerType::class,
-                // these options are passed to each "integer" type
+                // y estas son las opciones que se pasan a cada elemento:
                 'entry_options'  => array('attr' => array('style' => 'width: 80px')),
 //                    'label'      =>   $options['datos']['titulo'])) 
                 'label' => ' '

@@ -161,7 +161,9 @@
                 {% for key,productField in form.product[0:12] %}
                     <div class='row linea-prod'>                
                         <div class='col-sm-6'>
-                                {{ form_label(productField, formlabels[productField.vars.name]) }}
+                                <!--  Dump: {{ dump(prodguztiak) }}  
+                                {{ form_label(productField, prodguztiak[key].codigo) }}  -->
+                                <b>{{prodguztiak[key].codigo}}  </b> - {{ prodguztiak[key].precio }} €
                                 {{ form_errors(productField) }}
                         </div>
                         <div class='col-sm-6'>
@@ -179,7 +181,7 @@
                 {% for productField in form.product[12:] %}
                     <div class='row linea-prod'>                 
                         <div class='col-sm-6'>
-                                {{ form_label(productField, formlabels[productField.vars.name]) }}
+                                {{ form_label(productField, prodguztiak[key].codigo) }}
                                 {{ form_errors(productField) }}
                         </div>
                         <div class='col-sm-6'>                       

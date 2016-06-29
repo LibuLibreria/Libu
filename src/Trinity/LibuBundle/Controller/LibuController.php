@@ -45,9 +45,6 @@ class LibuController extends Controller
         // Abrimos una nueva instancia Venta
         $venta = new Venta();
 
-        // $fecha actualizada a día de hoy
-        $fecha = new \Datetime();
-
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
 
@@ -55,119 +52,69 @@ class LibuController extends Controller
         $product = $em->getRepository('LibuBundle:Producto')->findAll();
         $n = 0;
 
-        // Bucle para cada uno de los productos: crea varios arrays para utilizar posteriormente.
-        foreach ($product as $prod) {
-            // Prepara un buscador $cod para utilizar posteriormente; con el id de producto, nos da el producto. 
-//            $cod[$prod->getIdProd()] = $prod;
-
-            // Crea la matriz vacía para los subformularios
-            $subform[$prod->getIdProd()] = 0;
-
-            // Crea la matriz para que se utilicen los labels en Twig
-            $formlabels[$prod->getIdProd()] = $prod->getCodigo();
-        }
-
-        // Crea el formulario con el esquema VentaType
+        // Crea el formulario $form con el esquema VentaType
 		$form = $this->createForm(VentaType::class, array());
 
-        // Genera el subformulario vacío
-        $form->get('product')->setData($subform);
-//        $form->get('formlabels')->setData($formlabels);
+        // Genera el subformulario vacío de la Collection de productos; es imprescindible hacer esto.
+        $form->get('product')->setData(array_fill(1, count($product), 0));
 
+        // Actualiza el día y la hora en el formulario
+        $fecha = new \Datetime();        
         $form->get('diahora')->setData($fecha);
 
 
-
+        // Gestión de la respuesta
         $form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('save')->isClicked()) { 
 
                 // Recogemos los datos del formulario
                 $data = $form->getData();
-//               echo "LOS DATOS SE HAN GUARDADO CORRECTAMENTE: <pre>"; print_r($data); echo "</pre>";  
 
-                $resul = ($data['libros3'] * 3) + ($data['libros1'] * 1);
-
-                // Cálculo de la suma
-                $lib3 = $data['libros3'];
-                $lib1 = $data['libros1'];
-//                $array_resto10 = array('0'=>'0', '1'=>'3', '2'=>'5', '3'=>'8', '4'=>'10', '5'=>'10',
-//                    '6'=>'13', '7'=>'15', '8'=>'18', '9'=>'20', '10'=>'20');
-//                $array_resto10 = array('0'=>0, '1'=>3, '2'=>5, '3'=>8, '4'=>10, '5'=>10,
-//                    '6'=>13, '7'=>15, '8'=>18, '9'=>20, '10'=>20);
-                $array_resto5 = array('0'=>0, '1'=>3, '2'=>5, '3'=>8, '4'=>10, '5'=>10);
-                $resto5 = $lib3 % 5;
-                $multiplo5 = $lib3 - $resto5;
-                $pagos = implode(',', array($multiplo5, $resto5, $array_resto5[$resto5]));
-                $pagolibros = (($multiplo5 * 2) + ($array_resto5[$resto5]) + $lib1);
-
-
-
-/*                $resto5 = $lib3 % 5;
-                $precio5 = $lib3 - $resto5; 
-                $resto2 = $resto5 % 2; 
-                $precio2 = $resto5 - $resto2;
-                $pagos = implode (',', array($precio5, $resto5, $resto2));
-                $pagolibros = (($precio5 * 2) + ($resto5 * 2.5) + ($resto2 * 3) + $lib1);
-*/
-
-
+                // Hacemos la suma del pago de los libros (sin contar el resto de productos)
+                $sumalibros = $this->sumaPagoLibros($data['libros1'], $data['libros3']);
+                $pagos = $sumalibros['pagos'];
 
                 // Guardamos todos los datos de las ventas en la nueva instancia Venta
-                
                 $venta->setDiahora($fecha);
                 $venta->setLibros3($data['libros3']);
                 $venta->setLibros1($data['libros1']);
                 $venta->setCliente($data['cliente']);
                 $venta->setTematica($data['tematica']);
- //               $venta->setPrecio($resul);
                 $venta->setResponsable($data['responsable']);
-/*
-                try{
-//                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($venta);
-                    $em->flush();
-                } catch(\Doctrine\ORM\ORMException $e){
-                    $this->addFlash('error', 'Error al guardar los datos');
-                }
-*/
-                $vendidos = array();
-                $pagoproductos = 0;
-                $m  = 0;
-                // Buscamos los productos cuya venta ha sido mayor que cero
+
+                // Buscamos los productos cuya venta ha sido mayor que cero 
+                $vendidos = array(); $pagoproductos = 0; $m  = 0;
                 foreach($data['product'] as $pr => $cant){
                     if($cant > 0) {
 
-                        // Creamos una nueva instancia y le damos los valores 
-                        $pv = new ProductoVendido();
- //                       $prod_actual = $cod[$pr];
+                        // Obtenemos el Producto actual
                         $prod_actual = $em->getRepository('LibuBundle:Producto')->findOneByIdProd($pr);
+
+                        // Creamos una nueva instancia de Producto Vendido
+                        $pv = new ProductoVendido();
+
+                        //  y le damos los valores correspondientes
                         $pv->setIdProd($prod_actual);
                         $pv->setCantidad($cant);
                         $pv->setIdVenta($venta);
 
-                        // Calculamos el precio total
-                        $precio_actual = $prod_actual->getPrecio();
-                        echo "precio: ".$precio_actual;
-                        $pagoproductos = $pagoproductos + ($precio_actual * $cant);
+                        // Sumamos el precio de estos productos y los sumamos al precio total
+                        $pagoproductos = $pagoproductos + ($prod_actual->getPrecio() * $cant);
 
-                        $lista_prod[$m] = $pr;
-                        $cant_prod[$m] = $cant;
+                        // Añadimos este Producto Vendido a un array, para gestionarlo después; 
+                        // se persistirán estos datos por separado a la instancia de Venta. 
+                        // La razón de hacerlo así es la complicación de vincular las entities de 
+                        // Venta y de ProductoVendido. Quizá algún día lo pueda hacer
                         $vendidos[$m++] = $pv;
-/*
-                        try{
- //                           $em = $this->getDoctrine()->getManager();
-                            $em->persist($pv);
-                            $em->flush();
-                        } catch(\Doctrine\ORM\ORMException $e){
-                            $this->addFlash('error', 'Error al guardar los datos');
-                        }
- */
-
                     }
                     
                 }
-                $pagototal = $pagolibros + $pagoproductos;
+
+                // El pago total es el de los libros + el de los productos
+                $pagototal = $sumalibros['pagolibros'] + $pagoproductos;
+
+                // Ahora podemos introducir el dato que faltaba en la instancia de Venta
                 $venta->setIngreso($pagototal);
 
                 try{
@@ -183,9 +130,9 @@ class LibuController extends Controller
                     $this->addFlash('error', 'Error al guardar los datos');
                 }
 
-                $session->set('cobro', $resul);
+//                $session->set('cobro', $resul);
                 $session->set('pagos', $pagos);
-                $session->set('lib1', $lib1);
+//                $session->set('lib1', $lib1);
                 $session->set('pagoproductos', $pagoproductos);
                 $session->set('pagototal', $pagototal);
                 $session->set('ultimoid', $ultimoid);
@@ -200,9 +147,28 @@ class LibuController extends Controller
 		}
 		return $this->render('LibuBundle:libu:inicio.html.twig', array(
 			'form' => $form->createView(),
-            'formlabels' => $formlabels,
+            'prodguztiak' => $product,
 			));    
 	}
+
+
+
+    /*
+    *   Calcula el total (en euros) de los libros comprados.
+    *   
+    */
+    private function sumaPagoLibros( $lib1,  $lib3)
+    {
+        $array_resto5 = array('0'=>0, '1'=>3, '2'=>5, '3'=>8, '4'=>10, '5'=>10);
+        $resto5 = $lib3 % 5;
+        $multiplo5 = $lib3 - $resto5;
+        $pagos = implode(',', array($multiplo5, $resto5, $array_resto5[$resto5]));
+        $pagolibros = (($multiplo5 * 2) + ($array_resto5[$resto5]) + $lib1);
+        return array(
+            'pagolibros' => $pagolibros, 
+            'pagos' => $pagos,
+        ); 
+    }
 
 
 
@@ -284,10 +250,10 @@ class LibuController extends Controller
     public function facturarAction(Request $request)
     {
         $session = $request->getSession();
-        $resul = $session->get('cobro'); 
+//        $resul = $session->get('cobro'); 
         $pagos = $session->get('pagos');
         $pagoproductos = $session->get('pagoproductos');
-        $lib1 = $session->get('lib1');
+//        $lib1 = $session->get('lib1');
         $pagototal = $session->get('pagototal');
         $ultimoid = $session->get('ultimoid');
         $textoPagos = "";
@@ -307,9 +273,9 @@ class LibuController extends Controller
 
         if ($lista_pagos[1] == 4) $textoPagos .= "<br>Puede llevarse un libro más, al mismo precio"; 
 
-        if ($lib1 != 0) {
-            $textoPagos .= "<br><b>".$lib1."</b> libros a 1 euro: <b>".$lib1." euros</b>";
-        } 
+//        if ($lib1 != 0) {
+//            $textoPagos .= "<br><b>".$lib1."</b> libros a 1 euro: <b>".$lib1." euros</b>";
+//        } 
 
         if ($pagoproductos != 0) {; 
             $textoPagos .= "<br>Ha escogido productos por valor de <b>".$pagoproductos." euros.</b>";
