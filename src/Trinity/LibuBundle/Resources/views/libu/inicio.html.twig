@@ -153,7 +153,7 @@
 <!--        <h4 class=""><i class="icon-plus-sign-alt"></i>Otros productos</h4>    -->
         <hr>
         <div class="clearfix"></div>
-        <div class='col-sm-6'>
+        <div class='col-sm-6  form-inline'>
 
                 {{ form_label(form.product) }}
                 {{ form_errors(form.product) }}
@@ -179,13 +179,13 @@
         <div class = 'col-sm-6 form-inline'>
             <div class="clearfix"></div>
 
-                {% for productField in form.product[12:] %}
+                {% for key,productField in form.product[12:] %}
                     <div class='row linea-prod'>                 
                         <div class='col-sm-6'>
                                 <!--  Dump: {{ dump(prodguztiak) }}  -->
-                                {{ form_label(productField, prodguztiak[key].codigo) }}  
+                                {{ form_label(productField, prodguztiak[key+12].codigo) }}  
                                 <!-- <b>{{prodguztiak[key].codigo}}  </b>  -->
-                                 - {{ prodguztiak[key].precio }} €
+                                 - {{ prodguztiak[key+12].precio }} €
                                 {{ form_errors(productField) }}
                         </div>
                         <div class='col-sm-6'>                       
