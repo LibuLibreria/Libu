@@ -49,5 +49,86 @@ class ProductoVendido
     private $idVenta;
 
 
-}
 
+    /**
+     * Set cantidad
+     *
+     * @param integer $cantidad
+     *
+     * @return ProductoVendido
+     */
+    public function setCantidad($cantidad)
+    {
+        $this->cantidad = $cantidad;
+
+        return $this;
+    }
+
+    /**
+     * Get cantidad
+     *
+     * @return integer
+     */
+    public function getCantidad()
+    {
+        return $this->cantidad;
+    }
+
+    /**
+     * Get idPv
+     *
+     * @return integer
+     */
+    public function getIdPv()
+    {
+        return $this->idPv;
+    }
+
+    /**
+     * Set idProd
+     *
+     * @param \Trinity\LibuBundle\Entity\Producto $idProd
+     *
+     * @return ProductoVendido
+     */
+    public function setIdProd(\Trinity\LibuBundle\Entity\Producto $idProd = null)
+    {
+        $this->idProd = $idProd;
+
+        return $this;
+    }
+
+    /**
+     * Get idProd
+     *
+     * @return \Trinity\LibuBundle\Entity\Producto
+     */
+    public function getIdProd()
+    {
+        return $this->idProd;
+    }
+
+    /**
+     * Set idVenta
+     *
+     * @param \Trinity\LibuBundle\Entity\Venta $idVenta
+     *
+     * @return ProductoVendido
+     */
+    public function setIdVenta(\Trinity\LibuBundle\Entity\Venta $idVenta = null)
+    {
+        $this->idVenta = $idVenta;
+
+        return $this;
+    }
+
+    /**
+     * Get idVenta
+     *
+     * @return \Trinity\LibuBundle\Entity\Venta
+     */
+    public function getIdVenta()
+    {
+        return $this->idVenta;
+    }
+}

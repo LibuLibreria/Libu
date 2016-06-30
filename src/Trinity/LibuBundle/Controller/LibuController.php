@@ -312,21 +312,24 @@ class LibuController extends Controller
 
 
     /**
-     * @Route("/libu/factura", name="factura")
+     * @Route("/libu/caja", name="caja")
      */
-    public function facturaAction(Request $request)
+    public function cajaAction(Request $request)
     {
         // select * from venta where diaHora > "2016-06-10" and factura is not null;
         // select sum(ingreso) as total from venta where diaHora > "2016-06-10" and factura is not null;
-        echo "<h1>Aquí es donde se hace la factura</h1>";
-        
+        echo "<h1>Caja</h1>";
+        $eguna = "2016-07-01";
+        echo "<br>Día: ".$eguna; 
+
+        // Realizar la búsqueda
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery(
-            'SELECT v.factura, v.ingreso
+            'SELECT v
             FROM LibuBundle:Venta v 
             WHERE v.diahora > :fecha
             AND v.factura IS NOT NULL'
-        )->setParameter('fecha', "2016-06-10");
+        )->setParameter('fecha', $eguna);
 
         $ventas = $query->getResult();
         dump($ventas);

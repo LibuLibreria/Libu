@@ -29,5 +29,38 @@ class Tematica
     private $idTem;
 
 
-}
 
+    /**
+     * Set nombre
+     *
+     * @param string $nombre
+     *
+     * @return Tematica
+     */
+    public function setNombre($nombre)
+    {
+        $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    /**
+     * Get nombre
+     *
+     * @return string
+     */
+    public function getNombre()
+    {
+        return $this->nombre;
+    }
+
+    /**
+     * Get idTem
+     *
+     * @return integer
+     */
+    public function getIdTem()
+    {
+        return $this->idTem;
+    }
+}
