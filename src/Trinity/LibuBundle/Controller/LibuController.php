@@ -34,7 +34,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 class LibuController extends Controller
 {
 
-
     /**
      * @Route("/libu/venta", name="venta")
      */
@@ -56,12 +55,11 @@ class LibuController extends Controller
 		$form = $this->createForm(VentaType::class, array());
 
         // Genera el subformulario vacío de la Collection de productos; es imprescindible hacer esto.
-        $form->get('product')->setData(array_fill(1, count($product), 0));
+        $form->get('product')->setData(array_fill(0, count($product), 0));
 
         // Actualiza el día y la hora en el formulario
         $fecha = new \Datetime();        
         $form->get('diahora')->setData($fecha);
-
 
         // Gestión de la respuesta
         $form->handleRequest($request);
@@ -73,7 +71,6 @@ class LibuController extends Controller
 
                 // Hacemos la suma del pago de los libros (sin contar el resto de productos)
                 $sumalibros = $this->sumaPagoLibros($data['libros1'], $data['libros3']);
-                $pagos = $sumalibros['pagos'];
 
                 // Guardamos todos los datos de las ventas en la nueva instancia Venta
                 $venta->setDiahora($fecha);
@@ -89,7 +86,8 @@ class LibuController extends Controller
                     if($cant > 0) {
 
                         // Obtenemos el Producto actual
-                        $prod_actual = $em->getRepository('LibuBundle:Producto')->findOneByIdProd($pr);
+                        $prod_actual = $em->getRepository('LibuBundle:Producto')
+                            ->findOneByIdProd($product[$pr]->getIdProd()); 
 
                         // Creamos una nueva instancia de Producto Vendido
                         $pv = new ProductoVendido();
@@ -99,16 +97,17 @@ class LibuController extends Controller
                         $pv->setCantidad($cant);
                         $pv->setIdVenta($venta);
 
+                        $pagoactual = $prod_actual->getPrecio();
+
                         // Sumamos el precio de estos productos y los sumamos al precio total
-                        $pagoproductos = $pagoproductos + ($prod_actual->getPrecio() * $cant);
+                        $pagoproductos = $pagoproductos + ($pagoactual * $cant);
 
                         // Añadimos este Producto Vendido a un array, para gestionarlo después; 
                         // se persistirán estos datos por separado a la instancia de Venta. 
                         // La razón de hacerlo así es la complicación de vincular las entities de 
                         // Venta y de ProductoVendido. Quizá algún día lo pueda hacer
                         $vendidos[$m++] = $pv;
-                    }
-                    
+                    } 
                 }
 
                 // El pago total es el de los libros + el de los productos
@@ -117,11 +116,13 @@ class LibuController extends Controller
                 // Ahora podemos introducir el dato que faltaba en la instancia de Venta
                 $venta->setIngreso($pagototal);
 
+                // Subimos todos los datos a la base de datos
                 try{
-//                    $em = $this->getDoctrine()->getManager();
+                    // En primer lugar subimos la instancia Venta
                     $em->persist($venta);
                     $em->flush();
-                    $ultimoid = $venta->getId();
+
+                    // y después subimos las instancias de Productos Vendidos, desde el array $pv
                     foreach ($vendidos as $pv){
                         $em->persist($pv);
                         $em->flush();
@@ -130,8 +131,10 @@ class LibuController extends Controller
                     $this->addFlash('error', 'Error al guardar los datos');
                 }
 
-//                $session->set('cobro', $resul);
-                $session->set('pagos', $pagos);
+
+                // Recuperamos el Identificador de Venta 
+                $ultimoid = $venta->getId();
+
 //                $session->set('lib1', $lib1);
                 $session->set('pagoproductos', $pagoproductos);
                 $session->set('pagototal', $pagototal);
@@ -139,12 +142,13 @@ class LibuController extends Controller
                 return $this->redirectToRoute('facturar');
             }
 
+            // Botón Menú
             if ($form->get('menu')->isClicked()) {
 //                return $this->redirectToRoute('easyadmin');   CAMBIAR BOTÓN CUANDO FUNCIONE EASYADMIN
                 return $this->redirectToRoute('venta');   
-            }
-                      
+            }                    
 		}
+
 		return $this->render('LibuBundle:libu:inicio.html.twig', array(
 			'form' => $form->createView(),
             'prodguztiak' => $product,
@@ -159,15 +163,104 @@ class LibuController extends Controller
     */
     private function sumaPagoLibros( $lib1,  $lib3)
     {
+        // Realiza el cálculo
         $array_resto5 = array('0'=>0, '1'=>3, '2'=>5, '3'=>8, '4'=>10, '5'=>10);
         $resto5 = $lib3 % 5;
         $multiplo5 = $lib3 - $resto5;
-        $pagos = implode(',', array($multiplo5, $resto5, $array_resto5[$resto5]));
-        $pagolibros = (($multiplo5 * 2) + ($array_resto5[$resto5]) + $lib1);
+
+        // Crea un texto para desglosar el pago
+        $textoPagos = "";
+        if ($multiplo5 != 0) $textoPagos .= "<br><b>".$multiplo5."</b> libros a 10 euros cada 5 libros: <b>"
+                .($multiplo5 * 2)." euros.</b>";
+        if ($resto5 != 0) $textoPagos .= "<br><b>".$resto5."</b> libros a 3 euros (ó 5 euros por 2 libros): <b>"
+                .($array_resto5[$resto5])." euros.</b>";
+        if ($resto5 == 4) $textoPagos .= "<br><b>Puede llevarse un libro más, al mismo precio</b>"; 
+        $textoPagos .= "<br>&nbsp;<br>";
+
+        // Retorna los datos
         return array(
-            'pagolibros' => $pagolibros, 
-            'pagos' => $pagos,
+            'pagolibros' => ($multiplo5 * 2) + ($array_resto5[$resto5]) + $lib1, 
+            'texto' => $textoPagos,
         ); 
+    }
+
+
+
+    /**
+     * @Route("/libu/facturar", name="facturar")
+     */
+    public function facturarAction(Request $request)
+    {
+
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+
+        // Recupera el identificador yla instancia de la venta realizada; también el dato del ingreso total. 
+        $session = $request->getSession();
+        $ultimoid = $session->get('ultimoid');
+        $ventaactual = $em->getRepository('LibuBundle:Venta')->findOneById($ultimoid);
+        $pagototal = $ventaactual->getIngreso();
+
+        // Llama a la función sumaPagoLibros para el desglose del pago de libros
+        $calclibros = $this->sumaPagoLibros( $ventaactual->getLibros1(), $ventaactual->getLibros3());
+
+        // Calculamos el pago de productos en función del pago total y el de libros. 
+        $pagolibros = $calclibros['pagolibros'];
+        $pagoproductos = $pagototal - $pagolibros;
+
+        // Escribe el texto
+        $textoPagos = "";
+        $textoPagos .= "<h2>Número de ticket: ".$ultimoid."</h2>";
+
+        // Libros vendidos
+        if ($pagolibros > 0) {
+            $textoPagos .= "<b>LIBROS</b>"; 
+            $textoPagos .= $calclibros['texto'];         
+        }  
+
+        // Productos vendidos
+        if ($pagoproductos > 0) {; 
+            $textoPagos .= "<b>PRODUCTOS</b>"; 
+            $prodvendidos = $em->getRepository('LibuBundle:ProductoVendido')->findByIdVenta($ventaactual); 
+
+            // Bucle para cada producto vendido.
+            foreach ($prodvendidos as $pvend) {
+                $cantidad = $pvend->getCantidad();
+                $plural = ($cantidad > 1) ? "s" : ""; 
+                $textoPagos .= "<br>".$cantidad." producto".$plural.": ".$pvend->getIdProd()->getCodigo().
+                    " = ".($cantidad * $pvend->getIdProd()->getPrecio())." euros";
+            }         
+            $textoPagos .= "<br>Ha escogido productos por valor de <b>".$pagoproductos." euros.</b>";
+        }  
+
+        // Total pago
+        $textoPagos .= "<h1>Son ".$pagototal." euros</h1>";
+
+        // Creación del formulario
+        $form = $this->createForm(FacturarType::class, array());
+
+        // Manejo de la respuesta
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('finalizar')->isClicked()) {
+                $ventaactual->setFactura($ultimoid);
+                try{
+                    // En primer lugar subimos la instancia Venta
+                    $em->persist($ventaactual);
+                    $em->flush();
+                } catch(\Doctrine\ORM\ORMException $e){
+                    $this->addFlash('error', 'Error al guardar los datos');
+                }
+                return $this->redirectToRoute('venta');
+            }
+//            if ($form->get('factura')->isClicked()) return $this->redirectToRoute('factura');
+           if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+        }
+
+        return $this->render('LibuBundle:libu:facturar.html.twig',array(
+            'form' => $form->createView(),
+            'textopagos' => $textoPagos,
+            ));    
     }
 
 
@@ -242,61 +335,6 @@ class LibuController extends Controller
             'form' => $form->createView(),
             ));    
     }
-
-
-    /**
-     * @Route("/libu/facturar", name="facturar")
-     */
-    public function facturarAction(Request $request)
-    {
-        $session = $request->getSession();
-//        $resul = $session->get('cobro'); 
-        $pagos = $session->get('pagos');
-        $pagoproductos = $session->get('pagoproductos');
-//        $lib1 = $session->get('lib1');
-        $pagototal = $session->get('pagototal');
-        $ultimoid = $session->get('ultimoid');
-        $textoPagos = "";
-        $total = 0;
-
-        $textoPagos .= "<h2>Número de ticket: ".$ultimoid."</h2>";
-        $lista_pagos = explode(',', $pagos);
-        if ($lista_pagos[0] != 0) {
-            $parcial = ($lista_pagos[0] * 2);            
-            $textoPagos .= "<br><b>".$lista_pagos[0]."</b> libros a 10 euros/5 libros: <b>".$parcial." euros.</b>";
-        }
-
-        if ($lista_pagos[1] != 0) {
-            $parcial = ($lista_pagos[2]);
-            $textoPagos .= "<br><b>".$lista_pagos[1]."</b> libros a 3 euros (ó 5 euros por 2 libros): <b>".$parcial." euros.</b>";
-        }
-
-        if ($lista_pagos[1] == 4) $textoPagos .= "<br>Puede llevarse un libro más, al mismo precio"; 
-
-//        if ($lib1 != 0) {
-//            $textoPagos .= "<br><b>".$lib1."</b> libros a 1 euro: <b>".$lib1." euros</b>";
-//        } 
-
-        if ($pagoproductos != 0) {; 
-            $textoPagos .= "<br>Ha escogido productos por valor de <b>".$pagoproductos." euros.</b>";
-        }  
-
-        $form = $this->createForm(FacturarType::class, array());
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('finalizar')->isClicked()) return $this->redirectToRoute('venta');
-//            if ($form->get('factura')->isClicked()) return $this->redirectToRoute('factura');
-//           if ($form->get('menu')->isClicked()) return $this->redirectToRoute('menu');
-        }
-
-        return $this->render('LibuBundle:libu:facturar.html.twig',array(
-            'form' => $form->createView(),
-            'pago' => $pagototal,
-            'textopagos' => $textoPagos,
-            ));    
-    }
-
 
 
     /**

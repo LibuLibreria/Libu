@@ -6,8 +6,9 @@
     <link rel="stylesheet" href="{{ asset('bundles/libu/css/bootstrap.min.css') }}"  />
 
 <div class='container'>
-	{{ textopagos | raw}}
-	<h1>Son {{ pago }}  euros</h1>
+	<div class="lead">
+		{{ textopagos | raw}}
+	</div>
     <div class = 'col-sm-4 form-inline'>
         {{ form(form) }}
     </div>
