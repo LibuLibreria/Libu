@@ -61,13 +61,13 @@ class VentaType extends AbstractType
                 // es una Collection consistente en un array, en el que cada elemento es un Integer
                 'entry_type'   => IntegerType::class,
                 // y estas son las opciones que se pasan a cada elemento:
-                'entry_options'  => array('attr' => array('style' => 'width: 80px')),
+                'entry_options'  => array('attr' => array('style' => 'width: 90px')),
 //                    'label'      =>   $options['datos']['titulo'])) 
                 'label' => ' '
                 ))
                        
             ->add('save', SubmitType::class, array('label' => 'Venta'))         
-            ->add('menu', SubmitType::class, array('label' => 'Menú'))  
+            ->add('menu', SubmitType::class, array('label' => 'Caja de hoy'))  
             ->getForm(); 
 
         ;

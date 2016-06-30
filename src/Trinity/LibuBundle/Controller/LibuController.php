@@ -131,21 +131,16 @@ class LibuController extends Controller
                     $this->addFlash('error', 'Error al guardar los datos');
                 }
 
-
-                // Recuperamos el Identificador de Venta 
+                // Recuperamos el Identificador de Venta y lo subimos a session p
                 $ultimoid = $venta->getId();
-
-//                $session->set('lib1', $lib1);
-                $session->set('pagoproductos', $pagoproductos);
-                $session->set('pagototal', $pagototal);
                 $session->set('ultimoid', $ultimoid);
+
                 return $this->redirectToRoute('facturar');
             }
 
             // Botón Menú
             if ($form->get('menu')->isClicked()) {
-//                return $this->redirectToRoute('easyadmin');   CAMBIAR BOTÓN CUANDO FUNCIONE EASYADMIN
-                return $this->redirectToRoute('venta');   
+                return $this->redirectToRoute('caja');   
             }                    
 		}
 
@@ -172,8 +167,11 @@ class LibuController extends Controller
         $textoPagos = "";
         if ($multiplo5 != 0) $textoPagos .= "<br><b>".$multiplo5."</b> libros a 10 euros cada 5 libros: <b>"
                 .($multiplo5 * 2)." euros.</b>";
-        if ($resto5 != 0) $textoPagos .= "<br><b>".$resto5."</b> libros a 3 euros (ó 5 euros por 2 libros): <b>"
+        $descuento = ($resto5 == 1) ? "libro a 3 euros" : "libros a 3 euros cada uno (con descuentos)";
+        if ($resto5 != 0) $textoPagos .= "<br><b>".$resto5."</b> ".$descuento.": <b>"
                 .($array_resto5[$resto5])." euros.</b>";
+        if ($lib1 != 0) $textoPagos .= "<br><b>".$lib1."</b> libros a 1 euro cada uno: <b>"
+                .$lib1." euros.</b>";            
         if ($resto5 == 4) $textoPagos .= "<br><b>Puede llevarse un libro más, al mismo precio</b>"; 
         $textoPagos .= "<br>&nbsp;<br>";
 
@@ -209,14 +207,10 @@ class LibuController extends Controller
         $pagoproductos = $pagototal - $pagolibros;
 
         // Escribe el texto
-        $textoPagos = "";
-        $textoPagos .= "<h2>Número de ticket: ".$ultimoid."</h2>";
+        $textoPagos = "<h2>Número de ticket: ".$ultimoid."</h2>";
 
         // Libros vendidos
-        if ($pagolibros > 0) {
-            $textoPagos .= "<b>LIBROS</b>"; 
-            $textoPagos .= $calclibros['texto'];         
-        }  
+        $textoPagos .= ($pagolibros > 0) ? "<b>LIBROS</b>".$calclibros['texto'] : "";         
 
         // Productos vendidos
         if ($pagoproductos > 0) {; 
@@ -318,9 +312,10 @@ class LibuController extends Controller
     {
         // select * from venta where diaHora > "2016-06-10" and factura is not null;
         // select sum(ingreso) as total from venta where diaHora > "2016-06-10" and factura is not null;
-        echo "<h1>Caja</h1>";
-        $eguna = "2016-07-01";
-        echo "<br>Día: ".$eguna; 
+        $texto = "<h1>Caja</h1>";
+        $fecha = new \Datetime();  
+        $eguna = $fecha->format('Y-m-d');
+        $texto .= "<h4><br>Día: ".$fecha->format('d-M')."</h4>"; 
 
         // Realizar la búsqueda
         $em = $this->getDoctrine()->getManager();
@@ -332,22 +327,30 @@ class LibuController extends Controller
         )->setParameter('fecha', $eguna);
 
         $ventas = $query->getResult();
-        dump($ventas);
+
+        $ingrdia = 0;
+        foreach ($ventas as $vt) {
+            $ing = $vt->getIngreso();
+            $texto .= "<br>".$vt->getDiahora()->format('H:i')." - ".$ing. " euros" ;
+            $ingrdia = $ingrdia + $ing; 
+        }
+        $texto .= "<h4><b>Total: ".$ingrdia." euros</b></h4>";
 
         $form = $this->createFormBuilder(array())
-            ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta'))         
-            ->add('menu', SubmitType::class, array('label' => 'Volver al menú'))
+ //           ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta'))         
+            ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('finalizar')->isClicked()) return $this->redirectToRoute('venta');
-            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('menu');
+//            if ($form->get('finalizar')->isClicked()) return $this->redirectToRoute('venta');
+            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
         }
 
-        return $this->render('LibuBundle:libu:simple.html.twig',array(
+        return $this->render('LibuBundle:libu:caja.html.twig',array(
             'form' => $form->createView(),
+            'texto' => $texto,
             ));    
     }
 
