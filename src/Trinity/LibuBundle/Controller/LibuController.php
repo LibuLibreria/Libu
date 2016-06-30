@@ -316,9 +316,21 @@ class LibuController extends Controller
      */
     public function facturaAction(Request $request)
     {
-
+        // select * from venta where diaHora > "2016-06-10" and factura is not null;
+        // select sum(ingreso) as total from venta where diaHora > "2016-06-10" and factura is not null;
         echo "<h1>Aquí es donde se hace la factura</h1>";
         
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
+            'SELECT v.factura, v.ingreso
+            FROM LibuBundle:Venta v 
+            WHERE v.diahora > :fecha
+            AND v.factura IS NOT NULL'
+        )->setParameter('fecha', "2016-06-10");
+
+        $ventas = $query->getResult();
+        dump($ventas);
+
         $form = $this->createFormBuilder(array())
             ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta'))         
             ->add('menu', SubmitType::class, array('label' => 'Volver al menú'))
