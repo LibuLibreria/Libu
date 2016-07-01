@@ -310,31 +310,37 @@ class LibuController extends Controller
      */
     public function cajaAction(Request $request)
     {
-        // select * from venta where diaHora > "2016-06-10" and factura is not null;
-        // select sum(ingreso) as total from venta where diaHora > "2016-06-10" and factura is not null;
-        $texto = "<h1>Caja</h1>";
+        // $fecha a fecha de hoy 
         $fecha = new \Datetime();  
-        $eguna = $fecha->format('Y-m-d');
-        $texto .= "<h4><br>Día: ".$fecha->format('d-M')."</h4>"; 
 
-        // Realizar la búsqueda
+        // Realizar la búsqueda de las ventas de hoy 
         $em = $this->getDoctrine()->getManager();
+
+        // Buscamos las ventas del día marcado por $fecha
+        $parameters = array( 
+            'fecha' => $fecha->format('Y-m-d'),
+            'sigfecha' => $fecha->modify('+1 day')->format('Y-m-d'),
+        );
         $query = $em->createQuery(
-            'SELECT v
+            'SELECT v.diahora as hora, v.ingreso as ingreso
             FROM LibuBundle:Venta v 
-            WHERE v.diahora > :fecha
+            WHERE v.diahora > :fecha AND v.diahora < :sigfecha
             AND v.factura IS NOT NULL'
-        )->setParameter('fecha', $eguna);
-
+        )->setParameters($parameters);
         $ventas = $query->getResult();
+        $ingrdia = array_sum(array_column($ventas, 'ingreso'));
 
-        $ingrdia = 0;
-        foreach ($ventas as $vt) {
-            $ing = $vt->getIngreso();
-            $texto .= "<br>".$vt->getDiahora()->format('H:i')." - ".$ing. " euros" ;
-            $ingrdia = $ingrdia + $ing; 
-        }
-        $texto .= "<h4><b>Total: ".$ingrdia." euros</b></h4>";
+        // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
+        // en que se han hecho ingresos. 
+        $sql = 
+            'SELECT count(*) as cantidad, diaHora as dias
+            FROM venta 
+            WHERE factura > 0 
+            GROUP by day(diaHora)'
+        ;
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt->execute();
+        $diasanteriores = $stmt->fetchAll();
 
         $form = $this->createFormBuilder(array())
  //           ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta'))         
@@ -350,7 +356,9 @@ class LibuController extends Controller
 
         return $this->render('LibuBundle:libu:caja.html.twig',array(
             'form' => $form->createView(),
-            'texto' => $texto,
+            'ventasdia' => $ventas,
+            'fecha' => $fecha,
+            'ingrdia' => $ingrdia,
             ));    
     }
 
