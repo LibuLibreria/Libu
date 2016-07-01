@@ -311,9 +311,14 @@ class LibuController extends Controller
      */
     public function cajaAction(Request $request)
     {
-        // $fecha a fecha de hoy 
-        $fecha = new \Datetime();  
+        $fecha = new \Datetime(); 
+/*
+        $session = $request->getSession();
 
+        if ($session->get('diasventas') !== NULL) {
+            $fecha->setTimestamp($session->get('diasventas'));
+        };
+*/
         // Realizar la búsqueda de las ventas de hoy 
         $em = $this->getDoctrine()->getManager();
 
@@ -346,7 +351,7 @@ class LibuController extends Controller
         foreach ($diasanteriores as $dia) {
             $timedia = strtotime($dia['dias']);
             $keydia = $dia['cantidad']." ventas el ".date("j-n-Y", $timedia );
-            $diaslista[$keydia] = date("Ymd", $timedia);
+            $diaslista[$keydia] = $timedia;
         }
         dump($diaslista);
 
@@ -357,13 +362,21 @@ class LibuController extends Controller
                 'expanded' => false,
                 'multiple' => false,
             ))       
+            ->add('fecha', SubmitType::class, array('label' => 'Buscar la fecha'))            
             ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-//            if ($form->get('finalizar')->isClicked()) return $this->redirectToRoute('venta');
+            if ($form->get('fecha')->isClicked()) {
+ //                       $session = $request->getSession();
+
+ //               $session->set('diasventas', $form->get('diasventas'));
+                return $this->redirectToRoute('caja');
+            }
+
+                
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
         }
 
