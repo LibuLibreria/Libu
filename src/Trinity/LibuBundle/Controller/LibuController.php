@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -341,9 +342,21 @@ class LibuController extends Controller
         $stmt = $em->getConnection()->prepare($sql);
         $stmt->execute();
         $diasanteriores = $stmt->fetchAll();
+        $i = 0;
+        foreach ($diasanteriores as $dia) {
+            $timedia = strtotime($dia['dias']);
+            $keydia = $dia['cantidad']." ventas el ".date("j-n-Y", $timedia );
+            $diaslista[$keydia] = date("Ymd", $timedia);
+        }
+        dump($diaslista);
 
         $form = $this->createFormBuilder(array())
- //           ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta'))         
+ //           ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta')) 
+            ->add('diasventas', ChoiceType::class, array(
+                'choices'  => $diaslista,
+                'expanded' => false,
+                'multiple' => false,
+            ))       
             ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
             ->getForm();
 
