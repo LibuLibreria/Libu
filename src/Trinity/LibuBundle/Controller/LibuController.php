@@ -307,18 +307,18 @@ class LibuController extends Controller
 
 
     /**
-     * @Route("/libu/caja", name="caja")
+     * @Route("/libu/caja", defaults={"dia": 1}, name="caja")
+     * @Route("/libu/caja/{dia}", requirements={"dia": "[1-9]\d*"}, name="caja_fecha")     
      */
-    public function cajaAction(Request $request)
+    public function cajaAction(Request $request, $dia)
     {
         $fecha = new \Datetime(); 
-/*
-        $session = $request->getSession();
 
-        if ($session->get('diasventas') !== NULL) {
-            $fecha->setTimestamp($session->get('diasventas'));
+        if ($dia != 1) {
+            $fecha->setTimestamp($dia);
         };
-*/
+        $fechasolo = $fecha->format('Y-m-d');
+
         // Realizar la búsqueda de las ventas de hoy 
         $em = $this->getDoctrine()->getManager();
 
@@ -327,6 +327,8 @@ class LibuController extends Controller
             'fecha' => $fecha->format('Y-m-d'),
             'sigfecha' => $fecha->modify('+1 day')->format('Y-m-d'),
         );
+        $fecha->modify('-1 day');
+
         $query = $em->createQuery(
             'SELECT v.diahora as hora, v.ingreso as ingreso
             FROM LibuBundle:Venta v 
@@ -342,7 +344,7 @@ class LibuController extends Controller
             'SELECT count(*) as cantidad, diaHora as dias
             FROM venta 
             WHERE factura > 0 
-            GROUP by day(diaHora)'
+            GROUP by day(diaHora) LIMIT 10'
         ;
         $stmt = $em->getConnection()->prepare($sql);
         $stmt->execute();
@@ -353,12 +355,13 @@ class LibuController extends Controller
             $keydia = $dia['cantidad']." ventas el ".date("j-n-Y", $timedia );
             $diaslista[$keydia] = $timedia;
         }
-        dump($diaslista);
+//        dump($diaslista);
 
         $form = $this->createFormBuilder(array())
  //           ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta')) 
             ->add('diasventas', ChoiceType::class, array(
                 'choices'  => $diaslista,
+                'label' => 'Escoger otro día:',
                 'expanded' => false,
                 'multiple' => false,
             ))       
@@ -370,10 +373,9 @@ class LibuController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('fecha')->isClicked()) {
- //                       $session = $request->getSession();
+                $data = $form->getData();
 
- //               $session->set('diasventas', $form->get('diasventas'));
-                return $this->redirectToRoute('caja');
+                return $this->redirectToRoute('caja_fecha', array('dia' => $data['diasventas']));
             }
 
                 
