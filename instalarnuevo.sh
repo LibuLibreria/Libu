@@ -9,4 +9,5 @@ php -r "if (hash_file('SHA384', 'composer-setup.php') === 'bf16ac69bd8b807bc6e44
 php composer-setup.php
 php -r "unlink('composer-setup.php');"
 echo "Instalado Composer"
+
 composer install

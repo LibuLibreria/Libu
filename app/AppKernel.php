@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new AppBundle\AppBundle(),
             new Trinity\LibuBundle\LibuBundle(),
             new JavierEguiluz\Bundle\EasyAdminBundle\EasyAdminBundle(),
+            new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),            
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

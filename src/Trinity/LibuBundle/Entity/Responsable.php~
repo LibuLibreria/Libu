@@ -29,5 +29,38 @@ class Responsable
     private $idResp;
 
 
-}
 
+    /**
+     * Set nombre
+     *
+     * @param string $nombre
+     *
+     * @return Responsable
+     */
+    public function setNombre($nombre)
+    {
+        $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    /**
+     * Get nombre
+     *
+     * @return string
+     */
+    public function getNombre()
+    {
+        return $this->nombre;
+    }
+
+    /**
+     * Get idResp
+     *
+     * @return integer
+     */
+    public function getIdResp()
+    {
+        return $this->idResp;
+    }
+}
