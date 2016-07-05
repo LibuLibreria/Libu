@@ -3,25 +3,30 @@
 
 {% block content %}
 	<div class="contenedor">
-		
-		<img class="logolibu" src="{{ absolute_url(asset('bundles/libu/images/logo/Logo_pequeno.jpg')) }}" alt="Logo">
-		
-		<br><b>LIBRERÍA LIBU LIBURU-DENDA</b>
-		<br>(Asoc. Zubietxe / Zubietxe Elkartea)
-		<br>C/ Veintidos de Diciembre, 1 y 2 bajo, 
-		<br>Bilbao 48003
-		<br>C.I.F. G-48545610
-		<br>
-		<br>Factura simplificada nº LBS/{{factura}}/{{facturaurtea}}
-		<br>Fecha: {{fecha}}
-		<br>
-		<br><table>
-		<tr><th>Uds</th><th>Concepto    </th><th>TOTAL</th></tr>
-		<tr><td> {{ unidades }} </td><td>Libro/s</td><td>{{total}} euros</td></tr>
-		</table>	
-		<br>4% IVA de {{iva}}
-		<br>
-		<br>Eskerrik asko zure bisitagatik
-		<br>Gracias por su visita
+		{% for ticket in tickets %}
+			<div class="ticket">
+				<img class="logolibu" src="{{ absolute_url(asset('bundles/libu/images/logo/Logo_pequeno.jpg')) }}" alt="Logo">
+				
+				<div class="texto">
+					<br><b>LIBRERÍA LIBU LIBURU-DENDA</b>
+					<br>(Asoc. Zubietxe / Zubietxe Elkartea)
+					<br>C/ Veintidos de Diciembre, 1 y 2 bajo, 
+					<br>Bilbao 48003
+					<br>C.I.F. G-48545610
+					<br>
+					<br>Factura simplificada nº LBS/{{ ticket.factura}}/{{facturaurtea}}
+					<br>Fecha: {{ ticket.diahora | localizeddate('full', 'none', app.request.locale ) }}
+					<br>
+					<br><table>
+					<tr><th>Uds</th><th>Concepto    </th><th>TOTAL</th></tr>
+					<tr><td> {{ ticket.libros3 + ticket.libros1 }} </td><td>Libro/s</td><td> {{ ticket.ingreso }} euros</td></tr>
+					</table>	
+					<br>4% IVA incluido
+					<br>
+					<br>Eskerrik asko zure bisitagatik
+					<br>Gracias por su visita
+				</div>
+			</div>
+		{% endfor %}
 	</div>
 {% endblock %}

@@ -429,13 +429,10 @@ class LibuController extends Controller
         $tickets = $query->getResult();        
 
         $html = $this->renderView('LibuBundle:libu:ticket.html.twig', array(
-            'unidades'  => '4',
-            'fecha' => date('d-m-Y'),
-            'factura' => '2345',
-            'facturaurtea' => '16',
-            'total' => '5',
-            'iva' => '1.2'
+            'tickets' => $tickets,
+            'facturaurtea' => date('y'),
         ));   
+
         $filename = sprintf('ticket-%s.pdf', date('d-m-Y'));
 
         return new Response(
@@ -446,6 +443,9 @@ class LibuController extends Controller
                 'Content-Disposition'   => sprintf('attachment; filename="%s"', $filename),
             )
         );  
+        
+/*
+        return new Response ($html); */
     }
 
 

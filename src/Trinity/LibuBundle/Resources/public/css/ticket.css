@@ -1,6 +1,16 @@
 .contenedor {
 	font-family: Arial, Sans-serif;
-	max-width: 40%;
+}
+
+.ticket {
+	float: left;
+	margin-bottom: 100px;
+	max-width: 45%;
+}
+
+.texto {
+	margin-left: 10px;
+	margin-top: 10px;
 }
 
 .logolibu {
