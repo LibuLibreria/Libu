@@ -1,24 +1,27 @@
-<link rel="stylesheet" href="{{ asset('bundles/libu/css/ticket.css') }}" />
+{# src/Trinity/LibuBundle/Resources/views/libu/ticket.html.twig #}
+{% extends 'LibuBundle:libu:layout-pdf.html.twig' %}
 
-<div class="contenedor">
-	<img class="logolibu" src="{{ asset('bundles/libu/images/logo/Logo_pequeno.jpg') }}">
-	<br><b>LIBRERÍA LIBU LIBURU-DENDA</b>
-	<br>(Asoc. Zubietxe / Zubietxe Elkartea)
-	<br>C/ Veintidos de Diciembre, 1 y 2 bajo, 
-	<br>Bilbao 48003
-	<br>C.I.F. G-48545610
-	<br>
-	<br>Factura simplificada nº LBS/     /16
-	<br>Fecha: 
-	<br>
-	<br><table>
-	<tr><th>Uds</th><th>Concepto    </th><th>TOTAL</th></tr>
-	<tr><td>2</td><td>Libro/s</td><td></td></tr>
-	</table>	
-	<br>Libro/s
-	<br>
-	<br>4% IVA de 
-	<br>
-	<br>Eskerrik asko zure bisitagatik
-	<br>Gracias por su visita
-</div>
+{% block content %}
+	<div class="contenedor">
+		
+		<img class="logolibu" src="{{ absolute_url(asset('bundles/libu/images/logo/Logo_pequeno.jpg')) }}" alt="Logo">
+		
+		<br><b>LIBRERÍA LIBU LIBURU-DENDA</b>
+		<br>(Asoc. Zubietxe / Zubietxe Elkartea)
+		<br>C/ Veintidos de Diciembre, 1 y 2 bajo, 
+		<br>Bilbao 48003
+		<br>C.I.F. G-48545610
+		<br>
+		<br>Factura simplificada nº LBS/{{factura}}/{{facturaurtea}}
+		<br>Fecha: {{fecha}}
+		<br>
+		<br><table>
+		<tr><th>Uds</th><th>Concepto    </th><th>TOTAL</th></tr>
+		<tr><td> {{ unidades }} </td><td>Libro/s</td><td>{{total}} euros</td></tr>
+		</table>	
+		<br>4% IVA de {{iva}}
+		<br>
+		<br>Eskerrik asko zure bisitagatik
+		<br>Gracias por su visita
+	</div>
+{% endblock %}

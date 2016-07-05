@@ -397,18 +397,25 @@ class LibuController extends Controller
      */
     public function ticketAction(Request $request)
     {
-/*        $form = $this->createForm(MenuType::class, array());
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('venta')->isClicked()) return $this->redirectToRoute('venta');
-            if ($form->get('producto')->isClicked()) return $this->redirectToRoute('producto');
-            if ($form->get('libro')->isClicked()) return $this->redirectToRoute('libro');
-        }
-*/
-        return $this->render('LibuBundle:libu:ticket.html.twig',array(
-//            'form' => $form->createView(),
-            ));     
+        $html = $this->renderView('LibuBundle:libu:ticket.html.twig', array(
+            'unidades'  => '4',
+            'fecha' => date('d-m-Y'),
+            'factura' => '2345',
+            'facturaurtea' => '16',
+            'total' => '5',
+            'iva' => '1.2'
+        ));   
+        $filename = sprintf('ticket-%s.pdf', date('d-m-Y'));
+
+        return new Response(
+            $this->get('knp_snappy.pdf')->getOutputFromHtml($html),
+            200,
+            array(
+                'Content-Type'          => 'application/pdf',
+                'Content-Disposition'   => sprintf('attachment; filename="%s"', $filename),
+            )
+        );  
     }
 
 
