@@ -161,24 +161,54 @@ class LibuController extends Controller
     {
         // Realiza el cálculo
         $array_resto5 = array('0'=>0, '1'=>3, '2'=>5, '3'=>8, '4'=>10, '5'=>10);
-        $resto5 = $lib3 % 5;
-        $multiplo5 = $lib3 - $resto5;
+
+        $pagolib3 = ($lib3 < 5) ? $array_resto5[$lib3 % 5] : $lib3 * 2;
 
         // Crea un texto para desglosar el pago
         $textoPagos = "";
-        if ($multiplo5 != 0) $textoPagos .= "<br><b>".$multiplo5."</b> libros a 10 euros cada 5 libros: <b>"
-                .($multiplo5 * 2)." euros.</b>";
-        $descuento = ($resto5 == 1) ? "libro a 3 euros" : "libros a 3 euros cada uno (con descuentos)";
-        if ($resto5 != 0) $textoPagos .= "<br><b>".$resto5."</b> ".$descuento.": <b>"
-                .($array_resto5[$resto5])." euros.</b>";
-        if ($lib1 != 0) $textoPagos .= "<br><b>".$lib1."</b> libros a 1 euro cada uno: <b>"
-                .$lib1." euros.</b>";            
-        if ($resto5 == 4) $textoPagos .= "<br><b>Puede llevarse un libro más, al mismo precio</b>"; 
-        $textoPagos .= "<br>&nbsp;<br>";
-
+        if (($lib1 + $lib3) > 0) {
+            $textoPagos .= "<b>LIBROS</b>";
+            $unico = ($lib3 == 1) ? "libro a 3 euros:" : "libros a 3 euros cada uno (con descuentos):";
+            $textoPagos .= ($lib3 >= 1) ? "<br><b> ".$lib3." </b> ".$unico." <b>".$pagolib3." euros</b>" : "";
+            $textoPagos .= ($lib1 > 0) ? "<br><b>".$lib1." </b>libros a 1 euro: <b>".$lib1." euros</b>" : "";
+            $textoPagos .= ($lib3 == 4) ? "<br><b>Puede llevarse un libro más (de 3 euros), al mismo precio</b>" : "";
+            $textoPagos .= "<br>&nbsp;<br>";
+        }
         // Retorna los datos
         return array(
-            'pagolibros' => ($multiplo5 * 2) + ($array_resto5[$resto5]) + $lib1, 
+            'pagolibros' => $pagolib3 + $lib1, 
+            'texto' => $textoPagos,
+        ); 
+    }
+
+
+    /*
+    *   Calcula el total (en euros) de los productos comprados.
+    *   
+    */
+    private function sumaPagoProductos( $ventaactual, $em )
+    {
+        $textoPagos = ""; 
+        $pagoproductos = 0;
+        
+        $prodvendidos = $em->getRepository('LibuBundle:ProductoVendido')->findByIdVenta($ventaactual); 
+        
+        if (count($prodvendidos) > 0 ) {
+            $textoPagos .= "<b>PRODUCTOS</b>"; 
+            // Bucle para cada producto vendido.
+            foreach ($prodvendidos as $pvend) {
+                $cantidad = $pvend->getCantidad();
+                $pagopvend = $cantidad * $pvend->getIdProd()->getPrecio();
+                $plural = ($cantidad > 1) ? "s" : ""; 
+                $textoPagos .= "<br>".$cantidad." producto".$plural.": ".$pvend->getIdProd()->getCodigo().
+                    " = ".($pagopvend)." euros";
+                $pagoproductos += $pagopvend; 
+            }
+            $textoPagos .= "<br>Ha escogido productos por valor de <b>".$pagoproductos." euros.</b>";
+        }
+        // Retorna los datos
+        return array(
+            'pagoproductos' => $pagoproductos, 
             'texto' => $textoPagos,
         ); 
     }
@@ -194,42 +224,22 @@ class LibuController extends Controller
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
 
-        // Recupera el identificador yla instancia de la venta realizada; también el dato del ingreso total. 
+        // Recupera el identificador y la instancia de la venta realizada. 
         $session = $request->getSession();
         $ultimoid = $session->get('ultimoid');
         $ventaactual = $em->getRepository('LibuBundle:Venta')->findOneById($ultimoid);
-        $pagototal = $ventaactual->getIngreso();
 
         // Llama a la función sumaPagoLibros para el desglose del pago de libros
         $calclibros = $this->sumaPagoLibros( $ventaactual->getLibros1(), $ventaactual->getLibros3());
 
-        // Calculamos el pago de productos en función del pago total y el de libros. 
-        $pagolibros = $calclibros['pagolibros'];
-        $pagoproductos = $pagototal - $pagolibros;
+        // Llama a la función sumaPagoProductos para el desglose del pago de productos
+        $calcproductos = $this->sumaPagoProductos( $ventaactual, $em );
 
         // Escribe el texto
         $textoPagos = "<h2>Número de ticket: ".$ultimoid."</h2>";
-
-        // Libros vendidos
-        $textoPagos .= ($pagolibros > 0) ? "<b>LIBROS</b>".$calclibros['texto'] : "";         
-
-        // Productos vendidos
-        if ($pagoproductos > 0) {; 
-            $textoPagos .= "<b>PRODUCTOS</b>"; 
-            $prodvendidos = $em->getRepository('LibuBundle:ProductoVendido')->findByIdVenta($ventaactual); 
-
-            // Bucle para cada producto vendido.
-            foreach ($prodvendidos as $pvend) {
-                $cantidad = $pvend->getCantidad();
-                $plural = ($cantidad > 1) ? "s" : ""; 
-                $textoPagos .= "<br>".$cantidad." producto".$plural.": ".$pvend->getIdProd()->getCodigo().
-                    " = ".($cantidad * $pvend->getIdProd()->getPrecio())." euros";
-            }         
-            $textoPagos .= "<br>Ha escogido productos por valor de <b>".$pagoproductos." euros.</b>";
-        }  
-
-        // Total pago
-        $textoPagos .= "<h1>Son ".$pagototal." euros</h1>";
+        $textoPagos .= $calclibros['texto'];         
+        $textoPagos .= $calcproductos['texto'];
+        $textoPagos .= "<h1>TOTAL: ".($calclibros['pagolibros'] + $calcproductos['pagoproductos'])." euros</h1>";
 
         // Creación del formulario
         $form = $this->createForm(FacturarType::class, array());
@@ -240,7 +250,6 @@ class LibuController extends Controller
             if ($form->get('finalizar')->isClicked()) {
                 $ventaactual->setFactura($ultimoid);
                 try{
-                    // En primer lugar subimos la instancia Venta
                     $em->persist($ventaactual);
                     $em->flush();
                 } catch(\Doctrine\ORM\ORMException $e){
