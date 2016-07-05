@@ -391,6 +391,27 @@ class LibuController extends Controller
     }
 
 
+
+    /**
+     * @Route("/libu/ticket", name="ticket")
+     */
+    public function ticketAction(Request $request)
+    {
+/*        $form = $this->createForm(MenuType::class, array());
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('venta')->isClicked()) return $this->redirectToRoute('venta');
+            if ($form->get('producto')->isClicked()) return $this->redirectToRoute('producto');
+            if ($form->get('libro')->isClicked()) return $this->redirectToRoute('libro');
+        }
+*/
+        return $this->render('LibuBundle:libu:ticket.html.twig',array(
+//            'form' => $form->createView(),
+            ));     
+    }
+
+
     /**
      * @Route("/libu/menu", name="menu")
      */

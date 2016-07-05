@@ -67,6 +67,12 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     /usr/bin/wkhtmltopdf
+        options:    []
+
 easy_admin:
     entities:
         Cliente: 
