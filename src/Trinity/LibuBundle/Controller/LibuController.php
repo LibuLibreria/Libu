@@ -190,7 +190,7 @@ class LibuController extends Controller
     {
         $textoPagos = ""; 
         $pagoproductos = 0;
-        
+
         $prodvendidos = $em->getRepository('LibuBundle:ProductoVendido')->findByIdVenta($ventaactual); 
         
         if (count($prodvendidos) > 0 ) {
@@ -224,6 +224,18 @@ class LibuController extends Controller
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
 
+        // Averigua el número de la última factura emitida
+        $parameters = array();
+        $query = $em->createQuery(
+            'SELECT v.factura
+            FROM LibuBundle:Venta v 
+            WHERE v.factura IS NOT NULL
+            ORDER BY v.factura DESC'
+        )->setParameters($parameters);
+        $result = $query->setMaxResults(1)->getOneOrNullResult();
+        $numfactura = ($result['factura'] + 1);
+        
+
         // Recupera el identificador y la instancia de la venta realizada. 
         $session = $request->getSession();
         $ultimoid = $session->get('ultimoid');
@@ -236,7 +248,7 @@ class LibuController extends Controller
         $calcproductos = $this->sumaPagoProductos( $ventaactual, $em );
 
         // Escribe el texto
-        $textoPagos = "<h2>Número de ticket: ".$ultimoid."</h2>";
+        $textoPagos = "<h2>Número de ticket: ".$numfactura."</h2>";
         $textoPagos .= $calclibros['texto'];         
         $textoPagos .= $calcproductos['texto'];
         $textoPagos .= "<h1>TOTAL: ".($calclibros['pagolibros'] + $calcproductos['pagoproductos'])." euros</h1>";
@@ -248,7 +260,7 @@ class LibuController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('finalizar')->isClicked()) {
-                $ventaactual->setFactura($ultimoid);
+                $ventaactual->setFactura($numfactura);
                 try{
                     $em->persist($ventaactual);
                     $em->flush();
@@ -406,6 +418,15 @@ class LibuController extends Controller
      */
     public function ticketAction(Request $request)
     {
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+        $parameters = array();
+        $query = $em->createQuery(
+            'SELECT v
+            FROM LibuBundle:Venta v 
+            WHERE v.factura IS NOT NULL'
+        )->setParameters($parameters);
+        $tickets = $query->getResult();        
 
         $html = $this->renderView('LibuBundle:libu:ticket.html.twig', array(
             'unidades'  => '4',
