@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -160,24 +161,54 @@ class LibuController extends Controller
     {
         // Realiza el cálculo
         $array_resto5 = array('0'=>0, '1'=>3, '2'=>5, '3'=>8, '4'=>10, '5'=>10);
-        $resto5 = $lib3 % 5;
-        $multiplo5 = $lib3 - $resto5;
+
+        $pagolib3 = ($lib3 < 5) ? $array_resto5[$lib3 % 5] : $lib3 * 2;
 
         // Crea un texto para desglosar el pago
         $textoPagos = "";
-        if ($multiplo5 != 0) $textoPagos .= "<br><b>".$multiplo5."</b> libros a 10 euros cada 5 libros: <b>"
-                .($multiplo5 * 2)." euros.</b>";
-        $descuento = ($resto5 == 1) ? "libro a 3 euros" : "libros a 3 euros cada uno (con descuentos)";
-        if ($resto5 != 0) $textoPagos .= "<br><b>".$resto5."</b> ".$descuento.": <b>"
-                .($array_resto5[$resto5])." euros.</b>";
-        if ($lib1 != 0) $textoPagos .= "<br><b>".$lib1."</b> libros a 1 euro cada uno: <b>"
-                .$lib1." euros.</b>";            
-        if ($resto5 == 4) $textoPagos .= "<br><b>Puede llevarse un libro más, al mismo precio</b>"; 
-        $textoPagos .= "<br>&nbsp;<br>";
-
+        if (($lib1 + $lib3) > 0) {
+            $textoPagos .= "<b>LIBROS</b>";
+            $unico = ($lib3 == 1) ? "libro a 3 euros:" : "libros a 3 euros cada uno (con descuentos):";
+            $textoPagos .= ($lib3 >= 1) ? "<br><b> ".$lib3." </b> ".$unico." <b>".$pagolib3." euros</b>" : "";
+            $textoPagos .= ($lib1 > 0) ? "<br><b>".$lib1." </b>libros a 1 euro: <b>".$lib1." euros</b>" : "";
+            $textoPagos .= ($lib3 == 4) ? "<br><b>Puede llevarse un libro más (de 3 euros), al mismo precio</b>" : "";
+            $textoPagos .= "<br>&nbsp;<br>";
+        }
         // Retorna los datos
         return array(
-            'pagolibros' => ($multiplo5 * 2) + ($array_resto5[$resto5]) + $lib1, 
+            'pagolibros' => $pagolib3 + $lib1, 
+            'texto' => $textoPagos,
+        ); 
+    }
+
+
+    /*
+    *   Calcula el total (en euros) de los productos comprados.
+    *   
+    */
+    private function sumaPagoProductos( $ventaactual, $em )
+    {
+        $textoPagos = ""; 
+        $pagoproductos = 0;
+
+        $prodvendidos = $em->getRepository('LibuBundle:ProductoVendido')->findByIdVenta($ventaactual); 
+        
+        if (count($prodvendidos) > 0 ) {
+            $textoPagos .= "<b>PRODUCTOS</b>"; 
+            // Bucle para cada producto vendido.
+            foreach ($prodvendidos as $pvend) {
+                $cantidad = $pvend->getCantidad();
+                $pagopvend = $cantidad * $pvend->getIdProd()->getPrecio();
+                $plural = ($cantidad > 1) ? "s" : ""; 
+                $textoPagos .= "<br>".$cantidad." producto".$plural.": ".$pvend->getIdProd()->getCodigo().
+                    " = ".($pagopvend)." euros";
+                $pagoproductos += $pagopvend; 
+            }
+            $textoPagos .= "<br>Ha escogido productos por valor de <b>".$pagoproductos." euros.</b>";
+        }
+        // Retorna los datos
+        return array(
+            'pagoproductos' => $pagoproductos, 
             'texto' => $textoPagos,
         ); 
     }
@@ -193,42 +224,34 @@ class LibuController extends Controller
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
 
-        // Recupera el identificador yla instancia de la venta realizada; también el dato del ingreso total. 
+        // Averigua el número de la última factura emitida
+        $parameters = array();
+        $query = $em->createQuery(
+            'SELECT v.factura
+            FROM LibuBundle:Venta v 
+            WHERE v.factura IS NOT NULL
+            ORDER BY v.factura DESC'
+        )->setParameters($parameters);
+        $result = $query->setMaxResults(1)->getOneOrNullResult();
+        $numfactura = ($result['factura'] + 1);
+        
+
+        // Recupera el identificador y la instancia de la venta realizada. 
         $session = $request->getSession();
         $ultimoid = $session->get('ultimoid');
         $ventaactual = $em->getRepository('LibuBundle:Venta')->findOneById($ultimoid);
-        $pagototal = $ventaactual->getIngreso();
 
         // Llama a la función sumaPagoLibros para el desglose del pago de libros
         $calclibros = $this->sumaPagoLibros( $ventaactual->getLibros1(), $ventaactual->getLibros3());
 
-        // Calculamos el pago de productos en función del pago total y el de libros. 
-        $pagolibros = $calclibros['pagolibros'];
-        $pagoproductos = $pagototal - $pagolibros;
+        // Llama a la función sumaPagoProductos para el desglose del pago de productos
+        $calcproductos = $this->sumaPagoProductos( $ventaactual, $em );
 
         // Escribe el texto
-        $textoPagos = "<h2>Número de ticket: ".$ultimoid."</h2>";
-
-        // Libros vendidos
-        $textoPagos .= ($pagolibros > 0) ? "<b>LIBROS</b>".$calclibros['texto'] : "";         
-
-        // Productos vendidos
-        if ($pagoproductos > 0) {; 
-            $textoPagos .= "<b>PRODUCTOS</b>"; 
-            $prodvendidos = $em->getRepository('LibuBundle:ProductoVendido')->findByIdVenta($ventaactual); 
-
-            // Bucle para cada producto vendido.
-            foreach ($prodvendidos as $pvend) {
-                $cantidad = $pvend->getCantidad();
-                $plural = ($cantidad > 1) ? "s" : ""; 
-                $textoPagos .= "<br>".$cantidad." producto".$plural.": ".$pvend->getIdProd()->getCodigo().
-                    " = ".($cantidad * $pvend->getIdProd()->getPrecio())." euros";
-            }         
-            $textoPagos .= "<br>Ha escogido productos por valor de <b>".$pagoproductos." euros.</b>";
-        }  
-
-        // Total pago
-        $textoPagos .= "<h1>Son ".$pagototal." euros</h1>";
+        $textoPagos = "<h2>Número de ticket: ".$numfactura."</h2>";
+        $textoPagos .= $calclibros['texto'];         
+        $textoPagos .= $calcproductos['texto'];
+        $textoPagos .= "<h1>TOTAL: ".($calclibros['pagolibros'] + $calcproductos['pagoproductos'])." euros</h1>";
 
         // Creación del formulario
         $form = $this->createForm(FacturarType::class, array());
@@ -237,9 +260,8 @@ class LibuController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('finalizar')->isClicked()) {
-                $ventaactual->setFactura($ultimoid);
+                $ventaactual->setFactura($numfactura);
                 try{
-                    // En primer lugar subimos la instancia Venta
                     $em->persist($ventaactual);
                     $em->flush();
                 } catch(\Doctrine\ORM\ORMException $e){
@@ -306,52 +328,124 @@ class LibuController extends Controller
 
 
     /**
-     * @Route("/libu/caja", name="caja")
+     * @Route("/libu/caja", defaults={"dia": 1}, name="caja")
+     * @Route("/libu/caja/{dia}", requirements={"dia": "[1-9]\d*"}, name="caja_fecha")     
      */
-    public function cajaAction(Request $request)
+    public function cajaAction(Request $request, $dia)
     {
-        // select * from venta where diaHora > "2016-06-10" and factura is not null;
-        // select sum(ingreso) as total from venta where diaHora > "2016-06-10" and factura is not null;
-        $texto = "<h1>Caja</h1>";
-        $fecha = new \Datetime();  
-        $eguna = $fecha->format('Y-m-d');
-        $texto .= "<h4><br>Día: ".$fecha->format('d-M')."</h4>"; 
+        $fecha = new \Datetime(); 
 
-        // Realizar la búsqueda
+        if ($dia != 1) {
+            $fecha->setTimestamp($dia);
+        };
+        $fechasolo = $fecha->format('Y-m-d');
+
+        // Realizar la búsqueda de las ventas de hoy 
         $em = $this->getDoctrine()->getManager();
+
+        // Buscamos las ventas del día marcado por $fecha
+        $parameters = array( 
+            'fecha' => $fecha->format('Y-m-d'),
+            'sigfecha' => $fecha->modify('+1 day')->format('Y-m-d'),
+        );
+        $fecha->modify('-1 day');
+
         $query = $em->createQuery(
-            'SELECT v
+            'SELECT v.diahora as hora, v.ingreso as ingreso
             FROM LibuBundle:Venta v 
-            WHERE v.diahora > :fecha
+            WHERE v.diahora > :fecha AND v.diahora < :sigfecha
             AND v.factura IS NOT NULL'
-        )->setParameter('fecha', $eguna);
-
+        )->setParameters($parameters);
         $ventas = $query->getResult();
+        $ingrdia = array_sum(array_column($ventas, 'ingreso'));
 
-        $ingrdia = 0;
-        foreach ($ventas as $vt) {
-            $ing = $vt->getIngreso();
-            $texto .= "<br>".$vt->getDiahora()->format('H:i')." - ".$ing. " euros" ;
-            $ingrdia = $ingrdia + $ing; 
+        // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
+        // en que se han hecho ingresos. 
+        $sql = 
+            'SELECT count(*) as cantidad, diaHora as dias
+            FROM venta 
+            WHERE factura > 0 
+            GROUP by day(diaHora) LIMIT 10'
+        ;
+        $stmt = $em->getConnection()->prepare($sql);
+        $stmt->execute();
+        $diasanteriores = $stmt->fetchAll();
+        $i = 0;
+        foreach ($diasanteriores as $dia) {
+            $timedia = strtotime($dia['dias']);
+            $keydia = $dia['cantidad']." ventas el ".date("j-n-Y", $timedia );
+            $diaslista[$keydia] = $timedia;
         }
-        $texto .= "<h4><b>Total: ".$ingrdia." euros</b></h4>";
+//        dump($diaslista);
 
         $form = $this->createFormBuilder(array())
- //           ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta'))         
+ //           ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta')) 
+            ->add('diasventas', ChoiceType::class, array(
+                'choices'  => $diaslista,
+                'label' => 'Escoger otro día:',
+                'expanded' => false,
+                'multiple' => false,
+            ))       
+            ->add('fecha', SubmitType::class, array('label' => 'Buscar la fecha'))            
             ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-//            if ($form->get('finalizar')->isClicked()) return $this->redirectToRoute('venta');
+            if ($form->get('fecha')->isClicked()) {
+                $data = $form->getData();
+
+                return $this->redirectToRoute('caja_fecha', array('dia' => $data['diasventas']));
+            }
+
+                
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
         }
 
         return $this->render('LibuBundle:libu:caja.html.twig',array(
             'form' => $form->createView(),
-            'texto' => $texto,
+            'ventasdia' => $ventas,
+            'fecha' => $fecha,
+            'ingrdia' => $ingrdia,
             ));    
+    }
+
+
+
+    /**
+     * @Route("/libu/ticket", name="ticket")
+     */
+    public function ticketAction(Request $request)
+    {
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+        $parameters = array();
+        $query = $em->createQuery(
+            'SELECT v
+            FROM LibuBundle:Venta v 
+            WHERE v.factura IS NOT NULL'
+        )->setParameters($parameters);
+        $tickets = $query->getResult();        
+
+        $html = $this->renderView('LibuBundle:libu:ticket.html.twig', array(
+            'tickets' => $tickets,
+            'facturaurtea' => date('y'),
+        ));   
+
+        $filename = sprintf('ticket-%s.pdf', date('d-m-Y'));
+
+        return new Response(
+            $this->get('knp_snappy.pdf')->getOutputFromHtml($html),
+            200,
+            array(
+                'Content-Type'          => 'application/pdf',
+                'Content-Disposition'   => sprintf('attachment; filename="%s"', $filename),
+            )
+        );  
+        
+/*
+        return new Response ($html); */
     }
 
 
