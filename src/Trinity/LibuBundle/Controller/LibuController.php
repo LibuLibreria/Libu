@@ -342,7 +342,7 @@ class LibuController extends Controller
         } ;
         $fechasolo = $fecha->format('Y-m-d');
 
-        // Realizar la búsqueda de las ventas de hoy 
+        // 
         $em = $this->getDoctrine()->getManager();
 
         // Buscamos las ventas del día marcado por $fecha
