@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Venta
  *
  * @ORM\Table(name="venta", indexes={@ORM\Index(name="responsable", columns={"responsable"}), @ORM\Index(name="tematica", columns={"tematica"}), @ORM\Index(name="cliente", columns={"cliente"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Trinity\LibuBundle\Entity\VentaRepository")
  */
 class Venta
 {
