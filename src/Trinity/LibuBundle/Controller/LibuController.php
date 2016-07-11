@@ -333,14 +333,16 @@ class LibuController extends Controller
      */
     public function cajaAction(Request $request, $dia)
     {
-        $fecha = new \Datetime(); 
+        
 
         if ($dia != 1) {
-            $fecha->setTimestamp($dia);
-        };
+            $fecha = \DateTime::createFromFormat('Ymd', $dia);
+        } else {
+            $fecha = new \Datetime(); 
+        } ;
         $fechasolo = $fecha->format('Y-m-d');
 
-        // Realizar la búsqueda de las ventas de hoy 
+        // 
         $em = $this->getDoctrine()->getManager();
 
         // Buscamos las ventas del día marcado por $fecha
@@ -365,7 +367,9 @@ class LibuController extends Controller
             'SELECT count(*) as cantidad, diaHora as dias
             FROM venta 
             WHERE factura > 0 
-            GROUP by day(diaHora) LIMIT 10'
+            GROUP BY day(diaHora) 
+            ORDER BY dias DESC
+            LIMIT 10'
         ;
         $stmt = $em->getConnection()->prepare($sql);
         $stmt->execute();
@@ -373,8 +377,9 @@ class LibuController extends Controller
         $i = 0;
         foreach ($diasanteriores as $dia) {
             $timedia = strtotime($dia['dias']);
-            $keydia = $dia['cantidad']." ventas el ".date("j-n-Y", $timedia );
-            $diaslista[$keydia] = $timedia;
+//            $timedia = new \DateTime($dia['dias']);
+            $keydia = date("j-n-Y", $timedia );
+            $diaslista[$keydia] = date("Ymd",($timedia));
         }
 //        dump($diaslista);
 
