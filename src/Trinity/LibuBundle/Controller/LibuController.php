@@ -102,12 +102,12 @@ class LibuController extends Controller
                         $pagoactual = $prod_actual->getPrecio();
 
                         // Sumamos el precio de estos productos y los sumamos al precio total
-                        $pagoproductos = $pagoproductos + ($pagoactual * $cant);
+                        $pagoproductos += ($pagoactual * $cant);
 
                         // Añadimos este Producto Vendido a un array, para gestionarlo después; 
                         // se persistirán estos datos por separado a la instancia de Venta. 
                         // La razón de hacerlo así es la complicación de vincular las entities de 
-                        // Venta y de ProductoVendido. Quizá algún día lo pueda hacer
+                        // Venta y de ProductoVendido. Quizá algún día lo pueda hacer.
                         $vendidos[$m++] = $pv;
                     } 
                 }
@@ -334,23 +334,16 @@ class LibuController extends Controller
      */
     public function cajaAction(Request $request, $dia)
     {
-        
-
-        if ($dia != 1) {
-            $fecha = \DateTime::createFromFormat('Ymd', $dia);
-        } else {
-            $fecha = new \Datetime(); 
-        } ;
-        $fechasolo = $fecha->format('Y-m-d');
-
+        $fecha = ($dia != 1) ? $fecha = \DateTime::createFromFormat('Ymd', $dia) : $fecha = new \DateTime(); 
+        $fechasig = new \DateTime();
+        $fechasig = clone $fecha;   // nueva instancia para que no afecten las modify a $fecha
         // 
         $em = $this->getDoctrine()->getManager();
 
-        // Buscamos las ventas del día marcado por $fecha
-
-
-        $ventas = $em->getRepository('LibuBundle:Venta')->ventasFechas($fecha);
-
+        // Buscamos las ventas del día marcado por $fecha con la función ventasFechas()
+        $ventas = $em->getRepository('LibuBundle:Venta')->ventasFechas($fecha, $fechasig->modify('+1 day'));
+// dump($ventas);
+        // Utilizamos array_sum y array_column para calcular los ingresos del día
         $ingrdia = array_sum(array_column($ventas, 'ingreso'));
 
         // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
@@ -359,22 +352,17 @@ class LibuController extends Controller
 
         $i = 0;
         foreach ($diasanteriores as $dia) {
-            $timedia = strtotime($dia['dias']);
-//            $timedia = new \DateTime($dia['dias']);
-            $keydia = date("j-n-Y", $timedia );
-            $diaslista[$keydia] = date("Ymd",($timedia));
+            $time_dia = strtotime($dia['dias']);        // marca Unix de tiempo
+            $diaslista[date("j-n-Y", $time_dia )] = date("Ymd",($time_dia));     // array para los choices 
         }
-//        dump($diaslista);
 
         $form = $this->createFormBuilder(array())
- //           ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta')) 
             ->add('diasventas', ChoiceType::class, array(
                 'choices'  => $diaslista,
-                'label' => 'Escoger otro día:',
                 'expanded' => false,
                 'multiple' => false,
             ))       
-            ->add('fecha', SubmitType::class, array('label' => 'Buscar la fecha'))            
+            ->add('fecha', SubmitType::class, array('label' => 'Buscar en esa fecha'))            
             ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
             ->getForm();
 
@@ -442,6 +430,12 @@ class LibuController extends Controller
      */
     public function menuAction(Request $request)
     {
+        $venta = 207;
+        echo "Resultados de productos vendidos para Venta: ".$venta;
+        $em = $this->getDoctrine()->getManager();
+        $total = $em->getRepository('LibuBundle:Venta')->getProductosVendidos($venta);    
+        dump($total);
+
         $form = $this->createForm(MenuType::class, array());
         $form->handleRequest($request);
 
