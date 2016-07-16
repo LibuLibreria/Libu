@@ -61,7 +61,8 @@ class VentaRepository extends EntityRepository
             FROM LibuBundle:Venta v, LibuBundle:Cliente c
             WHERE v.diahora > :fecha AND v.diahora < :fechasig
             AND c.idCli = v.cliente
-            AND v.factura IS NOT NULL'
+            AND v.factura IS NOT NULL
+            ORDER BY v.diahora'
         )->setParameters($parameters);
         if ($prodvend) {
             $ventas = $query->getResult(); 
