@@ -3,11 +3,12 @@
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
 {# {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %} #}
 
+<script src="{{ asset('bundles/libu/jquery/dist/jquery.js') }}"></script>  
+ <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap.min.css') }}"  /> 
+ <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap-theme.css') }}"  />  
+ <script src="{{ asset('bundles/libu/bootstrap/dist/js/bootstrap.min.js') }}" ></script>
 
-<!-- <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap.min.css') }}"  />  -->
-<!-- <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap-theme.css') }}"  />  -->
-<!-- <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/js/bootstrap.min.js') }}"  />  -->
-<!-- <script src="{{ asset('bundles/libu/jquery/src/jquery.js') }}"></script>   -->
+
 
 
 
@@ -144,7 +145,8 @@
         {{ form_widget(form.diahora) }}
     </div>  
     <br>
-    <button class="boton-grande btn btn-primary" type="button" data-toggle="collapse" data-target="#col-productos" aria-expanded="false" aria-controls="col-productos">
+
+    <button class="boton-grande btn btn-primary" type="button" data-toggle="collapse" data-target="#col-productos" aria-expanded="true" aria-controls="col-productos">
       Otros productos
     </button>
     <div id = 'col-productos' class = 'col-sm-8 form-inline collapse'>
