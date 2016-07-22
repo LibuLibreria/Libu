@@ -7,9 +7,7 @@
  <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap.min.css') }}"  /> 
  <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap-theme.css') }}"  />  
  <script src="{{ asset('bundles/libu/bootstrap/dist/js/bootstrap.min.js') }}" ></script>
-
-
-
+ <script src="{{ asset('bundles/libu/js/scripts.js') }}" ></script>
 
 
 <style type="text/css">
@@ -32,6 +30,10 @@
 #venta_tematica, #venta_cliente, #venta_diahora {
     font-size: 16px;
 }
+.cuadro_input {
+    font-size: 20px;
+    width: 70px;
+}
 }
 </style>
 
@@ -43,38 +45,36 @@
 <!--            <h4 class=""><i class="icon-plus-sign-alt"></i>Libros</h4>    -->
             <br>
             <div class="clearfix">
-                <div>
-                    <div class="input_venta">
+
+
+<!--  ESTAS SON LAS PRUEBAS CON BOTONES -->
+
+
                         {{ form_label(form.libros3) }}
-                        {{ form_errors(form.libros3) }}
+<div class="center">
+
+    <div class="input-group">
+        
+<div>
+        <button type='button' class="btn btn-libu btn-danger qtyminus" value='-' field='venta_libros3' />
+            <span class="glyphicon glyphicon-minus"></span>
+        </button>
+    </div>
+        <div>
+                                        {{ form_errors(form.libros3) }}
+
                         {{ form_widget(form.libros3) }}
-                    </div>
-                    <br>
-                    <input type="button" name="1" value="  1  " class="btn btn-libu btn-primary  btn-lg"
-                        OnClick="venta.venta_libros3.value += '1'">
-                    <input type="button" name="2" value="  2  " class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value += '2'">
-                    <input type="button" name="3" value="  3  " class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value += '3'">
-                    <input type="button" name="4" value="  4  " class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value += '4'">
-                    <input type="button" name="5" value="  5  " class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value += '5'">
-                    <br>
-                    <input type="button" name="6" value="  6  " class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value += '6'">
-                    <input type="button" name="7" value="  7  " class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value += '7'">
-                    <input type="button" name="8" value="  8  " class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value += '8'">
-                    <input type="button" name="9" value="  9  " class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value += '9'">
-                    <input type="button" name="0" value="  0  " class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value += '0'">
-                    <br>
-                    <input type="button" name="borrar" value="C" class="btn btn-libu btn-primary btn-lg"
-                         OnClick="venta.venta_libros3.value = ''">
-                </div>
+                        </div>
+                        <div>
+        <button type='button' value='+'  class="btn btn-libu btn-primary qtyplus" field='venta_libros3' />
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+        </div>
+
+    </div>
+</div>
+<!--  FIN DE LAS PRUEBAS -->
+
                 <hr>
                 <div>
                     <div class="input_venta">                    
