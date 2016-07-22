@@ -33,13 +33,13 @@ class VentaType extends AbstractType
                 ))
             ->add('libros3', TextType::class, array(
                 'label' => 'Libros a 3 euros: ',
-                'data' => '',
+                'data' => '0',
                 'attr' => array('style' => 'width: 80px'), 
                 'required' => false,
                 )) 
             ->add('libros1', TextType::class, array(
                 'label' => 'Libros a 1 euro:',
-                'data' => '',
+                'data' => '0',
                 'attr' => array('style' => 'width: 80px'),
                 'required' => false,               
                 )) 

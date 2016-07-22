@@ -6,14 +6,14 @@ jQuery(document).ready(function(){
         // Get the field name
         fieldName = $(this).attr('field');
         // Get its current value
-        var currentVal = parseInt($('input[id='+fieldName+']').val());
+        var currentVal = parseInt($('input[id=venta_'+fieldName+']').val());
         // If is not undefined
         if (!isNaN(currentVal)) {
             // Increment
-            $('input[id='+fieldName+']').val(currentVal + 1);
+            $('input[id=venta_'+fieldName+']').val(currentVal + 1);
         } else {
             // Otherwise put a 0 there
-            $('input[id='+fieldName+']').val(0);
+            $('input[id=venta_'+fieldName+']').val(0);
         }
     });
     // This button will decrement the value till 0
@@ -23,14 +23,14 @@ jQuery(document).ready(function(){
         // Get the field name
         fieldName = $(this).attr('field');
         // Get its current value
-        var currentVal = parseInt($('input[id='+fieldName+']').val());
+        var currentVal = parseInt($('input[id=venta_'+fieldName+']').val());
         // If it isn't undefined or its greater than 0
         if (!isNaN(currentVal) && currentVal > 0) {
             // Decrement one
-            $('input[id='+fieldName+']').val(currentVal - 1);
+            $('input[id=venta_'+fieldName+']').val(currentVal - 1);
         } else {
             // Otherwise put a 0 there
-            $('input[id='+fieldName+']').val(0);
+            $('input[id=venta_'+fieldName+']').val(0);
         }
     });
 });

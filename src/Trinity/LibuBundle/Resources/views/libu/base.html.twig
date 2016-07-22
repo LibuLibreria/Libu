@@ -1,0 +1,42 @@
+{#
+   Base template
+#}
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Trinity{% endblock %}</title>
+
+        {% block stylesheets %}
+            <script src="{{ asset('bundles/libu/jquery/dist/jquery.js') }}"></script>  
+            <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap.min.css') }}"  /> 
+            <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap-theme.css') }}"  />  
+            <script src="{{ asset('bundles/libu/bootstrap/dist/js/bootstrap.min.js') }}" ></script>
+            <script src="{{ asset('bundles/libu/js/scripts.js') }}" ></script>
+        {% endblock %}
+
+        {#  <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />    #}
+        {% block head_cont %}{% endblock %}
+    </head>
+
+    <body id="{% block body_id %}body_id{% endblock %}">
+
+        <div class='container-fluid'>
+            {% block header %}
+                <header>
+                </header>
+            {% endblock %}
+
+            {% block body %}
+
+            {% endblock %}
+
+            {% block footer %}
+                <footer>    
+                </footer>
+            {% endblock %}   
+        </div>
+    </body>
+</html>
