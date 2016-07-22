@@ -29,7 +29,11 @@ class VentaType extends AbstractType
 //            ->add('factura')
 //           ->add('ingreso')
             ->add('diahora', DatetimeType::class, array(
-                'label' => 'Fecha y hora: ',
+                'label' => 'Fecha: ',
+                'format' => 'd-M-y',
+                'widget' => 'single_text',
+                'attr' => array('style' => 'width: 120px'), 
+
                 ))
             ->add('libros3', TextType::class, array(
                 'label' => 'Libros a 3 euros: ',

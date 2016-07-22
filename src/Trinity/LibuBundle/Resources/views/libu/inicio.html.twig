@@ -6,17 +6,21 @@
 
 {% block head_cont %}
     <style type="text/css">
+        .col-izda {
+            border-right: solid black 2px;
+        }
         .btn-libu {
             margin: 3px;
         }
-        .input_venta, .input_venta .form-control {
-            font-size: 22px;
+        .label_venta, .label_venta .form-control {
+            font-size: 20px;
         }
         .form-control {
             font-size: 16px;   
         }
         .boton-grande {
             font-size: 28px; 
+            margin-left: 30px;
         }
         .linea-prod {
             margin-bottom: 5px;
@@ -31,87 +35,104 @@
         .input_botones {
 
         }
+        .img_boton img{
+            float: left;
+            width: 80px;
+            margin-right: 30px;
+        }
     </style>
 {% endblock %}
 
 
 {% block body %}
     {{ form_start(form) }}
-    <div class = 'col-sm-3 form-inline'> 
+    <div class = 'col-izda col-sm-3 form-inline'> 
         <br>
         <div class="clearfix">
 
+            {% set botonfield = [ 
+                {'nombre': 'libros3', 'label':'Libros a 3 euros' }, 
+                {'nombre': 'libros1', 'label':'Libros a 1 euro' } 
+                ] %}
 
-{% set botonfield = [ 
-    {'nombre': 'libros3', 'label':'Libros a 3 euros' }, 
-    {'nombre': 'libros1', 'label':'Libros a 1 euro' } 
-    ] %}
-
-    {% for botonf in botonfield %}
-        <div class="input_venta">
-        <label class="control-label" for="venta_libros3">{{ botonf.label }}: </label>        
-        </div>
-        <div class="input_botones">
-            <div>
-                <button type='button' class="btn btn-libu btn-primary qtyminus" 
-                        value='-' field= '{{ botonf.nombre }}'/>
-                    <span class="glyphicon glyphicon-minus"></span>
-                </button>     
-                <input type="text" id="venta_{{ botonf.nombre }}" name="venta[{{ botonf.nombre }}]" 
-                        style="width: 80px; height: 54px; font-size: 24px" class="form-control" value="0" />
-                <button type='button' value='+'  class="btn btn-libu btn-primary qtyplus" 
-                        field='{{ botonf.nombre }}' />
-                    <span class="glyphicon glyphicon-plus"></span>
-                </button>
-            </div>
-        </div>
-        <hr>
-    {% endfor %}
-                
-                    <div>
-                        {{ form_label(form.tematica) }}
-                        {{ form_errors(form.tematica) }}
-                        {{ form_widget(form.tematica) }}
-                    </div>
-                    <!--
-                    <div>
-                        {{ form_label(form.responsable) }}
-                        {{ form_errors(form.responsable) }}
-                        {{ form_widget(form.responsable) }}
-                    </div>
-    -->
-                    <hr>
-
-                    <div>
-                        {{ form_label(form.cliente) }}
-                        {{ form_errors(form.cliente) }}
-                        {{ form_widget(form.cliente) }}
-                    </div>
-                  
-                    <hr>
-
-
-                    <div >
-                        {{ form_widget(form.save, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}}) }}
-                        {{ form_widget(form.menu) }}                
+            {% for botonf in botonfield %}
+                <div class="form_libro">
+                    <div class='img_boton'>
+                        <img src='{{ asset('bundles/libu/images/images/' ~ botonf.nombre ~ '.png') }}'  />
+                    </div>    
+                    <div class="labelinput">      
+                        <div class="label_venta">
+                            <label class="control-label" for="venta_libros3">{{ botonf.label }}: </label>        
+                        </div>
+                        <div class="input_botones">
+                            <div>
+                                <button type='button' class="btn btn-libu btn-primary qtyminus" 
+                                        value='-' field= '{{ botonf.nombre }}'/>
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                </button>  
+                                <input type="text" id="venta_{{ botonf.nombre }}" name="venta[{{ botonf.nombre }}]" 
+                                        style="width: 80px; height: 54px; font-size: 24px" class="form-control" value="0" />
+                                <button type='button' value='+'  class="btn btn-libu btn-primary qtyplus" 
+                                        field='{{ botonf.nombre }}' />
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <hr>
+            {% endfor %}
+                        
+            <div>
+                <div class = 'col-sm-6 label_venta'>
+                    {{ form_label(form.tematica) }}:
+                </div>
+                {{ form_errors(form.tematica) }}
+                {{ form_widget(form.tematica) }}
+            </div>
 
+            <hr>
+
+            <div>
+                <div class = 'col-sm-6 label_venta'>                        
+                    {{ form_label(form.cliente) }}:
+                </div>
+                {{ form_errors(form.cliente) }}
+                {{ form_widget(form.cliente) }}
+            </div>
+
+            <hr>
+
+            <div class='diahora'>
+                <div class='col-sm-6 label_venta'>
+                    {{ form_label(form.diahora) }}
+                </div>
+                {{ form_errors(form.diahora) }}
+                {{ form_widget(form.diahora)  }}
+            </div>  
+
+            <br>
+          
+            <hr>
+
+            <div >
+                {{ form_widget(form.save, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}}) }}
+                {{ form_widget(form.menu) }}                
+            </div>
         </div>
-        
-        <div class='diahora'>
-            {{ form_label(form.diahora) }}
-            {{ form_errors(form.diahora) }}
-            {{ form_widget(form.diahora) }}
-        </div>  
-        <br>
+    </div>
 
-        <button class="boton-grande btn btn-primary" type="button" data-toggle="collapse" data-target="#col-productos" aria-expanded="true" aria-controls="col-productos">
-          Otros productos
-        </button>
+    <div class = 'col-dcha col-sm-9 form-inline'> 
+        <br>   
+
+        <div class='boton1'>
+            <button class="boton-grande btn btn-primary" type="button" data-toggle="collapse" data-target="#col-productos" aria-expanded="true" aria-controls="col-productos">
+              Otros productos
+            </button>
+        </div>
         <div id = 'col-productos' class = 'col-sm-8 form-inline collapse'>
     <!--        <h4 class=""><i class="icon-plus-sign-alt"></i>Otros productos</h4>    -->
-            <hr>
+
             <div class="clearfix"></div>
             <div class='col-sm-6  form-inline'>
 
@@ -137,23 +158,25 @@
             <div class = 'col-sm-6 form-inline'>
                 <div class="clearfix"></div>
 
-                    {% for key,productField in form.product[12:] %}
-                        <div class='row linea-prod'>                 
-                            <div class='col-sm-6'>
-                                    {{ form_label(productField, prodguztiak[key+12].codigo) }}  
-                                     - {{ prodguztiak[key+12].precio }} €
-                                    {{ form_errors(productField) }}
-                            </div>
-                            <div class='col-sm-6'>                       
-                                    {{ form_widget(productField) }}
-                                    <br>
-                            </div>
-                        </div>                 
-                    {% endfor %}
+                {% for key,productField in form.product[12:] %}
+                    <div class='row linea-prod'>                 
+                        <div class='col-sm-6'>
+                                {{ form_label(productField, prodguztiak[key+12].codigo) }}  
+                                 - {{ prodguztiak[key+12].precio }} €
+                                {{ form_errors(productField) }}
+                        </div>
+                        <div class='col-sm-6'>                       
+                                {{ form_widget(productField) }}
+                                <br>
+                        </div>
+                    </div>                 
+                {% endfor %}
             </div>
         </div>
+    </div>
         {% do form.libros3.setRendered %}
         {% do form.libros1.setRendered %}
+        {% do form.responsable.setRendered %}
         {{ form_row(form._token) }}
         {{ form_end(form)}}
 

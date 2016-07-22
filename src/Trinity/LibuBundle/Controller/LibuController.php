@@ -79,7 +79,7 @@ class LibuController extends Controller
                 $sumalibros = $this->sumaPagoLibros($data['libros1'], $data['libros3']);
 
                 // Guardamos todos los datos de las ventas en la nueva instancia Venta
-                $venta->setDiahora($fecha);
+                $venta->setDiahora($data['diahora']);
                 $venta->setLibros3($data['libros3']);
                 $venta->setLibros1($data['libros1']);
                 $venta->setCliente($data['cliente']);
