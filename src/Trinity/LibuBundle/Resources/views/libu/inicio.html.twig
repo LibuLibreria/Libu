@@ -47,6 +47,14 @@
             padding: 10px;
             border: 1px solid black;
         }
+        .productitem {
+            margin: 5px;
+            padding: 5px;
+            border-bottom: 1px dotted;
+        }
+        .label_producto {
+            font-size: 16px;
+        }
     </style>
 {% endblock %}
 
@@ -140,53 +148,53 @@
               Otros productos
             </button>
         </div>
-        <div id = 'col-productos' class = 'col-sm-8 form-inline collapse'>
+        <div id = 'col-productos' class = 'col-sm-12 form-inline collapse'>
     <!--        <h4 class=""><i class="icon-plus-sign-alt"></i>Otros productos</h4>    -->
 
             <div class="clearfix"></div>
-            <div class='col-sm-6  form-inline'>
-
                     {{ form_label(form.product) }}
                     {{ form_errors(form.product) }}
+                    <div class=''>                
+                        <div class='col-sm-12'>
+                            <div class="form_producto">
+                                {% set columprod = 4 %}
+                                {% set numcolum = 3 %}
+                                {% for i in 0..(numcolum - 1) %}
+                                <div class='col-sm-4 col_producto'>
+                                {% for keys,productField in form.product[ (i * columprod) : ((i * columprod) + columprod) ] %}   
+                                    i= {{ i}} , de {{ i * columprod }} a {{ ((i*columprod) + columprod )}}
+                                    {% set key = (keys + (i * columprod)) %}
+                                    <br>Key: {{ key }}
+                                    <div class="productitem"> 
+                                        <div class='col-sm-12 label_producto'>
+                                            {{ form_label(productField, prodguztiak[key].codigo) }}  
+                                             - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
+                                            {{ form_errors(productField) }}
+                                        </div>
+                                        <div class="input_botones">
+                                            <div>
+                                                <span id='datos_{{ key }}' data-precio='{{ prodguztiak[key].precio }}'></span>
+                                                <button type='button' value='{{ key }}'  class="btn btn-libu qtyprminus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
+                                                    <span class="glyphicon glyphicon-minus"></span>
+                                                </button>
 
+                                                <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 60px" class="form-control" value="0" />
 
-                        <div class='row linea-prod'>                
-
-                            <div class='col-sm-6'>
-
-                <div class="form_producto">
-                    <div class="labelinput">  
-                                                        
-                            {% for key,productField in form.product[0:12] %}    
-                            <div class='col-sm-6'>
-                                    {{ form_label(productField, prodguztiak[key].codigo) }}  
-                                     - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
-                                    {{ form_errors(productField) }}
+                                                <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
-                        <div class="input_botones">
-                            <div>
-                                <span id='datos_{{ key }}' data-key='aaa' data-precio='{{ prodguztiak[key].precio }}'></span>
-                                <button type='button' class="btn btn-libu qtyprminus" 
-                                        value='{{ key }}' field= '{{ prodguztiak[key].codigo }}' 
-                                        data-key='aa{{ key }}' data-precio='{{ prodguztiak[key].precio }}'/>
-                                    <span class="glyphicon glyphicon-minus"></span>
-                                </button>  
-
-                                <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 90px" class="form-control" value="0" />
-                                    <br>
-                                <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
-                                    <span class="glyphicon glyphicon-plus"></span>
-                                </button>
+                                {% endfor %}
                             </div>
                         </div>
-                        {% endfor %}
-                    </div>
-                </div>
 
 
-            </div>
-            <div class = 'col-sm-6 form-inline'>
-                <div class="clearfix"></div>
+                        <div class = 'col-sm-6 form-inline'>
+                            <div class="clearfix"></div>
 
                 {% for key,productField in form.product[12:] %}
                     <div class='row linea-prod'>                 
