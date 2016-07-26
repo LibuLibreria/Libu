@@ -184,10 +184,8 @@
             </div>
         </div>
     </div>
-        {% do form.libros3.setRendered %}
-        {% do form.libros1.setRendered %}
-        {% do form.responsable.setRendered %}
+
         {{ form_row(form._token) }}
-        {{ form_end(form)}}
+        {{ form_end(form, {'render_rest': false})}}
 
 {% endblock %}
