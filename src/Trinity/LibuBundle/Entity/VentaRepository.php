@@ -16,7 +16,7 @@ class VentaRepository extends EntityRepository
             'SELECT count(*) as cantidad, diaHora as dias
             FROM venta 
             WHERE factura > 0 
-            GROUP BY day(diaHora) 
+            GROUP BY DATE(diaHora) 
             ORDER BY dias DESC
             LIMIT '.$limit
         ;
