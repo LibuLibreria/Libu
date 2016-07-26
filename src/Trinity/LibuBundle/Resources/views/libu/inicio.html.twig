@@ -149,19 +149,39 @@
                     {{ form_label(form.product) }}
                     {{ form_errors(form.product) }}
 
-                    {% for key,productField in form.product[0:12] %}
+
                         <div class='row linea-prod'>                
+
+                            <div class='col-sm-6'>
+
+                <div class="form_producto">
+                    <div class="labelinput">  
+                                                        
+                            {% for key,productField in form.product[0:12] %}    
                             <div class='col-sm-6'>
                                     {{ form_label(productField, prodguztiak[key].codigo) }}  
-                                     - {{ prodguztiak[key].precio }} €
+                                     - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
                                     {{ form_errors(productField) }}
                             </div>
-                            <div class='col-sm-6'>
-                                    {{ form_widget(productField) }}
+                        <div class="input_botones">
+                            <div>
+                                <span id='datos_{{ key }}' data-key='aaa' data-precio='{{ prodguztiak[key].precio }}'></span>
+                                <button type='button' class="btn btn-libu qtyprminus" 
+                                        value='{{ key }}' field= '{{ prodguztiak[key].codigo }}' 
+                                        data-key='aa{{ key }}' data-precio='{{ prodguztiak[key].precio }}'/>
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                </button>  
+
+                                <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 90px" class="form-control" value="0" />
                                     <br>
+                                <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
                             </div>
-                        </div>                
-                    {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
 
 
             </div>
