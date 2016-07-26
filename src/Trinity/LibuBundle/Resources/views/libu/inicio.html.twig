@@ -40,6 +40,13 @@
             width: 80px;
             margin-right: 30px;
         }
+        .divimporte {
+            font-size: 30px;
+            background-color: yellow;
+            margin-bottom: 40px;
+            padding: 10px;
+            border: 1px solid black;
+        }
     </style>
 {% endblock %}
 
@@ -51,15 +58,18 @@
         <div class="clearfix">
 
             {% set botonfield = [ 
-                {'nombre': 'libros3', 'label':'Libros a 3 euros' }, 
-                {'nombre': 'libros1', 'label':'Libros a 1 euro' } 
+                {'nombre': 'libros3', 'label':'Libros a 3 euros', 'precio': '3'}, 
+                {'nombre': 'libros1', 'label':'Libros a 1 euro', 'precio': '1' } 
                 ] %}
+            <div class="divimporte">
+                Importe: <span id="importe">0</span> euros
+            </div>
 
             {% for botonf in botonfield %}
                 <div class="form_libro">
                     <div class='img_boton'>
                         <img src='{{ asset('bundles/libu/images/images/' ~ botonf.nombre ~ '.png') }}'  />
-                    </div>    
+                    </div>   
                     <div class="labelinput">      
                         <div class="label_venta">
                             <label class="control-label" for="venta_libros3">{{ botonf.label }}: </label>        
@@ -67,12 +77,12 @@
                         <div class="input_botones">
                             <div>
                                 <button type='button' class="btn btn-libu btn-primary qtyminus" 
-                                        value='-' field= '{{ botonf.nombre }}'/>
+                                        value='{{ botonf.precio }}' field= '{{ botonf.nombre }}' />
                                     <span class="glyphicon glyphicon-minus"></span>
                                 </button>  
                                 <input type="text" id="venta_{{ botonf.nombre }}" name="venta[{{ botonf.nombre }}]" 
-                                        style="width: 80px; height: 54px; font-size: 24px" class="form-control" value="0" />
-                                <button type='button' value='+'  class="btn btn-libu btn-primary qtyplus" 
+                                        style="width: 80px; height: 54px; font-size: 24px" class="form-control" value=0 />
+                                <button type='button' value='{{ botonf.precio }}'  class="btn btn-libu btn-primary qtyplus" 
                                         field='{{ botonf.nombre }}' />
                                     <span class="glyphicon glyphicon-plus"></span>
                                 </button>
