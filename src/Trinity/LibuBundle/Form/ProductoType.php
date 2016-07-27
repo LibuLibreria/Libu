@@ -21,10 +21,10 @@ class ProductoType extends AbstractType
     {
         $builder
             ->add('codigo', TextType::class, array(
-                'label' => 'Nombre del producto: '
+                'label' => 'Nombre del producto (20 carac.): '
                 ))
             ->add('vendedor', TextType::class, array(
-                'label' => 'Nombre del producto: '
+                'label' => 'Nombre del vendedor (20 carac.): '
                 ))
             ->add('precio')
             ->add('tipo', EntityType::class, array(
