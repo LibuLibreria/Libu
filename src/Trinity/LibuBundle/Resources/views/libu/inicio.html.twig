@@ -194,21 +194,8 @@
 
 
                         <div class = 'col-sm-6 form-inline'>
-                            <div class="clearfix"></div>
+                    <div class="clearfix"></div>
 
-                {% for key,productField in form.product[12:] %}
-                    <div class='row linea-prod'>                 
-                        <div class='col-sm-6'>
-                                {{ form_label(productField, prodguztiak[key+12].codigo) }}  
-                                 - {{ prodguztiak[key+12].precio }} €
-                                {{ form_errors(productField) }}
-                        </div>
-                        <div class='col-sm-6'>                       
-                                {{ form_widget(productField) }}
-                                <br>
-                        </div>
-                    </div>                 
-                {% endfor %}
             </div>
         </div>
     </div>
