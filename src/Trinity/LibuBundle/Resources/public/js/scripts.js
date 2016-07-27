@@ -13,7 +13,7 @@ jQuery(document).ready(function(){
         var currentVal = parseInt($('input[id=venta_'+fieldName+']').val());
 
         // Recibe el valor actual en el importe
-        var totalVal = parseFloat(($('#importe')).html());    
+        var totalVal = parseFloat(($('#importe')).html());   
 
         // Si no está indefinido
         if (!isNaN(currentVal)) {
@@ -30,7 +30,8 @@ jQuery(document).ready(function(){
             $('input[id=venta_'+fieldName+']').val(currentVal + 1);
 
             // Incrementamos en 'precio' el valor de totalVal en el importe
-            $('#importe').html(totalVal + parseFloat(precio));
+            var subimporte = (totalVal + parseFloat(precio)).toFixed(2);
+            $('#importe').html(subimporte);
 
         } else {
             // En otro caso pone un cero en el input
@@ -69,7 +70,8 @@ jQuery(document).ready(function(){
             $('input[id=venta_'+fieldName+']').val(currentVal - 1);
 
             // Decrementamos en 'precio' el valor de totalVal en el importe
-            $('#importe').html(totalVal - parseFloat(precio));
+            var subimporte = (totalVal - parseFloat(precio)).toFixed(2);
+            $('#importe').html(subimporte);            
 
         } else {
             // En otro caso pone un cero en el input
@@ -104,7 +106,8 @@ jQuery(document).ready(function(){
             // Incrementa el valor del input en un entero
             $('input[id=venta_product_'+clave+']').val(currentVal + 1);
             // Incrementa el valor del importe según el precio
-            $('#importe').html(totalVal + parseFloat(precio));
+            var subimporte = (totalVal + parseFloat(precio)).toFixed(2);
+            $('#importe').html(subimporte);
 
         } else {
             // En otro caso, se pone un cero en el input
@@ -141,7 +144,8 @@ jQuery(document).ready(function(){
             // Decrementa el valor del input en un entero
             $('input[id=venta_product_'+clave+']').val(currentVal - 1);
             // Decrementa el valor del importe según el precio
-            $('#importe').html(totalVal - parseFloat(precio));
+            var subimporte = (totalVal - parseFloat(precio)).toFixed(2);
+            $('#importe').html(subimporte);
 
         // elemento.html('CurrentVal: ' + currentVal) ;           // DEBUG
 

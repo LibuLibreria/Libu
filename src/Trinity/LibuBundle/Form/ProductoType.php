@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 
@@ -19,8 +20,12 @@ class ProductoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('codigo')
-            ->add('vendedor')
+            ->add('codigo', TextType::class, array(
+                'label' => 'Nombre del producto: '
+                ))
+            ->add('vendedor', TextType::class, array(
+                'label' => 'Nombre del producto: '
+                ))
             ->add('precio')
             ->add('tipo', EntityType::class, array(
                 'class' => 'LibuBundle:Tipo',
