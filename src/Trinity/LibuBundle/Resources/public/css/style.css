@@ -48,8 +48,21 @@
     font-size: 16px;
 }
 .formulario {
-    margin: 80px 0 0 80px;
+    margin: 20px 0 0 80px;
 }
 .formulario label {
     font-size: 16px;
+}
+.formulario_links {
+    padding-top: 10px;
+}
+.formulario_links a {
+    padding: 10px;
+    margin-right: 10px;
+    font-size: 14px;
+    border: blue solid 1px;
+    border-radius: 10px;
+}
+.cuerpo_form {
+    margin-left: 30px;
 }

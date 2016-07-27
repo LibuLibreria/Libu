@@ -79,7 +79,7 @@ class LibuController extends Controller
                 $sumalibros = $this->sumaPagoLibros($data['libros1'], $data['libros3']);
 
                 // Guardamos todos los datos de las ventas en la nueva instancia Venta
-                $venta->setDiahora($data['diahora']);
+                $venta->setDiahora($data['diahora']->setTime(date('H'), date('i')));  // Añadimos hora actual
                 $venta->setLibros3($data['libros3']);
                 $venta->setLibros1($data['libros1']);
                 $venta->setCliente($data['cliente']);
@@ -308,8 +308,9 @@ class LibuController extends Controller
             return $this->redirectToRoute('libro');
         }
 
-        return $this->render('LibuBundle:libu:simple.html.twig', array(
+        return $this->render('LibuBundle:libu:form.html.twig', array(
             'form' => $form->createView(),
+            'titulo' => 'Nuevo libro',
             ));    
     }
 
@@ -331,8 +332,33 @@ class LibuController extends Controller
             return $this->redirectToRoute('venta');
         }
 
-        return $this->render('LibuBundle:libu:simple.html.twig', array(
+        return $this->render('LibuBundle:libu:form.html.twig', array(
             'form' => $form->createView(),
+            'titulo' => 'Nuevo producto',
+            ));    
+    }
+
+
+    /**
+     * @Route("/libu/tipo", name="tipo")
+     */
+    public function tipoAction(Request $request)
+    {
+        $tipo = new Tipo();
+        $form = $this->createForm(TipoType::class, $tipo);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($tipo);
+            $em->flush();
+            return $this->redirectToRoute('venta');
+        }
+
+        return $this->render('LibuBundle:libu:form.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Nuevo tipo de producto',
             ));    
     }
 
