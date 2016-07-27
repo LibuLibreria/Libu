@@ -1,6 +1,13 @@
-{% form_theme form 'bootstrap_3_layout.html.twig' %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+{# libu/Resources/views/libu/venta.html.twig #}
 
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{# {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %} #}
+
+
+<link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap.min.css') }}"  />
+<link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap-theme.css') }}"  />
+<link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/js/bootstrap.min.js') }}"  />
+<script src="{{ asset('bundles/libu/jquery/src/jquery.js') }}"></script>  
 
 <!-- Inline CSS based on choices in "Settings" tab -->
 <style TYPE="text/css">
