@@ -32,6 +32,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class LibuController extends Controller
 {
@@ -364,6 +368,8 @@ class LibuController extends Controller
             ))       
             ->add('fecha', SubmitType::class, array('label' => 'Buscar en esa fecha'))            
             ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
+            ->add('email', SubmitType::class, array('label' => 'Enviar email'))
+
             ->getForm();
 
         $form->handleRequest($request);
@@ -377,6 +383,8 @@ class LibuController extends Controller
 
                 
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+            if ($form->get('email')->isClicked()) return $this->redirectToRoute('email');
+
         }
 
         return $this->render('LibuBundle:libu:caja.html.twig',array(
@@ -474,6 +482,40 @@ class LibuController extends Controller
                 );
         }
     }
+
+
+     /**
+     * @Route("/libu/email", name="email")
+     */
+    public function emailAction(Request $request)
+    {
+
+        $em = $this->getDoctrine()->getManager();
+        $ventas = $em->getRepository('LibuBundle:Venta')->findAll();
+
+        $encoders = array(new XmlEncoder(), new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+
+        $serializer = new Serializer($normalizers, $encoders);
+        
+        $reports = $serializer->serialize($ventas, 'json');
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Email de Libu')
+            ->setFrom('libulibreria@gmail.com')
+            ->setTo('libulibreria@gmail.com')
+            ->setBody(
+                $this->render('LibuBundle:libu:email.html.twig',array(
+                    'report' => $reports)
+                ),
+                'text/html'
+            )
+
+        ;
+        $this->get('mailer')->send($message);
+
+        return new Response('Correo enviado<br>');
+    }   
 
 
 
