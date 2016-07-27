@@ -111,7 +111,7 @@
                                         {% for key in (i * columprod) .. ((i*columprod) + columprod -1 )  %}   
                                             {% if key < tope %}
                                             <div class="productitem"> 
-                                                <div class='col-sm-12 label_producto'>
+                                                <div class='label_producto'>
                                                     <label class="control-label required" for="venta_product_{{ key }}">{{ prodguztiak[key].codigo }}</label>
                                                      - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
                                                 </div>
