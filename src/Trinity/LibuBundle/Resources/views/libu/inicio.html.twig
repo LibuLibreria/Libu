@@ -157,37 +157,37 @@
                     <div class=''>                
                         <div class='col-sm-12'>
                             <div class="form_producto">
-                                {% set columprod = 4 %}
-                                {% set numcolum = 3 %}
+
+                                {% set numcolum = 4 %}
+                                {% set tope = prodguztiak|length %} 
+                                {% set columprod = 7 %}                                
                                 {% for i in 0..(numcolum - 1) %}
-                                <div class='col-sm-4 col_producto'>
-                                {% for keys,productField in form.product[ (i * columprod) : ((i * columprod) + columprod) ] %}   
-                                    i= {{ i}} , de {{ i * columprod }} a {{ ((i*columprod) + columprod )}}
-                                    {% set key = (keys + (i * columprod)) %}
-                                    <br>Key: {{ key }}
-                                    <div class="productitem"> 
-                                        <div class='col-sm-12 label_producto'>
-                                            {{ form_label(productField, prodguztiak[key].codigo) }}  
-                                             - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
-                                            {{ form_errors(productField) }}
-                                        </div>
-                                        <div class="input_botones">
-                                            <div>
-                                                <span id='datos_{{ key }}' data-precio='{{ prodguztiak[key].precio }}'></span>
-                                                <button type='button' value='{{ key }}'  class="btn btn-libu qtyprminus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
-                                                    <span class="glyphicon glyphicon-minus"></span>
-                                                </button>
+                                    <div class='col-sm-3 col_producto'>
+                                        {% for key in (i * columprod) .. ((i*columprod) + columprod -1 )  %}   
+                                            {% if key < tope %}
+                                            <div class="productitem"> 
+                                                <div class='col-sm-12 label_producto'>
+                                                    <label class="control-label required" for="venta_product_{{ key }}">{{ prodguztiak[key].codigo }}</label>
+                                                     - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
+                                                </div>
+                                                <div class="input_botones">
+                                                    <div>
+                                                        <span id='datos_{{ key }}' data-precio='{{ prodguztiak[key].precio }}'></span>
+                                                        <button type='button' value='{{ key }}'  class="btn btn-libu qtyprminus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
+                                                            <span class="glyphicon glyphicon-minus"></span>
+                                                        </button>
 
-                                                <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 60px" class="form-control" value="0" />
+                                                        <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 60px" class="form-control" value="0" />
 
-                                                <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
-                                                    <span class="glyphicon glyphicon-plus"></span>
-                                                </button>
+                                                        <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
+                                                            <span class="glyphicon glyphicon-plus"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                            {% endif %}
+                                        {% endfor %}
                                     </div>
-                                {% endfor %}
-                            </div>
                                 {% endfor %}
                             </div>
                         </div>

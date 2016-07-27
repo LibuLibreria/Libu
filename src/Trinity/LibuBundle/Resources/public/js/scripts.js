@@ -1,44 +1,78 @@
 jQuery(document).ready(function(){
-    // This button will increment the value
+    // Botón que incrementa el valor
     $('.qtyplus').click(function(e){
         // Stop acting like a button
         e.preventDefault();
-        // Get the field name
+        // Recibe el nombre del item: libros1 o libros3
         var fieldName = $(this).attr('field');
+
+        // Recibe el precio a partir del value del botón
         var precio = $(this).val();
-        // Get its current value
+
+        // Recibe el valor actual del input
         var currentVal = parseInt($('input[id=venta_'+fieldName+']').val());
+
+        // Recibe el valor actual en el importe
         var totalVal = parseFloat(($('#importe')).html());    
-        // If is not undefined
+
+        // Si no está indefinido
         if (!isNaN(currentVal)) {
-            // Increment
+            // Incrementa
+            if (precio == 3) {
+                // Valores diferentes según el valor actual
+                if (currentVal == 1) { precio = '2' };
+                if (currentVal == 3) { precio = '2' };
+                if (currentVal == 4) { precio = '0' };
+                if (currentVal >= 5) { precio = '2' };
+            }
+
+            // Incrementamos en 1 el valor de currentVal en el input
             $('input[id=venta_'+fieldName+']').val(currentVal + 1);
+
+            // Incrementamos en 'precio' el valor de totalVal en el importe
             $('#importe').html(totalVal + parseFloat(precio));
 
         } else {
-            // Otherwise put a 0 there
+            // En otro caso pone un cero en el input
             $('input[id=venta_'+fieldName+']').val(0);
         }
     });
-    // This button will decrement the value till 0
-    $(".qtyminus").click(function(e) {
+
+    // Botón que decrementa el valor
+    $('.qtyminus').click(function(e){
         // Stop acting like a button
         e.preventDefault();
-        // Get the field name
-        fieldName = $(this).attr('field');
-        // Get its current value
+        // Recibe el nombre del item: libros1 o libros3
+        var fieldName = $(this).attr('field');
+
+        // Recibe el precio a partir del value del botón
+        var precio = $(this).val();
+
+        // Recibe el valor actual del input
         var currentVal = parseInt($('input[id=venta_'+fieldName+']').val());
-        var totalVal = parseFloat(($('#importe')).html());  
-        var precio = {'libros3': '3', 'libros1':'1'};    
-        
-        // If it isn't undefined or its greater than 0
+
+        // Recibe el valor actual en el importe
+        var totalVal = parseFloat(($('#importe')).html());    
+
+        // Si no está indefinido ni es cero o menor
         if (!isNaN(currentVal) && currentVal > 0) {
-            // Decrement one
+            // Decrementa
+            if (precio == 3) {
+                // Valores diferentes según el valor actual
+                if (currentVal == 2) { precio = '2' };
+                if (currentVal == 4) { precio = '2' };
+                if (currentVal == 5) { precio = '0' };
+                if (currentVal > 5) { precio = '2' };
+            }
+
+            // Decrementamos en 1 el valor de currentVal en el input
             $('input[id=venta_'+fieldName+']').val(currentVal - 1);
-            $('#importe').html(totalVal - parseFloat(precio[fieldName]));
-          
+
+            // Decrementamos en 'precio' el valor de totalVal en el importe
+            $('#importe').html(totalVal - parseFloat(precio));
+
         } else {
-            // Otherwise put a 0 there
+            // En otro caso pone un cero en el input
             $('input[id=venta_'+fieldName+']').val(0);
         }
     });
