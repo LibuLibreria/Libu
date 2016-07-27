@@ -71,7 +71,8 @@ class VentaType extends AbstractType
                 ))
                        
             ->add('save', SubmitType::class, array('label' => 'Venta'))         
-            ->add('menu', SubmitType::class, array('label' => 'Caja de hoy'))  
+            ->add('caja', SubmitType::class, array('label' => 'Caja de hoy'))  
+            ->add('formul', SubmitType::class, array('label' => 'Nuevo Prod.'))  
             ->getForm(); 
 
         ;
