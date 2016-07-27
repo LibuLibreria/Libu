@@ -3,62 +3,6 @@
 
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
 
-
-{% block head_cont %}
-    <style type="text/css">
-        .col-izda {
-            border-right: solid black 2px;
-        }
-        .btn-libu {
-            margin: 3px;
-        }
-        .label_venta, .label_venta .form-control {
-            font-size: 20px;
-        }
-        .form-control {
-            font-size: 16px;   
-        }
-        .boton-grande {
-            font-size: 28px; 
-            margin-left: 30px;
-        }
-        .linea-prod {
-            margin-bottom: 5px;
-        }  
-        #venta_tematica, #venta_cliente, #venta_diahora {
-            font-size: 16px;
-        }
-        .cuadro_input {
-            font-size: 20px;
-            width: 70px;
-        }
-        .input_botones {
-
-        }
-        .img_boton img{
-            float: right;
-            width: 80px;
-            margin-right: 30px;
-        }
-        .divimporte {
-            font-size: 30px;
-            background-color: yellow;
-            margin-bottom: 40px;
-            padding: 10px;
-            border: 1px solid black;
-        }
-        .productitem {
-            margin: 5px;
-            padding: 5px;
-            border-bottom: 1px dotted;
-        }
-        .label_producto {
-            font-size: 16px;
-        }
-    </style>
-{% endblock %}
-
-
 {% block body %}
     {{ form_start(form) }}
     <div class = 'col-izda col-sm-3 form-inline'> 

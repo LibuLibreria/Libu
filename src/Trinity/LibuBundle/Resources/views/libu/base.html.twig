@@ -11,12 +11,12 @@
         <title>{% block title %}Trinity{% endblock %}</title>
 
         {% block stylesheets %}
-            <script src="{{ asset('bundles/libu/jquery/dist/jquery.js') }}"></script>  
-            <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap.min.css') }}"  /> 
-            <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap-theme.css') }}"  />  
+            <script src="{{ asset('bundles/libu/jquery/dist/jquery.js') }}"></script>   <!-- Debe ir arriba -->
             <script src="{{ asset('bundles/libu/bootstrap/dist/js/bootstrap.min.js') }}" ></script>
             <script src="{{ asset('bundles/libu/js/scripts.js') }}" ></script>
-
+            <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap.min.css') }}"  /> 
+            <link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap-theme.css') }}"  />  
+            <link rel="stylesheet" href="{{ asset('bundles/libu/css/style.css') }}" />            
         {% endblock %}
 
         {#  <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />    #}
