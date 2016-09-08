@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class LibroType extends AbstractType
+class LibroCortoType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -16,19 +16,10 @@ class LibroType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('codigo')
-            ->add('isbn')            
- //           ->add('tipo')
+            ->add('isbn')  
+            ->add('conservacion')                     
             ->add('titulo')
             ->add('autor')            
-
- //           ->add('editorial')
- //           ->add('anno')
- //           ->add('precio')
- //           ->add('notas')            
- //           ->add('tapas')
- //           ->add('conservacion')
- //           ->add('idVenta')
             ->add('save', SubmitType::class, array('label' => 'Guardar'))  
             ->getForm();             
         ;

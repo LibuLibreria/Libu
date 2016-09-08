@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Trinity\LibuBundle\Form\VentaType;
 use Trinity\LibuBundle\Form\TipoType;
 use Trinity\LibuBundle\Form\LibroType;
+use Trinity\LibuBundle\Form\LibroCortoType;
 use Trinity\LibuBundle\Form\ProductoType;
 use Trinity\LibuBundle\Form\ResponsableType;
 use Trinity\LibuBundle\Form\ClienteType;
@@ -295,7 +296,7 @@ class LibuController extends Controller
     /**
      * @Route("/libu/subir", name="subir")
      */
-    public function libroAction(Request $request)
+    public function libroSubir(Request $request)
     {
         $libro = new Libro();
         $form = $this->createForm(LibroCortoType::class, $libro);
@@ -306,7 +307,7 @@ class LibuController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($libro);
             $em->flush();
-            return $this->redirectToRoute('libro');
+            return $this->redirectToRoute('venta');
         }
 
         return $this->render('LibuBundle:libu:form.html.twig', array(
