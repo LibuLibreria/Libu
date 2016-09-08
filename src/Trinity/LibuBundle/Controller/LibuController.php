@@ -291,6 +291,33 @@ class LibuController extends Controller
 
 
 
+
+    /**
+     * @Route("/libu/subir", name="subir")
+     */
+    public function libroAction(Request $request)
+    {
+        $libro = new Libro();
+        $form = $this->createForm(LibroCortoType::class, $libro);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($libro);
+            $em->flush();
+            return $this->redirectToRoute('libro');
+        }
+
+        return $this->render('LibuBundle:libu:form.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Nuevo libro',
+            ));    
+    }
+
+
+
+
     /**
      * @Route("/libu/libro", name="libro")
      */
