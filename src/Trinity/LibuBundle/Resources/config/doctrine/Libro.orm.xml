@@ -58,6 +58,11 @@
         <option name="unsigned"/>
       </options>
     </field>    
+    <field name="balda" type="integer" column="balda" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>  
     <field name="notas" type="string" column="notas" length="40" nullable="true">
       <options>
         <option name="fixed"/>

@@ -414,4 +414,28 @@ class Libro
     {
         return $this->idVenta;
     }
+
+    /**
+     * Set estanteria
+     *
+     * @param integer $estanteria
+     *
+     * @return Libro
+     */
+    public function setEstanteria($estanteria)
+    {
+        $this->estanteria = $estanteria;
+
+        return $this;
+    }
+
+    /**
+     * Get estanteria
+     *
+     * @return integer
+     */
+    public function getEstanteria()
+    {
+        return $this->estanteria;
+    }
 }

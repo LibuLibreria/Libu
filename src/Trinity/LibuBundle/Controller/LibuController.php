@@ -8,6 +8,7 @@ use Trinity\LibuBundle\Form\VentaType;
 use Trinity\LibuBundle\Form\TipoType;
 use Trinity\LibuBundle\Form\LibroType;
 use Trinity\LibuBundle\Form\LibroCortoType;
+use Trinity\LibuBundle\Form\BaldaType;
 use Trinity\LibuBundle\Form\ProductoType;
 use Trinity\LibuBundle\Form\ResponsableType;
 use Trinity\LibuBundle\Form\ClienteType;
@@ -55,8 +56,9 @@ class LibuController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         // La variable $product es un array de todos los objetos Producto existentes
-        $product = $em->getRepository('LibuBundle:Producto')->findAll();
+        $product = $em->getRepository('LibuBundle:Producto')->findAll(array(), array('codigo'=>'asc'));
         $n = 0;
+
 
         // Crea el formulario $form con el esquema VentaType
 		$form = $this->createForm(VentaType::class, array());
@@ -309,12 +311,44 @@ class LibuController extends Controller
             $em->flush();
             // Recuperamos el Identificador de Libro
            $ultid = $libro->getIdLibro();           
-            return $this->redirectToRoute('subir', array('ultid' => $ultid));
+            return $this->redirectToRoute('balda', array('ultid' => $ultid));
         }
 
         return $this->render('LibuBundle:libu:form.html.twig', array(
             'form' => $form->createView(),
             'titulo' => 'Nuevo libro',
+            ));    
+    }
+
+
+
+
+    /**
+     * @Route("/libu/balda", name="balda")
+     */
+    public function baldaAction(Request $request)
+    {
+        $ultid = $request->get('ultid');
+        $em = $this->getDoctrine()->getManager();        
+        $libro = $em->getRepository('LibuBundle:Libro')->findOneByIdLibro($ultid);
+
+ //       $libro = new Libro();
+        $form = $this->createForm(BaldaType::class, $libro);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($libro);
+            $em->flush();
+            // Recuperamos el Identificador de Libro
+           $ultid = $libro->getIdLibro();           
+            return $this->redirectToRoute('subir');
+        }
+
+        return $this->render('LibuBundle:libu:form.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Libro con identificador '.$ultid,
             ));    
     }
 

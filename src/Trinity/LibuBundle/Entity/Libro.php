@@ -438,4 +438,33 @@ class Libro
     {
         return $this->estanteria;
     }
+    /**
+     * @var integer
+     */
+    private $balda;
+
+
+    /**
+     * Set balda
+     *
+     * @param integer $balda
+     *
+     * @return Libro
+     */
+    public function setBalda($balda)
+    {
+        $this->balda = $balda;
+
+        return $this;
+    }
+
+    /**
+     * Get balda
+     *
+     * @return integer
+     */
+    public function getBalda()
+    {
+        return $this->balda;
+    }
 }
