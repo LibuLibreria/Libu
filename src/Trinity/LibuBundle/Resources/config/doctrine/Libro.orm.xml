@@ -53,6 +53,11 @@
         <option name="unsigned"/>
       </options>
     </field>
+    <field name="estanteria" type="integer" column="estanteria" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>    
     <field name="notas" type="string" column="notas" length="40" nullable="true">
       <options>
         <option name="fixed"/>

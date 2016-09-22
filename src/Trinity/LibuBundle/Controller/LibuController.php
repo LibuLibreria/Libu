@@ -296,7 +296,7 @@ class LibuController extends Controller
     /**
      * @Route("/libu/subir", name="subir")
      */
-    public function libroSubir(Request $request)
+    public function subirAction(Request $request)
     {
         $libro = new Libro();
         $form = $this->createForm(LibroCortoType::class, $libro);
@@ -307,7 +307,9 @@ class LibuController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($libro);
             $em->flush();
-            return $this->redirectToRoute('venta');
+            // Recuperamos el Identificador de Libro
+           $ultid = $libro->getIdLibro();           
+            return $this->redirectToRoute('subir', array('ultid' => $ultid));
         }
 
         return $this->render('LibuBundle:libu:form.html.twig', array(

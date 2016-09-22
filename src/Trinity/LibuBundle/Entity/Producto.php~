@@ -15,7 +15,7 @@ class Producto
     /**
      * @var string
      *
-     * @ORM\Column(name="codigo", type="string", length=25, nullable=true)
+     * @ORM\Column(name="codigo", type="string", length=20, nullable=true)
      */
     private $codigo;
 

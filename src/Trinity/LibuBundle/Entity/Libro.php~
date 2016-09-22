@@ -83,6 +83,13 @@ class Libro
     private $conservacion;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="estanteria", type="integer", nullable=true)
+     */
+    private $estanteria;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="notas", type="string", length=40, nullable=true)
