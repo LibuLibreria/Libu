@@ -26,6 +26,14 @@ class Venta
      */
     private $ingreso;
 
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="concepto", type="integer", nullable=true)
+     */
+    private $concepto;
+
     /**
      * @var \DateTime
      *
