@@ -103,30 +103,22 @@
                         <div class='col-sm-12'>
                             <div class="form_producto">
 
-                                {% set numcolum = 4 %}
+                                {% set numcolum = 3 %}
                                 {% set tope = prodguztiak|length %} 
-                                {% set columprod = 7 %}                                
+                                {% set columprod = 13 %}      
                                 {% for i in 0..(numcolum - 1) %}
-                                    <div class='col-sm-3 col_producto'>
+                                    <div class='col-sm-4 col_producto'>
                                         {% for key in (i * columprod) .. ((i*columprod) + columprod -1 )  %}   
                                             {% if key < tope %}
                                             <div class="productitem"> 
-                                                <div class='label_producto'>
-                                                    <label class="control-label required" for="venta_product_{{ key }}">{{ prodguztiak[key].codigo }}</label>
-                                                     - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
-                                                </div>
                                                 <div class="input_botones">
                                                     <div>
                                                         <span id='datos_{{ key }}' data-precio='{{ prodguztiak[key].precio }}'></span>
-                                                        <button type='button' value='{{ key }}'  class="btn btn-libu qtyprminus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
-                                                            <span class="glyphicon glyphicon-minus"></span>
-                                                        </button>
-
-                                                        <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 60px" class="form-control" value="0" />
-
                                                         <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
-                                                            <span class="glyphicon glyphicon-plus"></span>
-                                                        </button>
+                                                            <label class="control-label required" for="venta_product_{{ key }}">{{ prodguztiak[key].codigo }}</label>
+                                                            - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
+                                                        </button>                                                        
+                                                        <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 40px" class="form-control" value="0" />
                                                     </div>
                                                 </div>
                                             </div>

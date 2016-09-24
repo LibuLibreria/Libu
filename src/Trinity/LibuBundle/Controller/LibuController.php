@@ -56,7 +56,7 @@ class LibuController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         // La variable $product es un array de todos los objetos Producto existentes
-        $product = $em->getRepository('LibuBundle:Producto')->findAll(array(), array('codigo'=>'asc'));
+        $product = $em->getRepository('LibuBundle:Producto')->findAll();
         $n = 0;
 
 

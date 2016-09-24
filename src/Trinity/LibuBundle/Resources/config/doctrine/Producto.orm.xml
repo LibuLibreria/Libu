@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-  <entity name="Trinity\LibuBundle\Entity\Producto" table="producto">
+  <entity name="Trinity\LibuBundle\Entity\Producto" table="producto" repository-class="Trinity\LibuBundle\Entity\ProductoRepository">
     <indexes>
       <index name="id_venta" columns="id_venta"/>
       <index name="tipo" columns="tipo"/>

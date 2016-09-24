@@ -40,9 +40,8 @@
     border: 1px solid black;
 }
 .productitem {
-    margin: 5px;
-    padding: 5px;
-    border-bottom: 1px dotted;
+    margin: 1px;
+    padding: 1px;
 }
 .label_producto {
     font-size: 16px;
