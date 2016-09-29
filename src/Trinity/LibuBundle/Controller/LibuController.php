@@ -124,6 +124,7 @@ class LibuController extends Controller
 
                 // Ahora podemos introducir el dato que faltaba en la instancia de Venta
                 $venta->setIngreso($pagototal);
+                $venta->setIngresolibros($sumalibros['pagolibros']);
 
                 // Subimos todos los datos a la base de datos
                 try{
@@ -444,6 +445,7 @@ class LibuController extends Controller
 // dump($ventas);
         // Utilizamos array_sum y array_column para calcular los ingresos del día
         $ingrdia = array_sum(array_column($ventas, 'ingreso'));
+        $ingrlibdia = array_sum(array_column($ventas, 'ingresolibros'));
 
         // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
         // en que se han hecho ingresos. 
@@ -487,6 +489,7 @@ class LibuController extends Controller
             'ventasdia' => $ventas,
             'fecha' => $fecha,
             'ingrdia' => $ingrdia,
+            'ingrlibdia' => $ingrlibdia,
             ));    
     }
 

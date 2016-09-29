@@ -29,6 +29,8 @@ class Venta
     
     /**
      * @var float
+     *
+     * @ORM\Column(name="ingreso_libros", type="float", precision=10, scale=0, nullable=true)     
      */
     private $ingresolibros;
 

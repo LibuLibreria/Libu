@@ -26,6 +26,12 @@ class Venta
      */
     private $ingreso;
 
+    
+    /**
+     * @var float
+     */
+    private $ingresolibros;
+
 
     /**
      * @var integer
@@ -350,10 +356,6 @@ class Venta
     {
         return $this->descripcion;
     }
-    /**
-     * @var float
-     */
-    private $ingresolibros;
 
 
     /**
