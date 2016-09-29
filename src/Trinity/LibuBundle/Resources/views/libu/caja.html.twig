@@ -1,17 +1,10 @@
-
+{% extends "LibuBundle::libu/base.html.twig" %}
 {# libu/Resources/views/libu/venta.html.twig #}
 
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
 {# {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %} #}
 
-
-<link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap.min.css') }}"  />
-<link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/css/bootstrap-theme.css') }}"  />
-<link rel="stylesheet" href="{{ asset('bundles/libu/bootstrap/dist/js/bootstrap.min.js') }}"  />
-<script src="{{ asset('bundles/libu/jquery/src/jquery.js') }}"></script>  
-
-
-<div class='container-fluid'>
+{% block body %}
     <div class = 'col-sm-12 form-inline'>
     	<h1>Caja</h1>
     	<h3><br>Día: {{ fecha | localizeddate('full', 'none', app.request.locale )}}</h3>
@@ -27,8 +20,8 @@
 		    	<tr>
 		        	<td>{{ vent['hora'] | localizeddate('none', 'short', app.request.locale ) }}</td>
 		        	<td>{{ vent['ingreso'] }} euros</td>
-		        	<td>{{ vent['sumalibros'] }} euros</td>
-		        	<td>{{ vent['sumaprods'] }} euros </td>
+		        	<td>{{ vent['ingresolibros'] |round(1,'common') }} euros</td>
+		        	<td>{{ vent['ingresoprods'] |round(1,'common') }} euros </td>
 		        	<td>{{ vent['cliente'] }} </td>
 		        	<td>
 		        		{% for pv in vent['prodvendidos'] %}
@@ -67,4 +60,4 @@
 	    {{ form_row(form._token) }}
 	    {{ form_end(form)}}        
     </div>
-</div>
+{% endblock %}

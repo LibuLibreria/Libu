@@ -12,42 +12,28 @@
     	<table class='table table-striped table-condensed'>
     		<thead>
     			<tr>
-    				<th>Día</th><th>Hora</th><th>Ingreso</th><th>Libros</th><th>Productos</th><th>Lista prods.</th>
+    				<th>Día</th><th>Ingreso</th><th>Libros</th><th>Productos</th>
 				</tr>
 			</thead>
 			<tbody>
 		    {% for vent in ventasdia %}
 		    	<tr>
-		        	<td>{{ vent['hora'] | localizeddate('short', 'none', app.request.locale ) }}</td>		    	
-		        	<td>{{ vent['hora'] | localizeddate('none', 'short', app.request.locale ) }}</td>
-		        	<td>{{ vent['ingreso'] }} euros</td>
-		        	<td>{{ vent['sumalibros'] }} euros</td>
-		        	<td>{{ vent['sumaprods'] }} euros </td>
-		        	<td>
-		        		{% for pv in vent['prodvendidos'] %}
-		        			<div class='txiki'>
-		        				{{ pv.cantidad }} {{ pv.idProd.codigo }}<br>
-	        				</div>
-		        		{% endfor %}
-
-		        	</td>
+		        	<td>{{ vent['dia'] | localizeddate('full', 'none', app.request.locale ) }}</td>		    	
+		        	<td>{{ vent['ingreso']  |round(1,'common') }} euros</td>
+		        	<td>{{ vent['ingresolibros']  |round(1,'common') }} euros</td>
+		        	<td>{{ (vent['ingreso'] - vent['ingresolibros'])  |round(1,'common') }} euros </td>
 	        	</tr>
 		    {% endfor %}
-		    <tr><td><b> Total:</b></td><td></td><td><b>{{ ingrmes }} euros</b></td><td><b>{{ ingrlibros }} euros</b></td><td><b>{{ ingrprods }} euros</b></td><td></td><td></tr>
+		    <tr><td><b> Total:</b></td><td><b>{{ ingrmes  |round(1,'common') }} euros</b></td><td><b>{{ ingrlibros  |round(1,'common') }} euros</b></td><td><b>{{ ingrprods  |round(1,'common') }} euros</b></td><td></tr>
 			</tbody>
 		</table>
 
 	    {{ form_start(form) }}
         <div>
-
+            {{ form_errors(form.mesesventas) }}
+            {{ form_widget(form.mesesventas) }}
             {{ form_label(form.fecha) }}
             {{ form_widget(form.fecha) }}
-        </div>
-        <p>&nbsp;</p>
-
-        <div>
-            {{ form_label(form.email) }}
-            {{ form_widget(form.email) }}
         </div>
         <p>&nbsp;</p>
 
