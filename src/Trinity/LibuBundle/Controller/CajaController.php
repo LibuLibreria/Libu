@@ -41,45 +41,46 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class CajaController extends Controller
 {
+
+
     /**
-     * @Route("/libu/cajamensual", defaults={"mes": 1}, name="cajamensual")
-     * @Route("/libu/cajamensual/{mes}", requirements={"mes": "[1-9]\d*"}, name="cajamensual_fecha")     
+     * @Route("/libu/caja", defaults={"dia": 1}, name="caja")
+     * @Route("/libu/caja/{dia}", requirements={"dia": "[1-9]\d*"}, name="caja_fecha")     
      */
-    public function cajamensualAction(Request $request, $mes)
+    public function cajaAction(Request $request, $dia)
     {
-        $fecha = ($mes != 1) ? \DateTime::createFromFormat('Ym', $mes) : new \DateTime(); 
-//        $fecha = new \DateTime();         
-//        $fechasig = new \DateTime();
-        $fecha->modify('first day of this month');
+        $fecha = ($dia != 1) ? $fecha = \DateTime::createFromFormat('Ymd', $dia) : $fecha = new \DateTime(); 
+        $fechasig = new \DateTime();
         $fechasig = clone $fecha;   // nueva instancia para que no afecten las modify a $fecha
-        $fechasig->modify('last day of this month')->modify('+1 day');
         // 
         $em = $this->getDoctrine()->getManager();
 
         // Buscamos las ventas del día marcado por $fecha con la función ventasFechas()
-        $ventas = $em->getRepository('LibuBundle:Venta')->ventasFechas($fecha, $fechasig);
-//dump($ventas);
-        // Utilizamos array_sum y array_column para calcular los ingresos del mes
-        $ingrmes = array_sum(array_column($ventas, 'ingreso'));
-        $ingrlibros = array_sum(array_column($ventas, 'sumalibros'));
-        $ingrprods = array_sum(array_column($ventas, 'sumaprods'));
+        $ventas = $em->getRepository('LibuBundle:Venta')->ventasFechas($fecha, $fechasig->modify('+1 day'));
+// dump($ventas);
+        // Utilizamos array_sum y array_column para calcular los ingresos del día
+        $ingrdia = array_sum(array_column($ventas, 'ingreso'));
+        $ingrlibdia = array_sum(array_column($ventas, 'ingresolibros'));
 
+        // DESPLEGABLE CON LAS FECHAS ANTERIORES
         // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
         // en que se han hecho ingresos. 
-        $hoy =  new \DateTime();
-        $mesesanteriores = $hoy->modify('-6 month');
+        $diasanteriores = $em->getRepository('LibuBundle:Venta')->fechasIngresos();
 
- //       for ($i=0; $i<7; $i++) {
- //           $hilabete = strtotime($hoy);        // marca Unix de tiempo
-//            $meseslista[date("n", $hoy )] = date("m",($hoy));     // array para los choices 
-//        }
+        // Creamos el array para preparar las choices
+        $i = 0;
+        foreach ($diasanteriores as $dia) {
+            $time_dia = strtotime($dia['dias']);        // marca Unix de tiempo
+            $diaslista[date("j-n-Y", $time_dia )] = date("Ymd",($time_dia));     // array para los choices 
+        }
 
+        // Y desplegamos el form
         $form = $this->createFormBuilder(array())
- //           ->add('diasventas', ChoiceType::class, array(
-//                'choices'  => $diaslista,
- //               'expanded' => false,
- //               'multiple' => false,
-//            ))       
+            ->add('diasventas', ChoiceType::class, array(
+                'choices'  => $diaslista,
+                'expanded' => false,
+                'multiple' => false,
+            ))       
             ->add('fecha', SubmitType::class, array('label' => 'Buscar en esa fecha'))            
             ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
             ->add('email', SubmitType::class, array('label' => 'Enviar email'))
@@ -101,13 +102,80 @@ class CajaController extends Controller
 
         }
 
+        return $this->render('LibuBundle:libu:caja.html.twig',array(
+            'form' => $form->createView(),
+            'ventasdia' => $ventas,
+            'fecha' => $fecha,
+            'ingrdia' => $ingrdia,
+            'ingrlibdia' => $ingrlibdia,
+            ));    
+    }
+
+
+
+
+
+    /**
+     * @Route("/libu/cajamensual", defaults={"mes": 1}, name="cajamensual")
+     * @Route("/libu/cajamensual/{mes}", requirements={"mes": "[1-9]\d*"}, name="cajamensual_fecha")     
+     */
+    public function cajamensualAction(Request $request, $mes)
+    {
+        $fecha = ($mes != 1) ? \DateTime::createFromFormat('Ym', $mes) : new \DateTime(); 
+//        $fecha = new \DateTime();         
+//        $fechasig = new \DateTime();
+        $fecha->modify('first day of this month');
+        $fechasig = clone $fecha;   // nueva instancia para que no afecten las modify a $fecha
+        $fechasig->modify('last day of this month')->modify('+1 day');
+        // 
+        $em = $this->getDoctrine()->getManager();
+
+        // Buscamos las ventas del día marcado por $fecha con la función ventasFechas()
+        $ventas = $em->getRepository('LibuBundle:Venta')->ventasMes($fecha, $fechasig);
+//dump($ventas);
+        // Utilizamos array_sum y array_column para calcular los ingresos del mes
+        $ingrmes = array_sum(array_column($ventas, 'ingreso'));
+        $ingrlibros = array_sum(array_column($ventas, 'ingresolibros'));
+
+        // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
+        // en que se han hecho ingresos. 
+        $hoy =  new \DateTime();
+        $mesesanteriores = $hoy->modify('-6 month');
+
+       for ($i=0; $i<7; $i++) {
+ //          $hilabete = strtotime($hoy);        // marca Unix de tiempo
+            $meseslista[$hoy->modify('+1 month')->format('n-Y')] = date($hoy->format('Ym'));     // array para los choices 
+        }
+
+        $form = $this->createFormBuilder(array())
+           ->add('mesesventas', ChoiceType::class, array(
+                'choices'  => $meseslista,
+               'expanded' => false,
+               'multiple' => false,
+            ))       
+            ->add('fecha', SubmitType::class, array('label' => 'Buscar en esa fecha'))            
+            ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
+
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('fecha')->isClicked()) {
+                $data = $form->getData();
+
+                return $this->redirectToRoute('cajamensual_fecha', array('mes' => $data['mesesventas']));
+            }              
+            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+        }
+
         return $this->render('LibuBundle:libu:cajamensual.html.twig',array(
             'form' => $form->createView(),
             'ventasdia' => $ventas,
             'fecha' => $fecha->format('m-Y'),
             'ingrmes' => $ingrmes,
             'ingrlibros' => $ingrlibros,       
-            'ingrprods' => $ingrprods,                 
+            'ingrprods' => $ingrmes - $ingrlibros,                
             ));    
     }
 }

@@ -26,6 +26,14 @@ class Venta
      */
     private $ingreso;
 
+    
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="ingreso_libros", type="float", precision=10, scale=0, nullable=true)     
+     */
+    private $ingresolibros;
+
 
     /**
      * @var integer
@@ -349,5 +357,30 @@ class Venta
     public function getDescripcion()
     {
         return $this->descripcion;
+    }
+
+
+    /**
+     * Set ingresolibros
+     *
+     * @param float $ingresolibros
+     *
+     * @return Venta
+     */
+    public function setIngresolibros($ingresolibros)
+    {
+        $this->ingresolibros = $ingresolibros;
+
+        return $this;
+    }
+
+    /**
+     * Get ingresolibros
+     *
+     * @return float
+     */
+    public function getIngresolibros()
+    {
+        return $this->ingresolibros;
     }
 }

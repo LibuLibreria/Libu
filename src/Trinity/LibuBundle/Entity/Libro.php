@@ -89,6 +89,13 @@ class Libro
      */
     private $estanteria;
 
+    
+    /**
+     * @var integer
+     */
+    private $balda;
+
+
     /**
      * @var string
      *
@@ -438,11 +445,6 @@ class Libro
     {
         return $this->estanteria;
     }
-    /**
-     * @var integer
-     */
-    private $balda;
-
 
     /**
      * Set balda
