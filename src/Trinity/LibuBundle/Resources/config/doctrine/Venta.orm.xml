@@ -15,6 +15,12 @@
       </options>
     </field>
     <field name="ingreso" type="float" column="ingreso" precision="10" scale="0" nullable="true"/>
+    <field name="concepto" type="integer" column="concepto" nullable="true"/>
+    <field name="descripcion" type="string" column="descripcion" length="40" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
     <field name="diahora" type="datetime" column="diaHora" nullable="true"/>
     <field name="libros3" type="integer" column="libros_3" nullable="true">
       <options>
