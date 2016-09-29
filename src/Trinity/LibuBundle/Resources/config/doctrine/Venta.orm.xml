@@ -15,6 +15,7 @@
       </options>
     </field>
     <field name="ingreso" type="float" column="ingreso" precision="10" scale="0" nullable="true"/>
+    <field name="ingresolibros" type="float" column="ingreso_libros" precision="10" scale="0" nullable="true"/>    
     <field name="concepto" type="integer" column="concepto" nullable="true"/>
     <field name="descripcion" type="string" column="descripcion" length="40" nullable="true">
       <options>

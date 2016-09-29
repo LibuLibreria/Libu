@@ -350,4 +350,33 @@ class Venta
     {
         return $this->descripcion;
     }
+    /**
+     * @var float
+     */
+    private $ingresolibros;
+
+
+    /**
+     * Set ingresolibros
+     *
+     * @param float $ingresolibros
+     *
+     * @return Venta
+     */
+    public function setIngresolibros($ingresolibros)
+    {
+        $this->ingresolibros = $ingresolibros;
+
+        return $this;
+    }
+
+    /**
+     * Get ingresolibros
+     *
+     * @return float
+     */
+    public function getIngresolibros()
+    {
+        return $this->ingresolibros;
+    }
 }
