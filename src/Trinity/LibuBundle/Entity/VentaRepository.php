@@ -83,4 +83,45 @@ class VentaRepository extends EntityRepository
         }
 
     }
+
+
+
+
+    /*
+    * Obtiene las ventas mensuales agrupándolas por días
+    */
+    public function ventasMes($fecha, $fechasig, $prodvend = true) {
+
+        $parameters = array( 
+            'fecha' => $fecha->format('Y-m-d'),
+            'fechasig' => $fechasig->format('Y-m-d'),
+        );
+
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT v.id as id, SUBSTRING(v.diahora,1,10) as hora, SUM(v.ingreso) as ingreso
+            FROM LibuBundle:Venta v
+            WHERE v.diahora >= :fecha AND v.diahora < :fechasig
+            AND v.factura IS NOT NULL
+            GROUP BY hora'
+        )->setParameters($parameters);
+        if ($prodvend) {
+            $ventas = $query->getResult(); 
+            $repoProdVend = $this->getEntityManager()->getRepository('LibuBundle:ProductoVendido');
+            $sartuProd = function(&$vent) use (&$repoProdVend)    {
+                    $vent['prodvendidos'] = $repoProdVend->findByIdVenta($vent['id']); 
+                    $suma = 0;
+                    foreach ($vent['prodvendidos'] as $pvend) {
+                        $suma += ($pvend->getCantidad() * $pvend->getIdProd()->getPrecio());
+                    }
+                    $vent['sumaprods'] = $suma; 
+                    $vent['sumalibros'] = $vent['ingreso'] - $vent['sumaprods'];
+                };
+            array_walk($ventas, $sartuProd );
+            return $ventas;
+        } else {
+            return $query->getResult();
+        }
+
+    }
+
 }
