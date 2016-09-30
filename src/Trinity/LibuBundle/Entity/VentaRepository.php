@@ -107,7 +107,13 @@ class VentaRepository extends EntityRepository
             AND v.factura IS NOT NULL
             GROUP BY dia'
         )->setParameters($parameters);
-            return $query->getResult();
+            $ventas = $query->getResult(); 
+            $formatoFecha = function(&$vent)   {
+                $vent['fechalink'] = date("Ymd",strtotime($vent['dia']));
+            };
+
+            array_walk($ventas, $formatoFecha );
+            return $ventas;
     }
 
 }

@@ -42,6 +42,20 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 class CajaController extends Controller
 {
 
+    public $mesescast = array(
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre',
+        );
 
     /**
      * @Route("/libu/caja", defaults={"dia": 1}, name="caja")
@@ -144,7 +158,9 @@ class CajaController extends Controller
 
        for ($i=0; $i<7; $i++) {
  //          $hilabete = strtotime($hoy);        // marca Unix de tiempo
-            $meseslista[$hoy->modify('+1 month')->format('n-Y')] = date($hoy->format('Ym'));     // array para los choices 
+            $anoactual = $hoy->modify('+1 month')->format('Y');
+            $textochoice = $this->mesescast[$hoy->format('n')]."-".$anoactual;
+            $meseslista[$textochoice] = date($hoy->format('Ym'));     // array para los choices 
         }
 
         $form = $this->createFormBuilder(array())
@@ -169,13 +185,16 @@ class CajaController extends Controller
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
         }
 
+       $fechatit = " ".$this->mesescast[$fecha->format('n')]." ".$fecha->format('Y');
+
         return $this->render('LibuBundle:libu:cajamensual.html.twig',array(
             'form' => $form->createView(),
             'ventasdia' => $ventas,
-            'fecha' => $fecha->format('m-Y'),
+            'fecha' => $fechatit,
             'ingrmes' => $ingrmes,
             'ingrlibros' => $ingrlibros,       
-            'ingrprods' => $ingrmes - $ingrlibros,                
+            'ingrprods' => $ingrmes - $ingrlibros,
+            'mesescast' => $this->mesescast,                
             ));    
     }
 }
