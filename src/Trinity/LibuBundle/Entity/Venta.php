@@ -34,6 +34,21 @@ class Venta
      */
     private $ingresolibros;
 
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="gasto", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $gasto;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="tipo_movim", type="string", length=3, nullable=true)
+     */
+    private $tipomovim;
+
 
     /**
      * @var integer
@@ -382,5 +397,54 @@ class Venta
     public function getIngresolibros()
     {
         return $this->ingresolibros;
+    }
+
+
+    /**
+     * Set gasto
+     *
+     * @param float $gasto
+     *
+     * @return Venta
+     */
+    public function setGasto($gasto)
+    {
+        $this->gasto = $gasto;
+
+        return $this;
+    }
+
+    /**
+     * Get gasto
+     *
+     * @return float
+     */
+    public function getGasto()
+    {
+        return $this->gasto;
+    }
+
+    /**
+     * Set tipomovim
+     *
+     * @param string $tipomovim
+     *
+     * @return Venta
+     */
+    public function setTipomovim($tipomovim)
+    {
+        $this->tipomovim = $tipomovim;
+
+        return $this;
+    }
+
+    /**
+     * Get tipomovim
+     *
+     * @return string
+     */
+    public function getTipomovim()
+    {
+        return $this->tipomovim;
     }
 }

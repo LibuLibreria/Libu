@@ -154,11 +154,11 @@ class CajaController extends Controller
         // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
         // en que se han hecho ingresos. 
         $hoy =  new \DateTime();
-        $mesesanteriores = $hoy->modify('-6 month');
+        $mesesanteriores = $hoy->modify('+1 month');
 
-       for ($i=0; $i<7; $i++) {
+       for ($i=0; $i<6; $i++) {
  //          $hilabete = strtotime($hoy);        // marca Unix de tiempo
-            $anoactual = $hoy->modify('+1 month')->format('Y');
+            $anoactual = $hoy->modify('-1 month')->format('Y');
             $textochoice = $this->mesescast[$hoy->format('n')]."-".$anoactual;
             $meseslista[$textochoice] = date($hoy->format('Ym'));     // array para los choices 
         }
