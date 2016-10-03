@@ -88,6 +88,8 @@ class LibuController extends Controller
                 $venta->setCliente($data['cliente']);
                 $venta->setTematica($data['tematica']);
                 $venta->setResponsable($data['responsable']);
+                $venta->setTipomovim('ven');
+                $venta->setGasto('0');
 
                 // Buscamos los productos cuya venta ha sido mayor que cero 
                 $vendidos = array(); $pagoproductos = 0; $m  = 0;
@@ -238,17 +240,8 @@ class LibuController extends Controller
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
 
-        // Averigua el número de la última factura emitida
-        $parameters = array();
-        $query = $em->createQuery(
-            'SELECT v.factura
-            FROM LibuBundle:Venta v 
-            WHERE v.factura IS NOT NULL
-            ORDER BY v.factura DESC'
-        )->setParameters($parameters);
-        $result = $query->setMaxResults(1)->getOneOrNullResult();
-        $numfactura = ($result['factura'] + 1);
-        
+        // Pone el siguiente identificador de factura
+        $numfactura = 1 + $em->getRepository('LibuBundle:Venta')->findNumUltimaFactura();
 
         // Recupera el identificador y la instancia de la venta realizada. 
         $session = $request->getSession();
@@ -438,13 +431,8 @@ class LibuController extends Controller
     {
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
-        $parameters = array();
-        $query = $em->createQuery(
-            'SELECT v
-            FROM LibuBundle:Venta v 
-            WHERE v.factura IS NOT NULL'
-        )->setParameters($parameters);
-        $tickets = $query->getResult();        
+
+        $tickets = $em->getRepository('LibuBundle:Venta')->findVentasConFactura();       
 
         $html = $this->renderView('LibuBundle:libu:ticket.html.twig', array(
             'tickets' => $tickets,
