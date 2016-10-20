@@ -118,6 +118,10 @@ class Venta
     private $responsable;
 
 
+    public function __toString() {
+        return "venta";
+    }
+
 
     /**
      * Set factura

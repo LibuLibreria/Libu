@@ -10,7 +10,7 @@ parameters:
 
 framework:
     #esi:             ~
-    #translator:      { fallbacks: ["%locale%"] }
+    translator:      { fallbacks: ["%locale%"] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -88,17 +88,28 @@ easy_admin:
         Producto:
             class: Trinity\LibuBundle\Entity\Producto
             label: 'Productos'
+            form: 
+                fields:
+                    - { property: 'email', type: 'email', type_options: { trim: true } }
+                    - Vendedor
+                    - Precio
             list: 
                 title: 'Lista de productos en venta'
+                fields: [{ property: 'Codigo', label:'Producto'}, 'Vendedor', 'Precio']
 
    #     - LibuBundle\Entity\Tematica
     #    - LibuBundle\Entity\Responsable
      #   - LibuBundle\Entity\ProductoVendido
       #  - LibuBundle\Entity\Tipo
-        Venta: 
-            class: Trinity\LibuBundle\Entity\Venta
-    site_name: 'Libu'
+      #  Venta: 
+       #     class: Trinity\LibuBundle\Entity\Venta
+    site_name: 'Trinity Admin'
     design:
         brand_color: 'red'
         color_scheme: 'light'
+        menu:
+            - Producto 
+            - { label: 'Crear Producto', url: 'http://localhost/Libu/web/app.php/libu/producto' }
+            - { label: 'Volver a Venta', url: 'http://localhost/Libu/web/app.php/libu/venta' }
+
 

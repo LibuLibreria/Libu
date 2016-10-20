@@ -63,4 +63,9 @@ class Tipo
     {
         return $this->idTipo;
     }
+
+    public function __toString() {
+        return $this->tipo;
+    }
+
 }
