@@ -10,6 +10,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+
 
 
 
@@ -26,7 +28,9 @@ class GastoType extends AbstractType
             ->add('descripcion', TextType::class, array(
                 'label' => 'Descripción del gasto (40 carac.): '
                 ))
-            ->add('gasto')
+            ->add('gasto', MoneyType::class, array(
+                    'label' => 'Cantidad',
+                ))
             ->add('diahora', DatetimeType::class, array(
                 'label' => 'Fecha: ',
                 'format' => 'd-M-y',
