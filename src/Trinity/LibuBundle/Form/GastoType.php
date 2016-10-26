@@ -9,6 +9,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+
 
 
 class GastoType extends AbstractType
@@ -22,10 +24,15 @@ class GastoType extends AbstractType
         $builder
             ->add('concepto')
             ->add('descripcion', TextType::class, array(
-                'label' => 'Nombre del vendedor (40 carac.): '
+                'label' => 'Descripción del gasto (40 carac.): '
                 ))
             ->add('gasto')
-            ->add('diahora')
+            ->add('diahora', DatetimeType::class, array(
+                'label' => 'Fecha: ',
+                'format' => 'd-M-y',
+                'widget' => 'single_text',
+                'attr' => array('style' => 'width: 120px'), 
+                ))
 /*            ->add('tipo', EntityType::class, array(
                 'class' => 'LibuBundle:Tipo',
                 'choice_label' => 'tipo',

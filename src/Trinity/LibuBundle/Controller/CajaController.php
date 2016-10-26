@@ -225,22 +225,23 @@ class CajaController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            if ($form->get('save')->isClicked()) {
+                $em = $this->getDoctrine()->getManager();
 
-            // Recogemos los datos del formulario
-            $gasto = $form->getData();
-            $nuevodate = $gasto->getDiahora()->setTime(date('H'), date('i'));
-            $gasto->setDiahora($nuevodate);  // Añadimos hora actual
-            $gasto->setTipomovim("gto");
+                // Recogemos los datos del formulario
+                $gasto = $form->getData();
+                $nuevodate = $gasto->getDiahora()->setTime(date('H'), date('i'));
+                $gasto->setDiahora($nuevodate);  // Añadimos hora actual
+                $gasto->setTipomovim("gto");
 
-            try {
-                $em->persist($gasto);
-                $em->flush();
-            } catch (Exception $e) {
-                 $this->get('session')->setFlash('flash_key',"No se ha guardado: " . $e->getMessage());
+                try {
+                    $em->persist($gasto);
+                    $em->flush();
+                } catch (Exception $e) {
+                     $this->get('session')->setFlash('flash_key',"No se ha guardado: " . $e->getMessage());
+                }
             }
-            
-///           return new Response ("hasta aquí hemos llegado");        
+                  
             return $this->redirectToRoute('venta');
         }
 

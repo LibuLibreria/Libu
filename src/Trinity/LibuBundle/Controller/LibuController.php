@@ -157,6 +157,12 @@ class LibuController extends Controller
             if ($form->get('formul')->isClicked()) {
                 return $this->redirectToRoute('producto');   
             }  
+
+            // Botón Gasto
+            if ($form->get('gasto')->isClicked()) {
+                echo "gasto";
+                return $this->redirectToRoute('gasto');   
+            }  
 		}
 
 		return $this->render('LibuBundle:libu:inicio.html.twig', array(
