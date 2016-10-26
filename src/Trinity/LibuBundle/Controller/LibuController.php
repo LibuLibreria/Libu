@@ -250,9 +250,11 @@ class LibuController extends Controller
         $numfactura = ($result['factura'] + 1);
         
 
-        // Recupera el identificador y la instancia de la venta realizada. 
+        // Recupera el identificador de la venta realizada. 
         $session = $request->getSession();
         $ultimoid = $session->get('ultimoid');
+
+        // $ventaactual es la instancia de la venta realizada
         $ventaactual = $em->getRepository('LibuBundle:Venta')->findOneById($ultimoid);
 
         // Llama a la función sumaPagoLibros para el desglose del pago de libros
@@ -277,6 +279,7 @@ class LibuController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('finalizar')->isClicked()) {
                 $ventaactual->setFactura($numfactura);
+                $ventaactual->setTipomovim("ven");
                 try{
                     $em->persist($ventaactual);
                     $em->flush();
