@@ -26,6 +26,22 @@ class Venta
      */
     private $ingreso;
 
+    
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="ingreso_libros", type="float", precision=10, scale=0, nullable=true)     
+     */
+    private $ingresolibros;
+
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="concepto", type="integer", nullable=true)
+     */
+    private $concepto;
+
     /**
      * @var \DateTime
      *
@@ -288,5 +304,83 @@ class Venta
     public function getResponsable()
     {
         return $this->responsable;
+    }
+    /**
+     * @var string
+     */
+    private $descripcion;
+
+
+    /**
+     * Set concepto
+     *
+     * @param integer $concepto
+     *
+     * @return Venta
+     */
+    public function setConcepto($concepto)
+    {
+        $this->concepto = $concepto;
+
+        return $this;
+    }
+
+    /**
+     * Get concepto
+     *
+     * @return integer
+     */
+    public function getConcepto()
+    {
+        return $this->concepto;
+    }
+
+    /**
+     * Set descripcion
+     *
+     * @param string $descripcion
+     *
+     * @return Venta
+     */
+    public function setDescripcion($descripcion)
+    {
+        $this->descripcion = $descripcion;
+
+        return $this;
+    }
+
+    /**
+     * Get descripcion
+     *
+     * @return string
+     */
+    public function getDescripcion()
+    {
+        return $this->descripcion;
+    }
+
+
+    /**
+     * Set ingresolibros
+     *
+     * @param float $ingresolibros
+     *
+     * @return Venta
+     */
+    public function setIngresolibros($ingresolibros)
+    {
+        $this->ingresolibros = $ingresolibros;
+
+        return $this;
+    }
+
+    /**
+     * Get ingresolibros
+     *
+     * @return float
+     */
+    public function getIngresolibros()
+    {
+        return $this->ingresolibros;
     }
 }

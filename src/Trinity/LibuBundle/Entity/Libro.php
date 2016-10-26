@@ -83,6 +83,20 @@ class Libro
     private $conservacion;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="estanteria", type="integer", nullable=true)
+     */
+    private $estanteria;
+
+    
+    /**
+     * @var integer
+     */
+    private $balda;
+
+
+    /**
      * @var string
      *
      * @ORM\Column(name="notas", type="string", length=40, nullable=true)
@@ -406,5 +420,53 @@ class Libro
     public function getIdVenta()
     {
         return $this->idVenta;
+    }
+
+    /**
+     * Set estanteria
+     *
+     * @param integer $estanteria
+     *
+     * @return Libro
+     */
+    public function setEstanteria($estanteria)
+    {
+        $this->estanteria = $estanteria;
+
+        return $this;
+    }
+
+    /**
+     * Get estanteria
+     *
+     * @return integer
+     */
+    public function getEstanteria()
+    {
+        return $this->estanteria;
+    }
+
+    /**
+     * Set balda
+     *
+     * @param integer $balda
+     *
+     * @return Libro
+     */
+    public function setBalda($balda)
+    {
+        $this->balda = $balda;
+
+        return $this;
+    }
+
+    /**
+     * Get balda
+     *
+     * @return integer
+     */
+    public function getBalda()
+    {
+        return $this->balda;
     }
 }

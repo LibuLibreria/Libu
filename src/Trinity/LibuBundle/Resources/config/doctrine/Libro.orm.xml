@@ -58,6 +58,16 @@
         <option name="fixed"/>
       </options>
     </field>
+    <field name="estanteria" type="integer" column="estanteria" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="balda" type="integer" column="balda" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
     <many-to-one field="idVenta" target-entity="Venta" fetch="LAZY">
       <join-columns>
         <join-column name="id_venta" referenced-column-name="id"/>

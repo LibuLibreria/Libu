@@ -26,6 +26,37 @@ class Venta
      */
     private $ingreso;
 
+    
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="ingreso_libros", type="float", precision=10, scale=0, nullable=true)     
+     */
+    private $ingresolibros;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="gasto", type="float", precision=10, scale=0, nullable=true)
+     */
+    private $gasto;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="tipo_movim", type="string", length=3, nullable=true)
+     */
+    private $tipomovim;
+
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="concepto", type="integer", nullable=true)
+     */
+    private $concepto;
+
     /**
      * @var \DateTime
      *
@@ -86,6 +117,10 @@ class Venta
      */
     private $responsable;
 
+
+    public function __toString() {
+        return "venta";
+    }
 
 
     /**
@@ -288,5 +323,132 @@ class Venta
     public function getResponsable()
     {
         return $this->responsable;
+    }
+    /**
+     * @var string
+     */
+    private $descripcion;
+
+
+    /**
+     * Set concepto
+     *
+     * @param integer $concepto
+     *
+     * @return Venta
+     */
+    public function setConcepto($concepto)
+    {
+        $this->concepto = $concepto;
+
+        return $this;
+    }
+
+    /**
+     * Get concepto
+     *
+     * @return integer
+     */
+    public function getConcepto()
+    {
+        return $this->concepto;
+    }
+
+    /**
+     * Set descripcion
+     *
+     * @param string $descripcion
+     *
+     * @return Venta
+     */
+    public function setDescripcion($descripcion)
+    {
+        $this->descripcion = $descripcion;
+
+        return $this;
+    }
+
+    /**
+     * Get descripcion
+     *
+     * @return string
+     */
+    public function getDescripcion()
+    {
+        return $this->descripcion;
+    }
+
+
+    /**
+     * Set ingresolibros
+     *
+     * @param float $ingresolibros
+     *
+     * @return Venta
+     */
+    public function setIngresolibros($ingresolibros)
+    {
+        $this->ingresolibros = $ingresolibros;
+
+        return $this;
+    }
+
+    /**
+     * Get ingresolibros
+     *
+     * @return float
+     */
+    public function getIngresolibros()
+    {
+        return $this->ingresolibros;
+    }
+
+
+    /**
+     * Set gasto
+     *
+     * @param float $gasto
+     *
+     * @return Venta
+     */
+    public function setGasto($gasto)
+    {
+        $this->gasto = $gasto;
+
+        return $this;
+    }
+
+    /**
+     * Get gasto
+     *
+     * @return float
+     */
+    public function getGasto()
+    {
+        return $this->gasto;
+    }
+
+    /**
+     * Set tipomovim
+     *
+     * @param string $tipomovim
+     *
+     * @return Venta
+     */
+    public function setTipomovim($tipomovim)
+    {
+        $this->tipomovim = $tipomovim;
+
+        return $this;
+    }
+
+    /**
+     * Get tipomovim
+     *
+     * @return string
+     */
+    public function getTipomovim()
+    {
+        return $this->tipomovim;
     }
 }

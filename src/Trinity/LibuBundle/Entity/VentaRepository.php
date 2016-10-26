@@ -57,30 +57,63 @@ class VentaRepository extends EntityRepository
         );
 
         $query = $this->getEntityManager()->createQuery(
-            'SELECT v.id as id, v.diahora as hora, v.ingreso as ingreso, v.libros3, v.libros1, c.nombre as cliente
+            'SELECT v.id as id, v.diahora as hora, v.ingreso as ingreso, v.ingresolibros as ingresolibros,
+                v.libros3, v.libros1, c.nombre as cliente, (v.ingreso - v.ingresolibros) as ingresoprods
             FROM LibuBundle:Venta v, LibuBundle:Cliente c
             WHERE v.diahora >= :fecha AND v.diahora < :fechasig
             AND c.idCli = v.cliente
             AND v.factura IS NOT NULL
             ORDER BY v.diahora'
         )->setParameters($parameters);
+
+        // Si la opción prodvend está activada, añadimos una matriz de productos a cada registro
         if ($prodvend) {
             $ventas = $query->getResult(); 
             $repoProdVend = $this->getEntityManager()->getRepository('LibuBundle:ProductoVendido');
             $sartuProd = function(&$vent) use (&$repoProdVend)    {
                     $vent['prodvendidos'] = $repoProdVend->findByIdVenta($vent['id']); 
-                    $suma = 0;
+ /*                   $suma = 0;
                     foreach ($vent['prodvendidos'] as $pvend) {
                         $suma += ($pvend->getCantidad() * $pvend->getIdProd()->getPrecio());
                     }
                     $vent['sumaprods'] = $suma; 
                     $vent['sumalibros'] = $vent['ingreso'] - $vent['sumaprods'];
-                };
+ */               };
             array_walk($ventas, $sartuProd );
             return $ventas;
         } else {
             return $query->getResult();
         }
-
     }
+
+
+
+
+    /*
+    * Obtiene las ventas mensuales agrupándolas por días
+    */
+    public function ventasMes($fecha, $fechasig) {
+
+        $parameters = array( 
+            'fecha' => $fecha->format('Y-m-d'),
+            'fechasig' => $fechasig->format('Y-m-d'),
+        );
+
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT v.id as id, SUBSTRING(v.diahora,1,10) as dia, 
+            SUM(v.ingreso) as ingreso, SUM(v.ingresolibros) AS ingresolibros
+            FROM LibuBundle:Venta v
+            WHERE v.diahora >= :fecha AND v.diahora < :fechasig
+            AND v.factura IS NOT NULL
+            GROUP BY dia'
+        )->setParameters($parameters);
+            $ventas = $query->getResult(); 
+            $formatoFecha = function(&$vent)   {
+                $vent['fechalink'] = date("Ymd",strtotime($vent['dia']));
+            };
+
+            array_walk($ventas, $formatoFecha );
+            return $ventas;
+    }
+
 }

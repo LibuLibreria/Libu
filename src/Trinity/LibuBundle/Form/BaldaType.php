@@ -3,12 +3,11 @@
 namespace Trinity\LibuBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class TipoType extends AbstractType
+class BaldaType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -17,10 +16,9 @@ class TipoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('tipo', TextType::class, array(
-                'label' => 'Tipo de producto (25 carac.): '
-                ))
-            ->add('save', SubmitType::class, array('label' => 'Guardar'))
+            ->add('estanteria')
+            ->add('balda')            
+            ->add('save', SubmitType::class, array('label' => 'Guardar'))  
             ->getForm();             
         ;
     }
@@ -31,7 +29,7 @@ class TipoType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Trinity\LibuBundle\Entity\Tipo'
+            'data_class' => 'Trinity\LibuBundle\Entity\Libro'
         ));
     }
 }

@@ -15,6 +15,19 @@
       </options>
     </field>
     <field name="ingreso" type="float" column="ingreso" precision="10" scale="0" nullable="true"/>
+    <field name="gasto" type="float" column="gasto" precision="10" scale="0" nullable="true"/>
+    <field name="ingresolibros" type="float" column="ingreso_libros" precision="10" scale="0" nullable="true"/>    
+    <field name="concepto" type="integer" column="concepto" nullable="true"/>
+    <field name="descripcion" type="string" column="descripcion" length="40" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="tipomovim" type="string" column="tipo_movim" length="3" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
     <field name="diahora" type="datetime" column="diaHora" nullable="true"/>
     <field name="libros3" type="integer" column="libros_3" nullable="true">
       <options>

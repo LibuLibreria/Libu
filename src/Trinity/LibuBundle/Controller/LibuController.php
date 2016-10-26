@@ -7,6 +7,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Trinity\LibuBundle\Form\VentaType;
 use Trinity\LibuBundle\Form\TipoType;
 use Trinity\LibuBundle\Form\LibroType;
+use Trinity\LibuBundle\Form\LibroCortoType;
+use Trinity\LibuBundle\Form\BaldaType;
 use Trinity\LibuBundle\Form\ProductoType;
 use Trinity\LibuBundle\Form\ResponsableType;
 use Trinity\LibuBundle\Form\ClienteType;
@@ -57,6 +59,7 @@ class LibuController extends Controller
         $product = $em->getRepository('LibuBundle:Producto')->findAll();
         $n = 0;
 
+
         // Crea el formulario $form con el esquema VentaType
 		$form = $this->createForm(VentaType::class, array());
 
@@ -79,7 +82,7 @@ class LibuController extends Controller
                 $sumalibros = $this->sumaPagoLibros($data['libros1'], $data['libros3']);
 
                 // Guardamos todos los datos de las ventas en la nueva instancia Venta
-                $venta->setDiahora($fecha);
+                $venta->setDiahora($data['diahora']->setTime(date('H'), date('i')));  // Añadimos hora actual
                 $venta->setLibros3($data['libros3']);
                 $venta->setLibros1($data['libros1']);
                 $venta->setCliente($data['cliente']);
@@ -121,6 +124,7 @@ class LibuController extends Controller
 
                 // Ahora podemos introducir el dato que faltaba en la instancia de Venta
                 $venta->setIngreso($pagototal);
+                $venta->setIngresolibros($sumalibros['pagolibros']);
 
                 // Subimos todos los datos a la base de datos
                 try{
@@ -144,10 +148,15 @@ class LibuController extends Controller
                 return $this->redirectToRoute('facturar');
             }
 
-            // Botón Menú
-            if ($form->get('menu')->isClicked()) {
+            // Botón Caja
+            if ($form->get('caja')->isClicked()) {
                 return $this->redirectToRoute('caja');   
-            }                    
+            }             
+
+            // Botón Formulario Productos
+            if ($form->get('formul')->isClicked()) {
+                return $this->redirectToRoute('producto');   
+            }  
 		}
 
 		return $this->render('LibuBundle:libu:inicio.html.twig', array(
@@ -249,14 +258,16 @@ class LibuController extends Controller
         // Llama a la función sumaPagoLibros para el desglose del pago de libros
         $calclibros = $this->sumaPagoLibros( $ventaactual->getLibros1(), $ventaactual->getLibros3());
 
+
         // Llama a la función sumaPagoProductos para el desglose del pago de productos
         $calcproductos = $this->sumaPagoProductos( $ventaactual, $em );
+        $calctotal = $ventaactual->getIngreso();
 
         // Escribe el texto
         $textoPagos = "<h2>Número de ticket: ".$numfactura."</h2>";
         $textoPagos .= $calclibros['texto'];         
         $textoPagos .= $calcproductos['texto'];
-        $textoPagos .= "<h1>TOTAL: ".($calclibros['pagolibros'] + $calcproductos['pagoproductos'])." euros</h1>";
+        $textoPagos .= "<h1>TOTAL: ".$calctotal." euros</h1>";
 
         // Creación del formulario
         $form = $this->createForm(FacturarType::class, array());
@@ -286,6 +297,67 @@ class LibuController extends Controller
 
 
 
+
+    /**
+     * @Route("/libu/subir", name="subir")
+     */
+    public function subirAction(Request $request)
+    {
+        $libro = new Libro();
+        $form = $this->createForm(LibroCortoType::class, $libro);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($libro);
+            $em->flush();
+            // Recuperamos el Identificador de Libro
+           $ultid = $libro->getIdLibro();           
+            return $this->redirectToRoute('balda', array('ultid' => $ultid));
+        }
+
+        return $this->render('LibuBundle:libu:form.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Nuevo libro',
+            ));    
+    }
+
+
+
+
+    /**
+     * @Route("/libu/balda", name="balda")
+     */
+    public function baldaAction(Request $request)
+    {
+        $ultid = $request->get('ultid');
+        $em = $this->getDoctrine()->getManager();        
+        $libro = $em->getRepository('LibuBundle:Libro')->findOneByIdLibro($ultid);
+
+ //       $libro = new Libro();
+        $form = $this->createForm(BaldaType::class, $libro);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($libro);
+            $em->flush();
+            // Recuperamos el Identificador de Libro
+           $ultid = $libro->getIdLibro();           
+            return $this->redirectToRoute('subir');
+        }
+
+        return $this->render('LibuBundle:libu:form.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Libro con identificador '.$ultid,
+            ));    
+    }
+
+
+
+
     /**
      * @Route("/libu/libro", name="libro")
      */
@@ -303,8 +375,9 @@ class LibuController extends Controller
             return $this->redirectToRoute('libro');
         }
 
-        return $this->render('LibuBundle:libu:simple.html.twig', array(
+        return $this->render('LibuBundle:libu:form.html.twig', array(
             'form' => $form->createView(),
+            'titulo' => 'Nuevo libro',
             ));    
     }
 
@@ -326,72 +399,33 @@ class LibuController extends Controller
             return $this->redirectToRoute('venta');
         }
 
-        return $this->render('LibuBundle:libu:simple.html.twig', array(
+        return $this->render('LibuBundle:libu:form.html.twig', array(
             'form' => $form->createView(),
+            'titulo' => 'Nuevo producto',
             ));    
     }
 
 
     /**
-     * @Route("/libu/caja", defaults={"dia": 1}, name="caja")
-     * @Route("/libu/caja/{dia}", requirements={"dia": "[1-9]\d*"}, name="caja_fecha")     
+     * @Route("/libu/tipo", name="tipo")
      */
-    public function cajaAction(Request $request, $dia)
+    public function tipoAction(Request $request)
     {
-        $fecha = ($dia != 1) ? $fecha = \DateTime::createFromFormat('Ymd', $dia) : $fecha = new \DateTime(); 
-        $fechasig = new \DateTime();
-        $fechasig = clone $fecha;   // nueva instancia para que no afecten las modify a $fecha
-        // 
-        $em = $this->getDoctrine()->getManager();
-
-        // Buscamos las ventas del día marcado por $fecha con la función ventasFechas()
-        $ventas = $em->getRepository('LibuBundle:Venta')->ventasFechas($fecha, $fechasig->modify('+1 day'));
-// dump($ventas);
-        // Utilizamos array_sum y array_column para calcular los ingresos del día
-        $ingrdia = array_sum(array_column($ventas, 'ingreso'));
-
-        // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
-        // en que se han hecho ingresos. 
-        $diasanteriores = $em->getRepository('LibuBundle:Venta')->fechasIngresos();
-
-        $i = 0;
-        foreach ($diasanteriores as $dia) {
-            $time_dia = strtotime($dia['dias']);        // marca Unix de tiempo
-            $diaslista[date("j-n-Y", $time_dia )] = date("Ymd",($time_dia));     // array para los choices 
-        }
-
-        $form = $this->createFormBuilder(array())
-            ->add('diasventas', ChoiceType::class, array(
-                'choices'  => $diaslista,
-                'expanded' => false,
-                'multiple' => false,
-            ))       
-            ->add('fecha', SubmitType::class, array('label' => 'Buscar en esa fecha'))            
-            ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
-            ->add('email', SubmitType::class, array('label' => 'Enviar email'))
-
-            ->getForm();
+        $tipo = new Tipo();
+        $form = $this->createForm(TipoType::class, $tipo);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('fecha')->isClicked()) {
-                $data = $form->getData();
-
-                return $this->redirectToRoute('caja_fecha', array('dia' => $data['diasventas']));
-            }
-
-                
-            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
-            if ($form->get('email')->isClicked()) return $this->redirectToRoute('email');
-
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($tipo);
+            $em->flush();
+            return $this->redirectToRoute('venta');
         }
 
-        return $this->render('LibuBundle:libu:caja.html.twig',array(
+        return $this->render('LibuBundle:libu:form.html.twig', array(
             'form' => $form->createView(),
-            'ventasdia' => $ventas,
-            'fecha' => $fecha,
-            'ingrdia' => $ingrdia,
+            'titulo' => 'Nuevo tipo de producto',
             ));    
     }
 
@@ -482,40 +516,6 @@ class LibuController extends Controller
                 );
         }
     }
-
-
-     /**
-     * @Route("/libu/email", name="email")
-     */
-    public function emailAction(Request $request)
-    {
-
-        $em = $this->getDoctrine()->getManager();
-        $ventas = $em->getRepository('LibuBundle:Venta')->findAll();
-
-        $encoders = array(new XmlEncoder(), new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
-
-        $serializer = new Serializer($normalizers, $encoders);
-        
-        $reports = $serializer->serialize($ventas, 'json');
-
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Email de Libu')
-            ->setFrom('libulibreria@gmail.com')
-            ->setTo('libulibreria@gmail.com')
-            ->setBody(
-                $this->render('LibuBundle:libu:email.html.twig',array(
-                    'report' => $reports)
-                ),
-                'text/html'
-            )
-
-        ;
-        $this->get('mailer')->send($message);
-
-        return new Response('Correo enviado<br>');
-    }   
 
 
 

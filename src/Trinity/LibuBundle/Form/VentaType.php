@@ -29,17 +29,21 @@ class VentaType extends AbstractType
 //            ->add('factura')
 //           ->add('ingreso')
             ->add('diahora', DatetimeType::class, array(
-                'label' => 'Fecha y hora: ',
+                'label' => 'Fecha: ',
+                'format' => 'd-M-y',
+                'widget' => 'single_text',
+                'attr' => array('style' => 'width: 120px'), 
+
                 ))
             ->add('libros3', TextType::class, array(
                 'label' => 'Libros a 3 euros: ',
-                'data' => '',
+                'data' => '0',
                 'attr' => array('style' => 'width: 80px'), 
                 'required' => false,
                 )) 
             ->add('libros1', TextType::class, array(
                 'label' => 'Libros a 1 euro:',
-                'data' => '',
+                'data' => '0',
                 'attr' => array('style' => 'width: 80px'),
                 'required' => false,               
                 )) 
@@ -67,7 +71,8 @@ class VentaType extends AbstractType
                 ))
                        
             ->add('save', SubmitType::class, array('label' => 'Venta'))         
-            ->add('menu', SubmitType::class, array('label' => 'Caja de hoy'))  
+            ->add('caja', SubmitType::class, array('label' => 'Caja de hoy'))  
+            ->add('formul', SubmitType::class, array('label' => 'Nuevo Prod.'))  
             ->getForm(); 
 
         ;
