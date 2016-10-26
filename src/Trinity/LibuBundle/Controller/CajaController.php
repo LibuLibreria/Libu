@@ -99,7 +99,7 @@ class CajaController extends Controller
             ))       
             ->add('fecha', SubmitType::class, array('label' => 'Buscar en esa fecha'))            
             ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
-            ->add('email', SubmitType::class, array('label' => 'Enviar email'))
+//            ->add('email', SubmitType::class, array('label' => 'Enviar email'))
 
             ->getForm();
 
@@ -114,7 +114,7 @@ class CajaController extends Controller
 
                 
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
-            if ($form->get('email')->isClicked()) return $this->redirectToRoute('email');
+//            if ($form->get('email')->isClicked()) return $this->redirectToRoute('email');
 
         }
 

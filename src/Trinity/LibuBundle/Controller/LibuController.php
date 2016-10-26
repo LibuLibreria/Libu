@@ -155,8 +155,8 @@ class LibuController extends Controller
             }             
 
             // Botón Formulario Productos
-            if ($form->get('formul')->isClicked()) {
-                return $this->redirectToRoute('producto');   
+            if ($form->get('mensual')->isClicked()) {
+                return $this->redirectToRoute('cajamensual');   
             }  
 
             // Botón Gasto
