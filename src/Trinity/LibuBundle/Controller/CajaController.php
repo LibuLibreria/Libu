@@ -15,6 +15,7 @@ use Trinity\LibuBundle\Form\ClienteType;
 use Trinity\LibuBundle\Form\TematicaType;
 use Trinity\LibuBundle\Form\FacturarType;
 use Trinity\LibuBundle\Form\MenuType;
+use Trinity\LibuBundle\Form\GastoType;
 use Trinity\LibuBundle\Entity\Venta;
 use Trinity\LibuBundle\Entity\Cliente;
 use Trinity\LibuBundle\Entity\Responsable;
@@ -197,5 +198,58 @@ class CajaController extends Controller
             'mesescast' => $this->mesescast,                
             ));    
     }
+
+
+
+
+
+    /**
+     * @Route("/libu/gasto", name="gasto")
+     */
+    public function gastoAction(Request $request)
+    {
+/*        $ultid = $request->get('ultid');
+        $em = $this->getDoctrine()->getManager();        
+        $libro = $em->getRepository('LibuBundle:Venta')->findOneByIdLibro($ultid);
+*/
+
+ //       $libro = new Libro();
+
+        $gasto = new Venta();
+        $form = $this->createForm(GastoType::class, $gasto);
+
+        // Actualiza el día y la hora en el formulario
+        $fecha = new \Datetime();        
+        $form->get('diahora')->setData($fecha);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+
+            // Recogemos los datos del formulario
+            $gasto = $form->getData();
+            $nuevodate = $gasto->getDiahora()->setTime(date('H'), date('i'));
+            $gasto->setDiahora($nuevodate);  // Añadimos hora actual
+            $gasto->setTipomovim("gto");
+
+            try {
+                $em->persist($gasto);
+                $em->flush();
+            } catch (Exception $e) {
+                 $this->get('session')->setFlash('flash_key',"No se ha guardado: " . $e->getMessage());
+            }
+            
+///           return new Response ("hasta aquí hemos llegado");        
+            return $this->redirectToRoute('venta');
+        }
+
+        return $this->render('LibuBundle:libu:form.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Gasto',
+            ));    
+    }
+
+
 }
 
