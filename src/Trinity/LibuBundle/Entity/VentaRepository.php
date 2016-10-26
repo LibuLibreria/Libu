@@ -13,12 +13,13 @@ class VentaRepository extends EntityRepository
     public function fechasIngresos($limit = 10)
     {
         $sql = 
-            'SELECT count(*) as cantidad, diaHora as dias
+            "SELECT count(*) as cantidad, diaHora as dias
             FROM venta 
             WHERE factura > 0 
+            AND tipo_movim = 'ven'
             GROUP BY DATE(diaHora) 
             ORDER BY dias DESC
-            LIMIT '.$limit
+            LIMIT ".$limit
         ;
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->execute();
@@ -47,6 +48,34 @@ class VentaRepository extends EntityRepository
 
 
     /*
+    * Averigua el número de la última factura emitida
+    */
+    public function findNumUltimaFactura() {
+
+        $parameters = array();
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT v.factura
+            FROM LibuBundle:Venta v 
+            WHERE v.factura IS NOT NULL
+            ORDER BY v.factura DESC'
+        )->setParameters($parameters);
+        $result = $query->setMaxResults(1)->getOneOrNullResult();
+        return $result['factura'];
+    }
+        
+    public function findVentasConFactura() {
+
+        $parameters = array();
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT v
+            FROM LibuBundle:Venta v 
+            WHERE v.factura IS NOT NULL
+            AND v.tipomovim = 'ven'"
+        )->setParameters($parameters);
+        return $query->getResult(); 
+    }
+
+    /*
     * Obtiene las ventas que hay entre dos determinadas fechas
     */
     public function ventasFechas($fecha, $fechasig, $prodvend = true) {
@@ -57,13 +86,14 @@ class VentaRepository extends EntityRepository
         );
 
         $query = $this->getEntityManager()->createQuery(
-            'SELECT v.id as id, v.diahora as hora, v.ingreso as ingreso, v.ingresolibros as ingresolibros,
+            "SELECT v.id as id, v.diahora as hora, v.ingreso as ingreso, v.ingresolibros as ingresolibros,
                 v.libros3, v.libros1, c.nombre as cliente, (v.ingreso - v.ingresolibros) as ingresoprods
             FROM LibuBundle:Venta v, LibuBundle:Cliente c
             WHERE v.diahora >= :fecha AND v.diahora < :fechasig
             AND c.idCli = v.cliente
+            AND v.tipomovim = 'ven'
             AND v.factura IS NOT NULL
-            ORDER BY v.diahora'
+            ORDER BY v.diahora"
         )->setParameters($parameters);
 
         // Si la opción prodvend está activada, añadimos una matriz de productos a cada registro
@@ -100,12 +130,13 @@ class VentaRepository extends EntityRepository
         );
 
         $query = $this->getEntityManager()->createQuery(
-            'SELECT v.id as id, SUBSTRING(v.diahora,1,10) as dia, 
+            "SELECT v.id as id, SUBSTRING(v.diahora,1,10) as dia, 
             SUM(v.ingreso) as ingreso, SUM(v.ingresolibros) AS ingresolibros
             FROM LibuBundle:Venta v
             WHERE v.diahora >= :fecha AND v.diahora < :fechasig
             AND v.factura IS NOT NULL
-            GROUP BY dia'
+            AND v.tipomovim = 'ven'
+            GROUP BY dia"
         )->setParameters($parameters);
             $ventas = $query->getResult(); 
             $formatoFecha = function(&$vent)   {
