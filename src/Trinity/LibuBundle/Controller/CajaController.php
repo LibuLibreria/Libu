@@ -24,6 +24,7 @@ use Trinity\LibuBundle\Entity\Producto;
 use Trinity\LibuBundle\Entity\ProductoVendido;
 use Trinity\LibuBundle\Entity\Libro;
 use Trinity\LibuBundle\Entity\Tipo;
+use Trinity\LibuBundle\Entity\Concepto;
 use Trinity\LibuBundle\Entity\VentaRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
