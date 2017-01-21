@@ -60,6 +60,9 @@ class LibuController extends Controller
         $product = $em->getRepository('LibuBundle:Producto')->findAll();
         $n = 0;
 
+        // La variable $product_activo es un array con los productos activos, para mostrarlos
+        $product_activo = $em->getRepository('LibuBundle:Producto')->findBy(array('activo' => 'si'));
+
 
         // Crea el formulario $form con el esquema VentaType
 		$form = $this->createForm(VentaType::class, array());
@@ -156,7 +159,7 @@ class LibuController extends Controller
                 return $this->redirectToRoute('caja');   
             }             
 
-            // Botón Formulario Productos
+            // Botón Formulario Caja Mensual
             if ($form->get('mensual')->isClicked()) {
                 return $this->redirectToRoute('cajamensual');   
             }  
@@ -166,11 +169,17 @@ class LibuController extends Controller
                 echo "gasto";
                 return $this->redirectToRoute('gasto');   
             }  
+
+            // Botón Admin
+            if ($form->get('admin')->isClicked()) {
+                echo "admin";
+                return $this->redirectToRoute('easyadmin');   
+            }  
 		}
 
 		return $this->render('LibuBundle:libu:inicio.html.twig', array(
 			'form' => $form->createView(),
-            'prodguztiak' => $product,
+            'prodguztiak' => $product_activo,
 			));    
 	}
 

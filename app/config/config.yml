@@ -83,13 +83,6 @@ easy_admin:
 #            - { name: '-edit'}
 #            - { name: 'modificar', label: 'Modificar' }
     entities:
-        Cliente: 
-            class: Trinity\LibuBundle\Entity\Cliente
-            label: 'Clientes'
-            list: 
-                title: 'Lista de clientes'
-                fields: [{ property: 'Id_cli', label: 'Identificador' }, 'Nombre']
- #       - LibuBundle\Entity\Libro
         Producto:
             class: Trinity\LibuBundle\Entity\Producto
             label: 'Productos'
@@ -98,9 +91,10 @@ easy_admin:
                     - { property: 'codigo', label: 'Producto', help: 'Máximo 20 caracteres', type_options: { trim: true } }
                     - { property: 'vendedor', label: 'Vendedor', help: 'Máximo 20 caracteres', type_options: { trim: true } }
                     - { property: 'precio', label: 'Precio', type_options: { trim: true } }
+                    - { property: 'activo', label: '¿Activo?', type: 'choice', type_options: { trim: true, choices: {si: 'si', no: 'no'} } }
             list: 
                 title: 'Lista de productos en venta'
-                fields: [{ property: 'Codigo', label:'Producto'}, 'Vendedor', 'Precio']
+                fields: [{ property: 'Codigo', label:'Producto'}, 'Vendedor', 'Precio', 'Activo']
 
    #     - LibuBundle\Entity\Tematica
     #    - LibuBundle\Entity\Responsable
