@@ -77,6 +77,11 @@ knp_snappy:
             - { name: 'encoding', value: 'UTF8' }
 
 easy_admin:
+    list:
+        # expanded configuration format
+#        actions:
+#            - { name: '-edit'}
+#            - { name: 'modificar', label: 'Modificar' }
     entities:
         Cliente: 
             class: Trinity\LibuBundle\Entity\Cliente
@@ -90,9 +95,9 @@ easy_admin:
             label: 'Productos'
             form: 
                 fields:
-                    - { property: 'email', type: 'email', type_options: { trim: true } }
-                    - Vendedor
-                    - Precio
+                    - { property: 'codigo', label: 'Producto', help: 'Máximo 20 caracteres', type_options: { trim: true } }
+                    - { property: 'vendedor', label: 'Vendedor', help: 'Máximo 20 caracteres', type_options: { trim: true } }
+                    - { property: 'precio', label: 'Precio', type_options: { trim: true } }
             list: 
                 title: 'Lista de productos en venta'
                 fields: [{ property: 'Codigo', label:'Producto'}, 'Vendedor', 'Precio']
