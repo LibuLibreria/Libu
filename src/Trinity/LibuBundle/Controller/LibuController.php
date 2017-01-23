@@ -102,7 +102,7 @@ class LibuController extends Controller
 
                         // Obtenemos el Producto actual
                         $prod_actual = $em->getRepository('LibuBundle:Producto')
-                            ->findOneByIdProd($product[$pr]->getIdProd()); 
+                            ->findOneByIdProd($product_activo[$pr]->getIdProd()); 
 
                         // Creamos una nueva instancia de Producto Vendido
                         $pv = new ProductoVendido();
