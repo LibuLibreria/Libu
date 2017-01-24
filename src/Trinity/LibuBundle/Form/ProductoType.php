@@ -5,7 +5,7 @@ namespace Trinity\LibuBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -31,7 +31,12 @@ class ProductoType extends AbstractType
                 'class' => 'LibuBundle:Tipo',
                 'choice_label' => 'tipo',
                 'label' => 'Tipo',
-                ))            
+                ))   
+            ->add('activo', ChoiceType::class, array(
+                'choices' => array(
+                    'si' => 'si',
+                    'no' => 'no'
+                )))         
 //            ->add('idVenta')
             ->add('save', SubmitType::class, array('label' => 'Guardar'))
             ->getForm(); 

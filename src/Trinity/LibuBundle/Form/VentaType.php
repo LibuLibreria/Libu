@@ -74,6 +74,7 @@ class VentaType extends AbstractType
             ->add('caja', SubmitType::class, array('label' => 'Caja de hoy'))  
             ->add('mensual', SubmitType::class, array('label' => 'Caja mensual.'))  
             ->add('gasto', SubmitType::class, array('label' => 'Gasto')) 
+            ->add('admin', SubmitType::class, array('label' => 'Admin')) 
             ->getForm(); 
 
         ;

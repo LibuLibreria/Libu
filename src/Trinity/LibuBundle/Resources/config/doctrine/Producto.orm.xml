@@ -18,6 +18,11 @@
         <option name="fixed"/>
       </options>
     </field>
+    <field name="activo" type="string" column="activo" length="2" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
     <field name="precio" type="float" column="precio" precision="6" scale="2" nullable="true"/>
     <many-to-one field="tipo" target-entity="Tipo" fetch="LAZY">
       <join-columns>
