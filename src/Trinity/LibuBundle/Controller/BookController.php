@@ -1,0 +1,137 @@
+<?php
+
+namespace Trinity\LibuBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Trinity\LibuBundle\Form\VentaType;
+use Trinity\LibuBundle\Form\TipoType;
+use Trinity\LibuBundle\Form\LibroType;
+use Trinity\LibuBundle\Form\LibroCortoType;
+use Trinity\LibuBundle\Form\BaldaType;
+use Trinity\LibuBundle\Form\ProductoType;
+use Trinity\LibuBundle\Form\ResponsableType;
+use Trinity\LibuBundle\Form\ClienteType;
+use Trinity\LibuBundle\Form\TematicaType;
+use Trinity\LibuBundle\Form\FacturarType;
+use Trinity\LibuBundle\Form\MenuType;
+use Trinity\LibuBundle\Entity\Venta;
+use Trinity\LibuBundle\Entity\Cliente;
+use Trinity\LibuBundle\Entity\Responsable;
+use Trinity\LibuBundle\Entity\Tematica;
+use Trinity\LibuBundle\Entity\Producto;
+use Trinity\LibuBundle\Entity\ProductoVendido;
+use Trinity\LibuBundle\Entity\Libro;
+use Trinity\LibuBundle\Entity\Tipo;
+use Trinity\LibuBundle\Entity\Concepto;
+use Trinity\LibuBundle\Entity\VentaRepository;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Doctrine\Common\Collections\ArrayCollection;
+
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+
+class BookController extends Controller
+{
+
+    /**
+     * @Route("/book/subir", name="booksubir")
+     */
+    public function booksubirAction(Request $request)
+    {
+        // Lee el archivo de excel en formato csv guardado en /home/libu/ y lo convierte en un array
+        $csv = array_map('str_getcsv', file('/home/libu/libros.csv'));
+
+        echo "<pre>"; print_r($csv); echo "</pre>";
+
+        // Crear un nuevo recurso cURL
+        $ch = curl_init();
+
+        // Adjunta el archivo xml
+        // $cfile = file_get_contents('/home/borja/peticion.xml');
+        // $data = array('peticion' => $cfile);
+/*
+        // Orden de conocer el pedido 132857690
+        $cfile = '
+        <?xml version="1.0" encoding="ISO-8859-1"?>
+        <orderUpdateRequest version="1.0">
+            <action name="getOrder">
+                <username>'.$csv[1][0].'</username>
+                <password>'.$csv[1][1].'</password>
+            </action>
+            <purchaseOrder id="132857690" />
+        </orderUpdateRequest>
+        ';
+*/
+
+        $cfile = '
+        <?xml version="1.0" encoding="ISO-8859-1"?>
+        <inventoryUpdateRequest version="1.0">
+            <action name="bookupdate">
+                <username>'.$csv[0][0].'</username>
+                <password>'.$csv[0][1].'</password>
+            </action>
+            <AbebookList>
+                <Abebook>
+                    <transactionType>add</transactionType>
+                    <vendorBookID>'.$csv[2][3].'</vendorBookID>
+                    <author>'.$csv[2][2].'</author>
+                    <title>'.$csv[2][1].'</title>
+                    <publisher></publisher>
+                    <subject></subject>
+                    <price currency="EUR">'.$csv[2][8].'</price>
+                    <dustJacket></dustJacket>
+                    <binding type="hard"></binding>
+                    <firstEdition>false</firstEdition>
+                    <signed>false</signed>
+                    <booksellerCatalogue></booksellerCatalogue>
+                    <description></description>
+                    <bookCondition>Fine</bookCondition>
+                    <size></size>
+                    <jacketCondition>Fine</jacketCondition>
+                    <bookType></bookType>
+                    <isbn>'.$csv[2][0].'</isbn>
+                    <publishPlace></publishPlace>
+                    <publishYear></publishYear>
+                    <edition></edition>
+                    <inscriptionType></inscriptionType>
+                    <quantity amount="1"></quantity>
+                </Abebook>
+            </AbebookList>
+        </inventoryUpdateRequest>
+        ';
+
+        echo "<pre>"; print_r($cfile); echo "</pre>";
+
+        // Establecer URL y otras opciones apropiadas
+//        curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
+        curl_setopt($ch, CURLOPT_URL, "https://inventoryupdate.abebooks.com:10027");        
+        curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+
+        // Capturar la URL y pasarla al navegador
+        $resultado = curl_exec($ch);
+
+        // Cerrar el recurso cURL y liberar recursos del sistema
+        curl_close($ch);
+ 
+ echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
+
+        return new Response('<br>Finalizado');
+//		return $this->render('LibuBundle:libu:inicio.html.twig', array(
+//			'form' => $form->createView(),
+//			));    
+	}
+}
+
