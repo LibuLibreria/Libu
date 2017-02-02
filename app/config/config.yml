@@ -112,7 +112,7 @@ easy_admin:
 #                    - { property: 'concepto', label: 'Concepto', type_options: { trim: true } }
 #            list: 
 #                title: 'Lista de ventas'
-#                fields: ['diaHora', 'Factura', 'Ingreso']       
+#                fields: ['diaHora', 'Factura', 'Ingreso', 'Tematica']       
     site_name: 'Trinity Admin'
     design:
         brand_color: 'red'
