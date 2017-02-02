@@ -77,17 +77,13 @@ knp_snappy:
             - { name: 'encoding', value: 'UTF8' }
 
 easy_admin:
-    list:
-        # expanded configuration format
-#        actions:
-#            - { name: '-edit'}
-#            - { name: 'modificar', label: 'Modificar' }
     entities:
         Producto:
             class: Trinity\LibuBundle\Entity\Producto
-            label: 'Productos'
+            label: 'Lista Productos'
             form: 
                 fields:
+                    - { type: 'group', css_class: 'col-sm-6'}
                     - { property: 'codigo', label: 'Producto', help: 'Máximo 20 caracteres', type_options: { trim: true } }
                     - { property: 'vendedor', label: 'Vendedor', help: 'Máximo 20 caracteres', type_options: { trim: true } }
                     - { property: 'precio', label: 'Precio', type_options: { trim: true } }
@@ -102,13 +98,28 @@ easy_admin:
       #  - LibuBundle\Entity\Tipo
       #  Venta: 
        #     class: Trinity\LibuBundle\Entity\Venta
+#        Venta:
+ #           class: Trinity\LibuBundle\Entity\Venta
+#            label: 'Lista Ventas'
+#            form: 
+#                fields:
+#                    - { type: 'group', css_class: 'col-sm-6'}
+#                    - { property: 'factura', label: 'Factura',  type_options: { trim: true } }
+#                    - { property: 'ingreso', label: 'Ingreso', type_options: { trim: true } }
+#                    - { property: 'diaHora', label: 'Hora', type_options: { trim: true } }
+#                    - { property: 'tematica', label: 'Temática', type_options: { trim: true } }
+#                    - { property: 'cliente', label: 'Cliente', type_options: { trim: true } }
+#                    - { property: 'concepto', label: 'Concepto', type_options: { trim: true } }
+#            list: 
+#                title: 'Lista de ventas'
+#                fields: ['diaHora', 'Factura', 'Ingreso', 'Tematica']       
     site_name: 'Trinity Admin'
     design:
         brand_color: 'red'
         color_scheme: 'light'
         menu:
             - Producto 
-            - { label: 'Crear Producto', url: 'http://localhost/Libu/web/app.php/libu/producto' }
+#            - Venta
             - { label: 'Volver a Venta', url: 'http://localhost/Libu/web/app.php/libu/venta' }
 
 
