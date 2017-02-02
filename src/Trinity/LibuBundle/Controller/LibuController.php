@@ -60,8 +60,10 @@ class LibuController extends Controller
         $product = $em->getRepository('LibuBundle:Producto')->findAll();
         $n = 0;
 
-        // La variable $product_activo es un array con los productos activos, para mostrarlos
-        $product_activo = $em->getRepository('LibuBundle:Producto')->findBy(array('activo' => 'si'));
+        // La variable $product_activo es un array con los productos activos, para mostrarlos por pantalla
+        $product_activo = $em->getRepository('LibuBundle:Producto')->findBy(
+            array('activo' => 'si'), 
+            array('codigo' => 'ASC'));
 
 
         // Crea el formulario $form con el esquema VentaType
