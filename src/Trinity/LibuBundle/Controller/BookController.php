@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\Response;
 // use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 // use Doctrine\Common\Collections\ArrayCollection;
 
-// use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 // use Symfony\Component\Form\Extension\Core\Type\TextType;
 // use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -74,6 +74,11 @@ class BookController extends Controller
 
         // Crea los botones para el formulario
         $form = $this->createFormBuilder()
+            ->add('choice1', ChoiceType::class, array(
+                'choices' => array(" " => true),
+                'multiple' => true,
+                'expanded' => true
+                ))
             ->add('continue', SubmitType::class, array('label' => 'Subir estos libros'))
             ->add('stop', SubmitType::class, array('label' => 'No subir'))            
             ->getForm();
@@ -85,7 +90,8 @@ class BookController extends Controller
 
             if ($form->get('continue')->isClicked()) {
 
-                // $datos = $form->getData();
+                $datos = $form->getData();
+                echo "<pre>"; print_r($datos); echo "</pre>";
 
                 // Crear un nuevo recurso cURL
                 $ch = curl_init();
@@ -106,7 +112,7 @@ class BookController extends Controller
                 </orderUpdateRequest>
                 ';
         */
-    /*            $abe_user = $this->getParameter('abebooks_user');
+                $abe_user = $this->getParameter('abebooks_user');
                 $abe_pass = $this->getParameter('abebooks_pass');        
                 // echo "Loader:<br><pre>"; print_r($loader); echo "</pre>";
 
@@ -161,7 +167,7 @@ class BookController extends Controller
 
                 // Cerrar el recurso cURL y liberar recursos del sistema
                 curl_close($ch);
-    */ 
+     
     // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
 
             }
@@ -175,7 +181,7 @@ class BookController extends Controller
         }
 
 
-        return $this->render('LibuBundle:libu:simple.html.twig', array(
+        return $this->render('LibuBundle:libu:books.html.twig', array(
  //           'lista' => $lista,
             'texto_previo' => $text,
             'tabla' => $tabla,

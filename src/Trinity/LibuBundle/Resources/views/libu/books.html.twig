@@ -1,0 +1,55 @@
+{% extends "LibuBundle::libu/base.html.twig" %}
+{# libu/Resources/views/libu/venta.html.twig #}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
+{% block body %}
+    <div class="clearfix">
+		{% if texto_previo is defined %}
+			{{ texto_previo | raw}}
+		{% endif %}
+
+		{% if lista is defined %}
+			<h1></h1>
+			<ul class="list-group">
+		    	{% for item in lista %}
+		      	  <li>{{ item | raw }}</li>
+		    	{% endfor %}
+			</ul>		    
+		{% endif %}
+
+
+{{ form_start(form) }}
+		{% if tabla is defined %}
+			<table class="table table-striped">
+			  <thead>
+			    <tr>
+			    	{% for cabecera in tabla.cabecera_array %}
+			      		<th> {{ cabecera }}</th>
+		      		{% endfor %}
+			    </tr>
+			  </thead>
+			  <tbody>
+
+			  	{% for linea in tabla.contenido %}
+			    <tr>
+	  				<td>
+	  					{{ form_widget(form.choice1, {'label_attr': {'class': 'foo'}}) }}
+		    		</td>
+			    	{% for item in linea %}
+			      		<td>{{ item }}</td>
+		      		{% endfor %}
+			    </tr>
+			    {% endfor %}
+			  </tbody>
+			</table>
+		{% endif%}
+{{ form_end(form) }}
+
+		<div class = 'formulario'>
+			<div class = 'col-sm-3 form'>
+		        {{ form(form) }}
+		    </div>
+	    </div>
+    </div>
+{% endblock %}
