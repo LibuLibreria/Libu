@@ -9,14 +9,16 @@
 			{{ texto_previo | raw}}
 		{% endif %}
 
+
+{{ form_start(form) }}
 		{% if lista is defined %}
-			<h1></h1>
-			<ul class="list-group">
-		    	{% for item in lista %}
-		      	  <li>{{ item | raw }}</li>
-		    	{% endfor %}
-			</ul>		    
+
+			{% for key, item in choices %}
+		      	  {{ form_widget(form.choice1[key]) }} {{ lista[item] | raw}}			
+	      	{% endfor %}      	      
 		{% endif %}
+{{ form_end(form) }}
+
 
 		{% if tabla is defined %}
 			<table class="table table-striped">
@@ -28,8 +30,12 @@
 			    </tr>
 			  </thead>
 			  <tbody>
+
 			  	{% for linea in tabla.contenido %}
 			    <tr>
+	  				<td>
+	  					{{ form_row(form) }}
+		    		</td>
 			    	{% for item in linea %}
 			      		<td>{{ item }}</td>
 		      		{% endfor %}
@@ -38,6 +44,7 @@
 			  </tbody>
 			</table>
 		{% endif%}
+
 
 		<div class = 'formulario'>
 			<div class = 'col-sm-3 form'>

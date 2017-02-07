@@ -24,3 +24,8 @@ swiftmailer:
     transport: gmail
     username:  '%mailer_user%'
     password:  '%mailer_password%'
+
+
+abebooks: 
+    abebooks_user: "%abebooks_user%"
+    abebooks_pass: "%abebooks_pass%"    
