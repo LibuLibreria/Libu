@@ -20,7 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 //use Trinity\LibuBundle\Entity\Tematica;
 //use Trinity\LibuBundle\Entity\Producto;
 //use Trinity\LibuBundle\Entity\ProductoVendido;
-//use Trinity\LibuBundle\Entity\Libro;
+use Trinity\LibuBundle\Entity\Libro;
 // use Trinity\LibuBundle\Entity\Tipo;
 //use Trinity\LibuBundle\Entity\Concepto;
 //use Trinity\LibuBundle\Entity\VentaRepository;
@@ -50,8 +50,10 @@ class BookController extends Controller
         // Lee el archivo de excel en formato csv guardado en /home/libu/ y lo convierte en un array
         $csv = array_map('str_getcsv', file('/home/libu/libros.csv'));
 
-//        echo "<pre>"; print_r($csv); echo "</pre>";
+        // echo "<pre>"; print_r($csv); echo "</pre>";
 
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
 
         $text = "<h1>Libros encontrados:</h1>"; 
         $lista = array();
@@ -96,12 +98,39 @@ class BookController extends Controller
             if ($form->get('continue')->isClicked()) {
 
                 $datos = $form->getData();
-                echo "<pre>"; print_r($datos); echo "</pre>";
+                // echo "<pre>"; print_r($datos); echo "</pre>";
 
-                foreach($datos['choice1'] as $book)
+                foreach($datos['choice1'] as $book) {
+
+                    // echo "BOOK: ".$book."<br>";
+
+                    // echo "<pre>"; print_r($csv); echo "</pre>"; 
 
                     $subido = $this->AbebookAdd($book,$csv);
+                    // dump($subido); 
+                    $mens_abebooks = new \SimpleXMLElement($subido);
+                    if ($mens_abebooks->code == "600") {
+                        $ok_mess = $mens_abebooks->AbebookList->Abebook->message;
+                        $ok_code = $mens_abebooks->AbebookList->Abebook->code;
+                        $ok_bookId = $mens_abebooks->AbebookList->Abebook->vendorBookID;
+                        echo $ok_bookId." añadido a Abebooks.<br>";
+                    }
 
+                    $libro = new Libro(); 
+                    $libro->setCodigo($csv[$book][3]);
+                    $libro->setAutor($csv[$book][2]);
+                    $libro->setTitulo($csv[$book][1]);
+                    $libro->setIsbn($csv[$book][0]);
+
+                    // Subimos todos los datos a la base de datos
+                    try {
+                            $em->persist($libro);
+                            $em->flush();
+                        }
+                    catch(\Doctrine\ORM\ORMException $e) {
+                        $this->addFlash('error', 'Error al guardar los datos');
+                    }
+                }
 
                 // Adjunta el archivo xml
                 // $cfile = file_get_contents('/home/borja/peticion.xml');
@@ -124,7 +153,7 @@ class BookController extends Controller
             if ($form->get('stop')->isClicked()) {
 
             }
-            return new Response ("ya está");
+            return new Response ("Volver a venta");
         }
 
 
@@ -146,8 +175,7 @@ class BookController extends Controller
                 
                 // Lee usuario y contraseña 
                 $abe_user = $this->getParameter('abebooks_user');
-                $abe_pass = $this->getParameter('abebooks_pass');        
-
+                $abe_pass = $this->getParameter('abebooks_pass');  
 
                 $cfile = '<?xml version="1.0" encoding="ISO-8859-1"?>
                 <inventoryUpdateRequest version="1.0">
@@ -184,7 +212,7 @@ class BookController extends Controller
                     </AbebookList>
                 </inventoryUpdateRequest>
                 ';
-
+                // dump($cfile);
 
                 // Establecer URL y otras opciones apropiadas
                 // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
@@ -193,15 +221,16 @@ class BookController extends Controller
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+                curl_setopt($ch, CURLOPT_ENCODING ,"");
 
                 // Capturar la URL y pasarla al navegador
-                // $resultado = curl_exec($ch);
+                $resultado = curl_exec($ch);
 
                 // Cerrar el recurso cURL y liberar recursos del sistema
                 curl_close($ch);
      
                 // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
-                return true; 
+                return $resultado; 
             }
 }
 
