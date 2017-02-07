@@ -60,24 +60,29 @@ class BookController extends Controller
             $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
             if ($isbn != "") {
                 $lista[$i][] = $i;
+                $choices[] = $i;
                 foreach ($book as $col) {
                     $lista[$i] = $book;
                 }                
             } else {      
-                if ($i != 0) $lista[$i] = array($i, "ISBN NO CORRECTO", "", "", "");   
+                if ($i != 0);   
             }
+            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
             $i++; 
         }
+        // echo "<pre>"; print_r($lista); echo "</pre><br>";
+        // echo "<pre>"; print_r($choices); echo "</pre><br>";
 
-        $tabla["contenido"] = $lista;
-        $tabla["cabecera_array"] = array("ISBN", "Título", "Autor", "Código");
+//        $tabla["contenido"] = $lista;
+//        $tabla["cabecera_array"] = array("ISBN", "Título", "Autor", "Código");
 
         // Crea los botones para el formulario
         $form = $this->createFormBuilder()
             ->add('choice1', ChoiceType::class, array(
-                'choices' => array(" " => true),
+                'choices' => $choices,
+                'label' => " ", 
                 'multiple' => true,
-                'expanded' => true
+                'expanded' => true, 
                 ))
             ->add('continue', SubmitType::class, array('label' => 'Subir estos libros'))
             ->add('stop', SubmitType::class, array('label' => 'No subir'))            
@@ -93,8 +98,10 @@ class BookController extends Controller
                 $datos = $form->getData();
                 echo "<pre>"; print_r($datos); echo "</pre>";
 
-                // Crear un nuevo recurso cURL
-                $ch = curl_init();
+                foreach($datos['choice1'] as $book)
+
+                    $subido = $this->AbebookAdd($book,$csv);
+
 
                 // Adjunta el archivo xml
                 // $cfile = file_get_contents('/home/borja/peticion.xml');
@@ -112,13 +119,37 @@ class BookController extends Controller
                 </orderUpdateRequest>
                 ';
         */
+            }
+
+            if ($form->get('stop')->isClicked()) {
+
+            }
+            return new Response ("ya está");
+        }
+
+
+        return $this->render('LibuBundle:libu:books.html.twig', array(
+ //           'lista' => $lista,
+            'texto_previo' => $text,
+            'lista' => $html_text,
+            'choices' => $choices,
+            'form' => $form->createView(),
+        ));
+  
+	}
+
+
+    private function AbebookAdd($book, $csv) {
+
+                // Crear un nuevo recurso cURL
+                $ch = curl_init();
+                
+                // Lee usuario y contraseña 
                 $abe_user = $this->getParameter('abebooks_user');
                 $abe_pass = $this->getParameter('abebooks_pass');        
-                // echo "Loader:<br><pre>"; print_r($loader); echo "</pre>";
 
-                $book = 1; 
-                $cfile = '
-                <?xml version="1.0" encoding="ISO-8859-1"?>
+
+                $cfile = '<?xml version="1.0" encoding="ISO-8859-1"?>
                 <inventoryUpdateRequest version="1.0">
                     <action name="bookupdate">
                         <username>'.$abe_user.'</username>
@@ -154,8 +185,9 @@ class BookController extends Controller
                 </inventoryUpdateRequest>
                 ';
 
+
                 // Establecer URL y otras opciones apropiadas
-        //        curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
+                // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
                 curl_setopt($ch, CURLOPT_URL, "https://inventoryupdate.abebooks.com:10027");        
                 curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
                 curl_setopt($ch, CURLOPT_POST, true);
@@ -163,31 +195,13 @@ class BookController extends Controller
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
 
                 // Capturar la URL y pasarla al navegador
-        //        $resultado = curl_exec($ch);
+                // $resultado = curl_exec($ch);
 
                 // Cerrar el recurso cURL y liberar recursos del sistema
                 curl_close($ch);
      
-    // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
-
+                // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
+                return true; 
             }
-
-            if ($form->get('stop')->isClicked()) {
-
-            }
-
-                return new Response ("ya está");
- //           return $this->redirectToRoute('venta');
-        }
-
-
-        return $this->render('LibuBundle:libu:books.html.twig', array(
- //           'lista' => $lista,
-            'texto_previo' => $text,
-            'tabla' => $tabla,
-            'form' => $form->createView(),
-        ));
-  
-	}
 }
 
