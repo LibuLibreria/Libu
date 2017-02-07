@@ -1,16 +1,45 @@
 #!/bin/bash
-echo "Necesitas entrar como super usuario"
+
+echo "====================="
+echo "Creando base de datos"
+echo "====================="
+echo "Introduzca la contraseña para el nuevo usuario de la base de datos: "
+read PASS
+
+echo "Y ahora el sistema le pedirá la contraseña root de mysql"
+mysql  -p -u root <<MYSQL_SCRIPT
+CREATE DATABASE libudb;
+CREATE USER 'user_libu'@'localhost' IDENTIFIED BY '$PASS';
+GRANT ALL PRIVILEGES ON libudb.* TO 'user_libu'@'localhost';
+FLUSH PRIVILEGES;
+MYSQL_SCRIPT
+
+echo "Datos a introducir cuando se solicite:"
+echo "Database:   libudb"
+echo "Username:   user_libu"
+echo "Password:   $PASS"
+
 HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
 sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
 sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var
-echo "Creados permisos..."
-<<<<<<< HEAD
-=======
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('SHA384', 'composer-setup.php') === 'bf16ac69bd8b807bc6e4499b28968ee87456e29a3894767b60c2d4dafa3d10d045ffef2aeb2e78827fa5f024fbe93ca2') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
-echo "Instalado Composer"
 
-composer install
->>>>>>> 7df9cdaf3ae308a67ac8bb12e9327ac5ba27ba79
+echo "===================================="
+echo "Instalando dependencias con Composer"
+echo "===================================="
+php composer.phar install
+
+echo "==============================="
+echo "Actualizando las bases de datos"
+echo "==============================="
+php bin/console doctrine:migrations:migrate
+
+echo "==============================="
+echo "Actualizando enlaces simbólicos"
+echo "==============================="
+php bin/console assets:install web --symlink
+
+echo "=================="
+echo "Actualizando caché"
+echo "=================="
+php bin/console cache:clear --env=dev
+php bin/console cache:clear --env=prod
