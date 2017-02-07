@@ -80,7 +80,7 @@
             <div >
                 {{ form_widget(form.save, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}}) }}
                 {{ form_widget(form.caja) }}     
-                {{ form_widget(form.formul) }}                             
+                {{ form_widget(form.mensual) }}                             
             </div>
         </div>
     </div>
@@ -91,6 +91,14 @@
         <div class='boton1'>
             <button class="boton-grande btn btn-primary" type="button" data-toggle="collapse" data-target="#col-productos" aria-expanded="true" aria-controls="col-productos">
               Otros productos
+            </button>
+
+            <button type="submit" id="venta_gasto" name="venta[gasto]" value="gasto" class="boton-grande btn btn-primary" >
+              Gasto
+            </button>
+
+            <button type="submit" id="venta_admin" name="venta[admin]" value="admin" class="boton-grande btn btn-primary" >
+              Admin
             </button>
         </div>
         <div id = 'col-productos' class = 'col-sm-12 form-inline collapse'>

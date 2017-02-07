@@ -5,6 +5,7 @@
       <index name="responsable" columns="responsable"/>
       <index name="tematica" columns="tematica"/>
       <index name="cliente" columns="cliente"/>
+      <index name="concepto" columns="concepto"/>
     </indexes>
     <id name="id" type="integer" column="id">
       <generator strategy="IDENTITY"/>
@@ -17,7 +18,6 @@
     <field name="ingreso" type="float" column="ingreso" precision="10" scale="0" nullable="true"/>
     <field name="gasto" type="float" column="gasto" precision="10" scale="0" nullable="true"/>
     <field name="ingresolibros" type="float" column="ingreso_libros" precision="10" scale="0" nullable="true"/>    
-    <field name="concepto" type="integer" column="concepto" nullable="true"/>
     <field name="descripcion" type="string" column="descripcion" length="40" nullable="true">
       <options>
         <option name="fixed"/>
@@ -52,6 +52,11 @@
     <many-to-one field="responsable" target-entity="Responsable" fetch="LAZY">
       <join-columns>
         <join-column name="responsable" referenced-column-name="id_resp"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="concepto" target-entity="Concepto" fetch="LAZY">
+      <join-columns>
+        <join-column name="concepto" referenced-column-name="id"/>
       </join-columns>
     </many-to-one>
   </entity>

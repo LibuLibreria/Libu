@@ -5,13 +5,17 @@ namespace Trinity\LibuBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 
 
-class ProductoType extends AbstractType
+
+
+class GastoType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -20,23 +24,25 @@ class ProductoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('codigo', TextType::class, array(
-                'label' => 'Nombre del producto (20 carac.): '
+            ->add('concepto')
+            ->add('descripcion', TextType::class, array(
+                'label' => 'Descripción del gasto (40 carac.): '
                 ))
-            ->add('vendedor', TextType::class, array(
-                'label' => 'Nombre del vendedor (20 carac.): '
+            ->add('gasto', MoneyType::class, array(
+                    'label' => 'Cantidad',
                 ))
-            ->add('precio')
-            ->add('tipo', EntityType::class, array(
+            ->add('diahora', DatetimeType::class, array(
+                'label' => 'Fecha: ',
+                'format' => 'd-M-y',
+                'widget' => 'single_text',
+                'attr' => array('style' => 'width: 120px'), 
+                ))
+/*            ->add('tipo', EntityType::class, array(
                 'class' => 'LibuBundle:Tipo',
                 'choice_label' => 'tipo',
                 'label' => 'Tipo',
-                ))   
-            ->add('activo', ChoiceType::class, array(
-                'choices' => array(
-                    'si' => 'si',
-                    'no' => 'no'
-                )))         
+                ))       
+*/     
 //            ->add('idVenta')
             ->add('save', SubmitType::class, array('label' => 'Guardar'))
             ->getForm(); 
@@ -49,7 +55,7 @@ class ProductoType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Trinity\LibuBundle\Entity\Producto'
+            'data_class' => 'Trinity\LibuBundle\Entity\Venta'
         ));
     }
 }

@@ -53,7 +53,10 @@ class Venta
     /**
      * @var integer
      *
-     * @ORM\Column(name="concepto", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Trinity\LibuBundle\Entity\Concepto")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="concepto", referencedColumnName="id")
+     * })
      */
     private $concepto;
 

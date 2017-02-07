@@ -23,6 +23,7 @@ use Trinity\LibuBundle\Entity\Producto;
 use Trinity\LibuBundle\Entity\ProductoVendido;
 use Trinity\LibuBundle\Entity\Libro;
 use Trinity\LibuBundle\Entity\Tipo;
+use Trinity\LibuBundle\Entity\Concepto;
 use Trinity\LibuBundle\Entity\VentaRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -59,6 +60,11 @@ class LibuController extends Controller
         $product = $em->getRepository('LibuBundle:Producto')->findAll();
         $n = 0;
 
+        // La variable $product_activo es un array con los productos activos, para mostrarlos por pantalla
+        $product_activo = $em->getRepository('LibuBundle:Producto')->findBy(
+            array('activo' => 'si'), 
+            array('codigo' => 'ASC'));
+
 
         // Crea el formulario $form con el esquema VentaType
 		$form = $this->createForm(VentaType::class, array());
@@ -88,6 +94,8 @@ class LibuController extends Controller
                 $venta->setCliente($data['cliente']);
                 $venta->setTematica($data['tematica']);
                 $venta->setResponsable($data['responsable']);
+                $venta->setTipomovim('ven');
+                $venta->setGasto('0');
 
                 // Buscamos los productos cuya venta ha sido mayor que cero 
                 $vendidos = array(); $pagoproductos = 0; $m  = 0;
@@ -96,7 +104,7 @@ class LibuController extends Controller
 
                         // Obtenemos el Producto actual
                         $prod_actual = $em->getRepository('LibuBundle:Producto')
-                            ->findOneByIdProd($product[$pr]->getIdProd()); 
+                            ->findOneByIdProd($product_activo[$pr]->getIdProd()); 
 
                         // Creamos una nueva instancia de Producto Vendido
                         $pv = new ProductoVendido();
@@ -153,15 +161,27 @@ class LibuController extends Controller
                 return $this->redirectToRoute('caja');   
             }             
 
-            // Botón Formulario Productos
-            if ($form->get('formul')->isClicked()) {
-                return $this->redirectToRoute('producto');   
+            // Botón Formulario Caja Mensual
+            if ($form->get('mensual')->isClicked()) {
+                return $this->redirectToRoute('cajamensual');   
+            }  
+
+            // Botón Gasto
+            if ($form->get('gasto')->isClicked()) {
+                echo "gasto";
+                return $this->redirectToRoute('gasto');   
+            }  
+
+            // Botón Admin
+            if ($form->get('admin')->isClicked()) {
+                echo "admin";
+                return $this->redirectToRoute('easyadmin');   
             }  
 		}
 
 		return $this->render('LibuBundle:libu:inicio.html.twig', array(
 			'form' => $form->createView(),
-            'prodguztiak' => $product,
+            'prodguztiak' => $product_activo,
 			));    
 	}
 
@@ -238,21 +258,14 @@ class LibuController extends Controller
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
 
-        // Averigua el número de la última factura emitida
-        $parameters = array();
-        $query = $em->createQuery(
-            'SELECT v.factura
-            FROM LibuBundle:Venta v 
-            WHERE v.factura IS NOT NULL
-            ORDER BY v.factura DESC'
-        )->setParameters($parameters);
-        $result = $query->setMaxResults(1)->getOneOrNullResult();
-        $numfactura = ($result['factura'] + 1);
-        
+        // Pone el siguiente identificador de factura
+        $numfactura = 1 + $em->getRepository('LibuBundle:Venta')->findNumUltimaFactura();
 
-        // Recupera el identificador y la instancia de la venta realizada. 
+        // Recupera el identificador de la venta realizada. 
         $session = $request->getSession();
         $ultimoid = $session->get('ultimoid');
+
+        // $ventaactual es la instancia de la venta realizada
         $ventaactual = $em->getRepository('LibuBundle:Venta')->findOneById($ultimoid);
 
         // Llama a la función sumaPagoLibros para el desglose del pago de libros
@@ -277,6 +290,7 @@ class LibuController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('finalizar')->isClicked()) {
                 $ventaactual->setFactura($numfactura);
+                $ventaactual->setTipomovim("ven");
                 try{
                     $em->persist($ventaactual);
                     $em->flush();
@@ -438,13 +452,8 @@ class LibuController extends Controller
     {
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
-        $parameters = array();
-        $query = $em->createQuery(
-            'SELECT v
-            FROM LibuBundle:Venta v 
-            WHERE v.factura IS NOT NULL'
-        )->setParameters($parameters);
-        $tickets = $query->getResult();        
+
+        $tickets = $em->getRepository('LibuBundle:Venta')->findVentasConFactura();       
 
         $html = $this->renderView('LibuBundle:libu:ticket.html.twig', array(
             'tickets' => $tickets,
