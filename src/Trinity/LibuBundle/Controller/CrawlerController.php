@@ -51,36 +51,13 @@ class CrawlerController extends Controller
     /**
      * @Route("/crawler", name="crawler")
      */
-    public function crawlerAction(Request $request)
+    public function crawlerAction(Request $request )
     {
-        echo "Abriendo Crawler<br>";
+ 
+    if (!isset($isbn)) $isbn = '9788495618603';
+    $datos_isbn = $this->buscaIsbn($isbn);
 
-
-$html = <<<'HTML'
-<!DOCTYPE html>
-<html2>
-    <body>
-        <p class="message">Hello World!</p>
-        <p>Hello Crawler!</p>
-    </body>
-</html2>
-HTML;
-
-$crawler = new Crawler($html);
-$crawler = $crawler->filter('html');
-foreach ($crawler as $domElement) {
-    var_dump($domElement->nodeName);
-}
-
-
-
-
-
-
-
-
-
-       // echo "<pre>"; print_r($csv); echo "</pre>";
+    echo "<pre>"; print_r($datos_isbn); echo "</pre>";
 
         // Abrimos un gestionador de repositorio para toda la función
  //       $em = $this->getDoctrine()->getManager();
@@ -128,6 +105,39 @@ foreach ($crawler as $domElement) {
   
 	}
 
+    public function buscaIsbn($isbn) {
+        $libreria_espana = true;
+        $esp = $libreria_espana ? '&n=200000228' : '';
+        $abebooks_isbn = file_get_contents('https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn);
+    //print_r($abebooks_isbn);
+
+        $crawler = new Crawler($abebooks_isbn);
+        $header = $crawler->filter('#pageHeader > h1')->text();
+        echo "<h2>".$header."</h2>";
+
+        $precios = $crawler->filter('.result-data');
+        // echo "<br>Text: ".$crawler->filter('p')->last()->text();
+        // echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
+
+        $i = 0;
+        foreach ($precios as $domElement) {
+            $array_crawler[$i] = new Crawler();
+            $array_crawler[$i]->add($domElement);
+            $pr = explode(' ',$array_crawler[$i]->filter('.item-price .price')->text());
+            $precio = end($pr); 
+            $env = explode(' ',$array_crawler[$i]->filter('.shipping .price')->text());
+            $envio = end($env);
+            $libreria = $array_crawler[$i]->filter('.bookseller-info > p > a')->text();        
+            $pais = explode(',',$array_crawler[$i]->filter('.bookseller-info > p > span')->text());         
+            $suma = (float)str_replace(',', '.', $precio) + (float)str_replace(',', '.', $envio);
+       //      number_format((float)$precio, 2, '.', '') + number_format((float)$envio, 2, '.', '') ;
+            $datos[$i++] = "Librería: <b>".$libreria."</b> - País: ".substr(end($pais), 0, -1)." - Precio: ".$precio." - Envío: ".$envio." - <b>TOTAL: ".$suma."</b><br>";
+
+     //       var_dump($domElement->nodeName);
+        }
+        return $datos; 
+
+    }
 
 
 }
