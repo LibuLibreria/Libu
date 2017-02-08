@@ -185,7 +185,13 @@ class BookController extends Controller
     public function buscaIsbn($isbn) {
         $libreria_espana = true;
         $esp = $libreria_espana ? '&n=200000228' : '';
-        $abebooks_isbn = file_get_contents('https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn);
+        $streamContext = stream_context_create([
+            'ssl' => [
+                'verify_peer'      => false,
+                'verify_peer_name' => false
+            ]
+        ]);
+        $abebooks_isbn = file_get_contents('https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn, false, $streamContext);
     //print_r($abebooks_isbn);
 
         $crawler = new Crawler($abebooks_isbn);
