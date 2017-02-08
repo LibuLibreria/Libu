@@ -1,10 +1,10 @@
 {% extends "LibuBundle::libu/base.html.twig" %}
 {# libu/Resources/views/libu/venta.html.twig #}
 
-{% form_theme form 'bootstrap_3_layout.html.twig' %}
 
 {% block body %}
     <div class="clearfix">
+
 		{% if texto_previo is defined %}
 			{{ texto_previo | raw}}
 		{% endif %}
@@ -39,10 +39,12 @@
 			</table>
 		{% endif%}
 
-		<div class = 'formulario'>
-			<div class = 'col-sm-3 form'>
-		        {{ form(form) }}
+		{% if form is defined %}
+			<div class = 'formulario'>
+				<div class = 'col-sm-3 form'>
+			        {{ form(form) }}
+			    </div>
 		    </div>
-	    </div>
+	    {% endif %}
     </div>
 {% endblock %}
