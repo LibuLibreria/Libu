@@ -39,14 +39,18 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 // use Symfony\Component\Serializer\Encoder\JsonEncoder;
 // use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\CssSelector\CssSelectorConverter;
+
+
+
 class BookController extends Controller
 {
 
     /**
      * @Route("/book/subir", name="booksubir")
      */
-    public function booksubirAction(Request $request)
-    {
+    public function booksubirAction(Request $request)  {
         // Lee el archivo de excel en formato csv guardado en /home/libu/ y lo convierte en un array
         $csv = array_map('str_getcsv', file('/home/libu/libros.csv'));
 
@@ -70,8 +74,18 @@ class BookController extends Controller
                 if ($i != 0);   
             }
             $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
+            $arrayprecios = $this->buscaIsbn($book[0]);
+            if ($arrayprecios) {
+                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
+            } else {
+                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
+            }
+        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
             $i++; 
         }
+
+
+
         // echo "<pre>"; print_r($lista); echo "</pre><br>";
         // echo "<pre>"; print_r($choices); echo "</pre><br>";
 
@@ -166,6 +180,47 @@ class BookController extends Controller
         ));
   
 	}
+
+
+    public function buscaIsbn($isbn) {
+        $libreria_espana = true;
+        $esp = $libreria_espana ? '&n=200000228' : '';
+        $abebooks_isbn = file_get_contents('https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn);
+    //print_r($abebooks_isbn);
+
+        $crawler = new Crawler($abebooks_isbn);
+
+        if (! $crawler->filter('#pageHeader > h1')->count()) {
+            $datos = false;
+        } else {
+            $header = $crawler->filter('#pageHeader > h1');
+//            echo "<h2>".$header->text()."</h2>";
+
+            $precios = $crawler->filter('.result-data');
+            // echo "<br>Text: ".$crawler->filter('p')->last()->text();
+            // echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
+
+            $i = 0;
+            foreach ($precios as $domElement) {
+                $array_crawler[$i] = new Crawler();
+                $array_crawler[$i]->add($domElement);
+                $pr = explode(' ',$array_crawler[$i]->filter('.item-price .price')->text());
+                $precio = end($pr); 
+                $env = explode(' ',$array_crawler[$i]->filter('.shipping .price')->text());
+                $envio = end($env);
+                $libreria = $array_crawler[$i]->filter('.bookseller-info > p > a')->text();        
+                $pais = explode(',',$array_crawler[$i]->filter('.bookseller-info > p > span')->text());         
+                $suma = (float)str_replace(',', '.', $precio) + (float)str_replace(',', '.', $envio);
+           //      number_format((float)$precio, 2, '.', '') + number_format((float)$envio, 2, '.', '') ;
+                $datos[$i++] = "Librería: <b>".$libreria."</b> - País: ".substr(end($pais), 0, -1)." - Precio: ".$precio." - Envío: ".$envio." - <b>TOTAL: ".$suma."</b><br>";
+
+         //       var_dump($domElement->nodeName);
+            }
+
+        return $datos; 
+        }
+    }
+
 
 
     private function AbebookAdd($book, $csv) {
