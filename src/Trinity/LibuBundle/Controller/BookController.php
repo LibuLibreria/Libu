@@ -174,8 +174,8 @@ class BookController extends Controller
                 $ch = curl_init();
                 
                 // Lee usuario y contraseña 
-                $abe_user = $this->getParameter('abebooks_user');
-                $abe_pass = $this->getParameter('abebooks_pass');  
+                $abe_user = $this->getParameter('mailer_user');
+                $abe_pass = $this->getParameter('mailer_password');  
 
                 $cfile = '<?xml version="1.0" encoding="ISO-8859-1"?>
                 <inventoryUpdateRequest version="1.0">
