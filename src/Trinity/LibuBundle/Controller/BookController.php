@@ -185,6 +185,8 @@ class BookController extends Controller
     public function buscaIsbn($isbn) {
         $libreria_espana = true;
         $esp = $libreria_espana ? '&n=200000228' : '';
+
+        // See http://php.net/manual/en/migration56.openssl.php
         $streamContext = stream_context_create([
             'ssl' => [
                 'verify_peer'      => false,
@@ -192,7 +194,7 @@ class BookController extends Controller
             ]
         ]);
         $abebooks_isbn = file_get_contents('https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn, false, $streamContext);
-    //print_r($abebooks_isbn);
+        //print_r($abebooks_isbn);
 
         $crawler = new Crawler($abebooks_isbn);
 
