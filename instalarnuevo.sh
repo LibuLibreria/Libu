@@ -28,9 +28,12 @@ echo "Instalando dependencias con Composer"
 echo "===================================="
 php composer.phar install
 
+
 echo "==============================="
 echo "Actualizando las bases de datos"
 echo "==============================="
+
+mysql -p "$PASS" -u user_libu libudb < estructura_libudb.sql
 php bin/console doctrine:migrations:migrate
 
 echo "==============================="

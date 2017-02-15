@@ -1,7 +1,8 @@
 #!/bin/bash
 
-
-
+echo "Debe estar instalado php7.0-xml"
+echo "Si no lo está, hacer un sudo apt-get install, o dará error"
+echo "También debe instalarse php-intl"
 
 while true; do
     read -p "¿Desea continuar? (s/n)" sn

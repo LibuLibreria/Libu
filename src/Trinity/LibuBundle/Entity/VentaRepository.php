@@ -136,7 +136,7 @@ class VentaRepository extends EntityRepository
             WHERE v.diahora >= :fecha AND v.diahora < :fechasig
             AND v.factura IS NOT NULL
             AND v.tipomovim = 'ven'
-            GROUP BY dia"
+            GROUP BY dia, id"
         )->setParameters($parameters);
             $ventas = $query->getResult(); 
             $formatoFecha = function(&$vent)   {
