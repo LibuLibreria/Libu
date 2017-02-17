@@ -8,7 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
- * @UniqueEntity(fields="email", message="This email address is already in use")
+ * @UniqueEntity(fields="userid", message="Este identificador ya se está utilizando")
  */
 class User implements UserInterface
 {
@@ -20,7 +20,7 @@ class User implements UserInterface
     protected $id;
 
     /**
-     * @ORM\Column(type="string", length=255, unique=true)
+     * @ORM\Column(type="string", length=255)
      */
     protected $email;
 
@@ -43,6 +43,12 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=64)
      */
     protected $password;
+
+    /**
+     * @ORM\Column(type="string", length=30, unique=true)
+     */
+    protected $userid;
+
 
     public function eraseCredentials()
     {
@@ -117,5 +123,30 @@ class User implements UserInterface
     public function getSalt()
     {
         return null;
+    }
+
+
+    /**
+     * Set userid
+     *
+     * @param string $userid
+     *
+     * @return User
+     */
+    public function setUserid($userid)
+    {
+        $this->userid = $userid;
+
+        return $this;
+    }
+
+    /**
+     * Get userid
+     *
+     * @return string
+     */
+    public function getUserid()
+    {
+        return $this->userid;
     }
 }

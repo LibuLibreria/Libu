@@ -23,6 +23,11 @@
       <options>
         <option name="fixed"/>
       </options>
-    </field>              
+    </field>     
+    <field name="userid" type="string" column="userid" length="30" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>               
   </entity>
 </doctrine-mapping>
