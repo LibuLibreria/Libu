@@ -5,7 +5,7 @@ security:
         Trinity\LibuBundle\Entity\User: bcrypt
     providers:
         database_users:
-            entity: { class: LibuBundle:User, property: email }
+            entity: { class: LibuBundle:User, property: userid }
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
@@ -25,3 +25,4 @@ security:
         - { path: ^/libu/, roles: ROLE_USER }
         - { path: ^/book/, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_USER }
+#        - { path: ^/register, roles: ROLE_USER }
