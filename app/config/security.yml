@@ -20,3 +20,8 @@ security:
             logout:
                 path: /logout
                 target: /
+    access_control: 
+#        - { path: ^/login/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/libu/, roles: ROLE_USER }
+        - { path: ^/book/, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_USER }
