@@ -1,158 +1,121 @@
 <?php
-
 namespace Trinity\LibuBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * User
- *
- * @ORM\Table(name="user")
- * @ORM\Entity(repositoryClass="Trinity\LibuBundle\Repository\UserRepository")
+ * @ORM\Entity
+ * @UniqueEntity(fields="email", message="This email address is already in use")
  */
-class User
+class User implements UserInterface
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
+     * @ORM\Id;
+     * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="email", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
-    private $email;
+    protected $email;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=40, nullable=true)
+     * @ORM\Column(type="string", length=40)
      */
-    private $name;
+    protected $name;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="role", type="string", length=50, nullable=true)
+     * @ORM\Column(type="string", length=50)
      */
-    private $role;
+    protected $role;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="password", type="string", length=64, nullable=true)
+     * @Assert\Length(max=4096)
      */
-    private $password;
-
+    protected $plainPassword;
 
     /**
-     * Get id
-     *
-     * @return int
+     * @ORM\Column(type="string", length=64)
      */
-    public function getId()
+    protected $password;
+
+    public function eraseCredentials()
     {
-        return $this->id;
+        return null;
     }
 
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
-     * @return User
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return User
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set role
-     *
-     * @param string $role
-     *
-     * @return User
-     */
-    public function setRole($role)
-    {
-        $this->role = $role;
-
-        return $this;
-    }
-
-    /**
-     * Get role
-     *
-     * @return string
-     */
     public function getRole()
     {
         return $this->role;
     }
 
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
-     */
-    public function setPassword($password)
+    public function setRole($role = null)
     {
-        $this->password = $password;
-
-        return $this;
+        $this->role = $role;
     }
 
-    /**
-     * Get password
-     *
-     * @return string
-     */
+    public function getRoles()
+    {
+        return [$this->getRole()];
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getUsername()
+    {
+        return $this->email;
+    }
+
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
     public function getPassword()
     {
         return $this->password;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword($plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
+    }
+
+    public function getSalt()
+    {
+        return null;
     }
 }
