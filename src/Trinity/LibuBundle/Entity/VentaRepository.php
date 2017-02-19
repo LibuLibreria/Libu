@@ -39,10 +39,9 @@ class VentaRepository extends EntityRepository
             FROM producto_vendido pv, producto p 
             WHERE pv.id_prod = p.id_prod 
             AND pv.id_venta = '.$venta;
-       $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();    
-
     }        
 
 
@@ -96,27 +95,30 @@ class VentaRepository extends EntityRepository
             ORDER BY v.diahora"
         )->setParameters($parameters);
 
-        // Si la opción prodvend está activada, añadimos una matriz de productos a cada registro
+        $ventas = $query->getResult();  
+
+        // Si la opción prodvend está activada, añadimos una matriz de productos vendidos a cada registro
         if ($prodvend) {
-            $ventas = $query->getResult(); 
             $repoProdVend = $this->getEntityManager()->getRepository('LibuBundle:ProductoVendido');
             $sartuProd = function(&$vent) use (&$repoProdVend)    {
                     $vent['prodvendidos'] = $repoProdVend->findByIdVenta($vent['id']); 
- /*                   $suma = 0;
-                    foreach ($vent['prodvendidos'] as $pvend) {
-                        $suma += ($pvend->getCantidad() * $pvend->getIdProd()->getPrecio());
-                    }
-                    $vent['sumaprods'] = $suma; 
-                    $vent['sumalibros'] = $vent['ingreso'] - $vent['sumaprods'];
- */               };
+            };
             array_walk($ventas, $sartuProd );
-            return $ventas;
-        } else {
-            return $query->getResult();
-        }
+        } 
+        return array(
+            'ventas' => $ventas,
+            'ingreso' => $this->SumaColumna($ventas, 'ingreso'), 
+            'ingresolibros' => $this->SumaColumna($ventas, 'ingresolibros'),
+        );
     }
 
 
+    /*
+    * Hace la suma de todos los valores de una columna
+    */
+    public function SumaColumna($matriz, $columna) {
+        return array_sum(array_column($matriz, $columna));
+    }
 
 
     /*
@@ -138,13 +140,19 @@ class VentaRepository extends EntityRepository
             AND v.tipomovim = 'ven'
             GROUP BY dia"
         )->setParameters($parameters);
-            $ventas = $query->getResult(); 
-            $formatoFecha = function(&$vent)   {
-                $vent['fechalink'] = date("Ymd",strtotime($vent['dia']));
-            };
 
-            array_walk($ventas, $formatoFecha );
-            return $ventas;
+        $ventas = $query->getResult(); 
+        
+        $formatoFecha = function(&$vent)   {
+            $vent['fechalink'] = date("Ymd",strtotime($vent['dia']));
+        };
+        array_walk($ventas, $formatoFecha );
+
+        return array(
+            'ventas' => $ventas,
+            'ingreso' => $this->SumaColumna($ventas, 'ingreso'), 
+            'ingresolibros' => $this->SumaColumna($ventas, 'ingresolibros'),
+        );
     }
 
 }

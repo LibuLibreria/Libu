@@ -16,7 +16,7 @@
 				</tr>
 			</thead>
 			<tbody>
-		    {% for vent in ventasdia %}
+		    {% for vent in ventasdia.ventas %}
 		    	<tr>
 		        	<td><a href= "{{ path('caja_fecha', { 'dia' : vent['fechalink'] }) }}">
 		        		{{ vent['dia'] | localizeddate('full', 'none', app.request.locale ) }}</a></td>		    	
@@ -25,7 +25,9 @@
 		        	<td>{{ (vent['ingreso'] - vent['ingresolibros'])  |round(1,'common') }} euros </td>
 	        	</tr>
 		    {% endfor %}
-		    <tr><td><b> Total:</b></td><td><b>{{ ingrmes  |round(1,'common') }} euros</b></td><td><b>{{ ingrlibros  |round(1,'common') }} euros</b></td><td><b>{{ ingrprods  |round(1,'common') }} euros</b></td><td></tr>
+		    <tr><td><b> Total:</b></td><td><b>{{ ventasdia.ingreso  |round(1,'common') }} euros</b></td>
+		    	<td><b>{{ ventasdia.ingresolibros  |round(1,'common') }} euros</b></td>
+		    	<td><b>{{ ventasdia.ingreso - ventasdia.ingresolibros  |round(1,'common') }} euros</b></td><td></tr>
 			</tbody>
 		</table>
 

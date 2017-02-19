@@ -16,7 +16,7 @@
 				</tr>
 			</thead>
 			<tbody>
-		    {% for vent in ventasdia %}
+		    {% for vent in ventasdia.ventas %}
 		    	<tr>
 		        	<td>{{ vent['hora'] | localizeddate('none', 'short', app.request.locale ) }}</td>
 		        	<td>{{ vent['ingreso'] }} euros</td>
@@ -33,8 +33,8 @@
 		        	</td>
 	        	</tr>
 		    {% endfor %}
-		    <tr><td><b> Total:</b></td><td><b>{{ ingrdia }} euros</b></td><td><b>{{ ingrlibdia }} euros </b>
-		    	</td><td><b>{{ ingrdia - ingrlibdia }} euros</b></td><td></td><td></td></tr>
+		    <tr><td><b> Total:</b></td><td><b>{{ ventasdia.ingreso }} euros</b></td><td><b>{{ ventasdia.ingresolibros }} euros </b>
+		    	</td><td><b>{{ ventasdia.ingreso - ventasdia.ingresolibros }} euros</b></td><td></td><td></td></tr>
 			</tbody>
 		</table>
 
