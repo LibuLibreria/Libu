@@ -17,7 +17,7 @@ class VentaRepository extends EntityRepository
             FROM venta 
             WHERE factura > 0 
             AND tipo_movim = 'ven'
-            GROUP BY DATE(diaHora) 
+            GROUP BY dias
             ORDER BY dias DESC
             LIMIT ".$limit
         ;
