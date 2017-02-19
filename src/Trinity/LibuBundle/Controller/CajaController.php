@@ -149,6 +149,7 @@ class CajaController extends Controller
         // Buscamos las ventas del día marcado por $fecha con la función ventasFechas()
         $ventas = $em->getRepository('LibuBundle:Venta')->ventasMes($fecha, $fechasig);
 //dump($ventas);
+
         // Utilizamos array_sum y array_column para calcular los ingresos del mes
         $ingrmes = array_sum(array_column($ventas, 'ingreso'));
         $ingrlibros = array_sum(array_column($ventas, 'ingresolibros'));
@@ -158,8 +159,8 @@ class CajaController extends Controller
         $hoy =  new \DateTime();
         $mesesanteriores = $hoy->modify('+1 month');
 
-       for ($i=0; $i<6; $i++) {
- //          $hilabete = strtotime($hoy);        // marca Unix de tiempo
+        for ($i=0; $i<6; $i++) {
+ //         $hilabete = strtotime($hoy);        // marca Unix de tiempo
             $anoactual = $hoy->modify('-1 month')->format('Y');
             $textochoice = $this->mesescast[$hoy->format('n')]."-".$anoactual;
             $meseslista[$textochoice] = date($hoy->format('Ym'));     // array para los choices 
