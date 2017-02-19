@@ -62,8 +62,11 @@ class VentaRepository extends EntityRepository
         return $result['factura'];
     }
         
-    public function findVentasConFactura() {
 
+
+
+        
+    public function findVentasConFactura() {
         $parameters = array();
         $query = $this->getEntityManager()->createQuery(
             "SELECT v
@@ -73,6 +76,7 @@ class VentaRepository extends EntityRepository
         )->setParameters($parameters);
         return $query->getResult(); 
     }
+
 
     /*
     * Obtiene las ventas que hay entre dos determinadas fechas
@@ -142,7 +146,7 @@ class VentaRepository extends EntityRepository
         )->setParameters($parameters);
 
         $ventas = $query->getResult(); 
-        
+
         $formatoFecha = function(&$vent)   {
             $vent['fechalink'] = date("Ymd",strtotime($vent['dia']));
         };
