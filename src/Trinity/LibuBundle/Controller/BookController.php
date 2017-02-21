@@ -33,6 +33,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 // use Symfony\Component\Form\Extension\Core\Type\TextType;
 // use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+
 
 // use Symfony\Component\Serializer\Serializer;
 // use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -48,10 +50,57 @@ class BookController extends Controller
 {
 
     /**
+     * @Route("/book/csv", name="bookcsv")
+     */
+    public function booksubirCsvAction(Request $request)  {
+        $form = $this->createFormBuilder()
+            ->add('archivocsv', FileType::class, array(
+                "label" => "Archivo csv:",
+            ))
+            ->add('enviar', SubmitType::class, array('label' => 'Enviar'))            
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        $mensaje = ""; 
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($form->get('enviar')->isClicked()) {
+                // Recogemos el fichero
+                $file=$form['archivocsv']->getData();
+                 
+                // Sacamos la extensión del fichero
+                $ext=$file->guessExtension();
+
+                if ($ext != 'txt') $mensaje = "El archivo subido no es csv";
+                 
+                // Guardamos el fichero en el directorio uploads que estará en el directorio /web del framework
+                $file->move(
+                    $this->getParameter('directorio_uploads')."/archivoscsv",
+                    $file->getClientOriginalName()
+                );
+            }
+        }
+
+
+        return $this->render('LibuBundle:libu:libro.html.twig', array(
+            'mensaje' => $mensaje,
+            'titulo' => "Libro",
+            'form' => $form->createView(),
+        ));
+    }
+
+
+    /**
      * @Route("/book/subir", name="booksubir")
      */
     public function booksubirAction(Request $request)  {
         // Lee el archivo de excel en formato csv guardado en /home/libu/ y lo convierte en un array
+
+
+
+
         $csv = array_map('str_getcsv', file('/home/libu/libros.csv'));
 
         // echo "<pre>"; print_r($csv); echo "</pre>";
