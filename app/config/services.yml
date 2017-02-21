@@ -13,3 +13,5 @@ services:
         class: Trinity\LibuBundle\Security\FormLoginAuthenticator
         arguments: ["@router", "@security.password_encoder"]
 
+    app.books:
+        class: Trinity\LibuBundle\Books\BookManager

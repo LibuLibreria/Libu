@@ -62,24 +62,33 @@ class BookController extends Controller
 
         $form->handleRequest($request);
 
+        $bman = $this->get('app.books');
+
         $mensaje = ""; 
+
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             if ($form->get('enviar')->isClicked()) {
                 // Recogemos el fichero
-                $file=$form['archivocsv']->getData();
+                $uplfile=$form['archivocsv']->getData();
                  
-                // Sacamos la extensión del fichero
-                $ext=$file->guessExtension();
+                if (($uplfile->guessExtension() == 'txt') ){
 
-                if ($ext != 'txt') $mensaje = "El archivo subido no es csv";
-                 
-                // Guardamos el fichero en el directorio uploads que estará en el directorio /web del framework
-                $file->move(
-                    $this->getParameter('directorio_uploads')."/archivoscsv",
-                    $file->getClientOriginalName()
-                );
+                    // Guardamos el fichero en el directorio uploads que estará en el directorio /web del framework
+                    $file = $uplfile->move(
+                        $this->getParameter('directorio_uploads')."/archivoscsv",
+                        $uplfile->getClientOriginalName()
+                    );
+
+                    $bman->setFilename($uplfile->getClientOriginalName());
+                    $bman->setFile($file);
+                    $bman->getArrayFile();
+                    return new Response("<br>Se ha subido correctamente");
+
+                } else {
+                    $mensaje = "El archivo subido no es csv";
+                } 
             }
         }
 
