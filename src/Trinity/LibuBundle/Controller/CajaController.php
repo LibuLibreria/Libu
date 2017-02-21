@@ -65,26 +65,22 @@ class CajaController extends Controller
      */
     public function cajaAction(Request $request, $dia)
     {
+        // Fecha de hoy según la url 
         $fecha = ($dia != 1) ? $fecha = \DateTime::createFromFormat('Ymd', $dia) : $fecha = new \DateTime(); 
-        $fechasig = new \DateTime();
-        $fechasig = clone $fecha;   // nueva instancia para que no afecten las modify a $fecha
-        // 
+        // $fechasig = new \DateTime();
+
+        // Nueva instancia para que no afecten las modify a $fecha
+        $fechasig = clone $fecha;   
+
         $em = $this->getDoctrine()->getManager();
 
         // Buscamos las ventas del día marcado por $fecha con la función ventasFechas()
         $ventas = $em->getRepository('LibuBundle:Venta')->ventasFechas($fecha, $fechasig->modify('+1 day'));
-// dump($ventas);
-        // Utilizamos array_sum y array_column para calcular los ingresos del día
-        $ingrdia = array_sum(array_column($ventas, 'ingreso'));
-        $ingrlibdia = array_sum(array_column($ventas, 'ingresolibros'));
 
-        // DESPLEGABLE CON LAS FECHAS ANTERIORES
-        // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
-        // en que se han hecho ingresos. 
+        // Desplegable con las fechas anteriores
         $diasanteriores = $em->getRepository('LibuBundle:Venta')->fechasIngresos();
 
         // Creamos el array para preparar las choices
-        $i = 0;
         foreach ($diasanteriores as $dia) {
             $time_dia = strtotime($dia['dias']);        // marca Unix de tiempo
             $diaslista[date("j-n-Y", $time_dia )] = date("Ymd",($time_dia));     // array para los choices 
@@ -108,22 +104,15 @@ class CajaController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('fecha')->isClicked()) {
                 $data = $form->getData();
-
                 return $this->redirectToRoute('caja_fecha', array('dia' => $data['diasventas']));
             }
-
-                
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
-//            if ($form->get('email')->isClicked()) return $this->redirectToRoute('email');
-
         }
 
         return $this->render('LibuBundle:libu:caja.html.twig',array(
             'form' => $form->createView(),
             'ventasdia' => $ventas,
             'fecha' => $fecha,
-            'ingrdia' => $ingrdia,
-            'ingrlibdia' => $ingrlibdia,
             ));    
     }
 
@@ -138,28 +127,22 @@ class CajaController extends Controller
     public function cajamensualAction(Request $request, $mes)
     {
         $fecha = ($mes != 1) ? \DateTime::createFromFormat('Ym', $mes) : new \DateTime(); 
-//        $fecha = new \DateTime();         
-//        $fechasig = new \DateTime();
         $fecha->modify('first day of this month');
         $fechasig = clone $fecha;   // nueva instancia para que no afecten las modify a $fecha
         $fechasig->modify('last day of this month')->modify('+1 day');
+
         // 
         $em = $this->getDoctrine()->getManager();
 
         // Buscamos las ventas del día marcado por $fecha con la función ventasFechas()
         $ventas = $em->getRepository('LibuBundle:Venta')->ventasMes($fecha, $fechasig);
-//dump($ventas);
-        // Utilizamos array_sum y array_column para calcular los ingresos del mes
-        $ingrmes = array_sum(array_column($ventas, 'ingreso'));
-        $ingrlibros = array_sum(array_column($ventas, 'ingresolibros'));
 
-        // Usamos NativeSql de Doctrine (query directo a mysql) para averiguar las últimas fechas 
-        // en que se han hecho ingresos. 
+
         $hoy =  new \DateTime();
         $mesesanteriores = $hoy->modify('+1 month');
 
-       for ($i=0; $i<6; $i++) {
- //          $hilabete = strtotime($hoy);        // marca Unix de tiempo
+        for ($i=0; $i<6; $i++) {
+ //         $hilabete = strtotime($hoy);        // marca Unix de tiempo
             $anoactual = $hoy->modify('-1 month')->format('Y');
             $textochoice = $this->mesescast[$hoy->format('n')]."-".$anoactual;
             $meseslista[$textochoice] = date($hoy->format('Ym'));     // array para los choices 
@@ -193,9 +176,6 @@ class CajaController extends Controller
             'form' => $form->createView(),
             'ventasdia' => $ventas,
             'fecha' => $fechatit,
-            'ingrmes' => $ingrmes,
-            'ingrlibros' => $ingrlibros,       
-            'ingrprods' => $ingrmes - $ingrlibros,
             'mesescast' => $this->mesescast,                
             ));    
     }
