@@ -16,11 +16,12 @@ class BookManager implements ContainerAwareInterface  {
 
 	protected $array_file; 
 
-    public function __construct() {
-    	$this->file = ""; 
-    	$this->filename = ""; 
-    	$this->array_file = ""; 
-    }	
+	protected $em;
+
+	public function __construct($em)
+	{ 
+	    $this->em = $em;
+	}
 
     public function setFilename($filename) {
     	$this->filename = $filename;   	
@@ -97,6 +98,26 @@ class BookManager implements ContainerAwareInterface  {
         return $libro; 
     }
 
+    public function persisteArrayLibros($arrayLibros) {
+
+        $em = $this->em;
+
+    	foreach ($arrayLibros as $libro) {
+	        try {
+	            $em->persist($libro);
+	            $em->flush();
+            }
+            catch(\Doctrine\ORM\ORMException $e){
+	            $this->addFlash('error', 'Error al guardar los datos de uno de los libros');
+	        } 
+        } 
+   	
+    }
+
+
+    public function leerArrayLibros() {
+
+    }
 
     public function saluda() {
     	echo "<br>Hola";

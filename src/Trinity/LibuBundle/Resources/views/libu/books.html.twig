@@ -3,10 +3,10 @@
 {#    {% form_theme form 'bootstrap_3_layout.html.twig' %}   #}
 
 {% block body %}
-<div class="container">
   <div class="row">
 		<div class="col-md-12">
       <h4>{{ titulo }}</h4>
+      {{ form(form) }}
       <div class="table-responsive">
         <table id="mytable" class="table table-bordred table-striped">
           {% if cabecera is defined %}
@@ -51,7 +51,6 @@
       </div>  
     </div>
 	</div>
-</div>
 
 
 <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">

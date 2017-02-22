@@ -83,23 +83,30 @@ class BookController extends Controller
                 // Crea el array de libros con los datos
                 $arrayLibros = $bman->creaArrayLibros();
 
-                // Renderiza la tabla con los libros de arrayLibros
-                return $this->render('LibuBundle:libu:books.html.twig', array(
-                    'titulo' => 'Lista de libros subidos',
-                    'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
-                    'lista' => $arrayLibros,
-                    ));
-                   // 'lista' => $lista,
-                   //  'texto_previo' => $text,
-                   //  'lista' => $html_text,
-                   //  'choices' => $choices,
-                   // 'form' => $form->createView(),
+                // Guarda los libros en la base de datos
+                $bman->persisteArrayLibros($arrayLibros);
 
+              //  return $this->redirectToRoute('booksubir');
 
+        $form = $this->createFormBuilder()
+            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
+            ->add('stop', SubmitType::class, array('label' => 'No subir'))            
+            ->getForm();
 
-                echo "<pre>";  print_r($arrayLibros); echo "</pre>";
+        // Renderiza la tabla con los libros de arrayLibros
+        return $this->render('LibuBundle:libu:books.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Lista de libros subidos',
+            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
+            'lista' => $arrayLibros,
+            ));
+
+                // echo "<pre>";  print_r($arrayLibros); echo "</pre>";
             }
 
+            if ($form->get('subir')->isClicked()) {
+                return new Response("Enviado!");
+            }
 
 
         } else {
@@ -170,10 +177,28 @@ class BookController extends Controller
     public function booksubirAction(Request $request)  {
         // Lee el archivo de excel en formato csv guardado en /home/libu/ y lo convierte en un array
 
+        $bman = $this->get('app.books');
+
+        $arrayLibros = $bman->leerArrayLibros();
+
+
+        $form = $this->createFormBuilder()
+            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
+            ->add('stop', SubmitType::class, array('label' => 'No subir'))            
+            ->getForm();
+
+        // Renderiza la tabla con los libros de arrayLibros
+        return $this->render('LibuBundle:libu:books.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Lista de libros subidos',
+            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
+            'lista' => $arrayLibros,
+            ));
 
 
 
-        $csv = array_map('str_getcsv', file('/home/libu/libros.csv'));
+
+
 
         // echo "<pre>"; print_r($csv); echo "</pre>";
 

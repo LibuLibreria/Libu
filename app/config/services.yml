@@ -15,4 +15,4 @@ services:
 
     app.books:
         class: Trinity\LibuBundle\Books\BookManager
-        arguments: [file, filename, array_file]
+        arguments: [ "@doctrine.orm.entity_manager" ]
