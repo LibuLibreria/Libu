@@ -72,29 +72,21 @@ class BookController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             if ($form->get('enviar')->isClicked()) {
-                // Recogemos el fichero
-                $uplfile=$form['archivocsv']->getData();
+
+                // Guardamos el fichero con la orden guardaFile($archivo, $directorio)
+                $bman->guardaFile($form['archivocsv']->getData(), 
+                            $this->getParameter('directorio_uploads')."/archivoscsv");
+
+                // Convertimos el archivo en un array
+                $this->array_file = $bman->convertArrayFile();
+
+                // Crea el array de libros con los datos
+                $arrayLibros = $bman->creaArrayLibros();
+                echo "<pre>";  print_r($arrayLibros); echo "</pre>";
                  
-                if (($uplfile->guessExtension() == 'txt') ){
 
-                    // Guardamos el fichero en el directorio uploads que estará en el directorio /web del framework
-                    $file = $uplfile->move(
-                        $this->getParameter('directorio_uploads')."/archivoscsv",
-                        $uplfile->getClientOriginalName()
-                    );
-
-                    $bman->setFilename($uplfile->getClientOriginalName());
-                    $bman->setFile($file);
-                    $this->array_file = $bman->convertArrayFile();
-
-                    return $this->redirect($this->generateUrl('booklista'));
-
-                } else {
-                    $mensaje = "El archivo subido no es csv";
-                } 
             }
         }
-
 
         return $this->render('LibuBundle:libu:libro.html.twig', array(
             'mensaje' => $mensaje,
@@ -118,7 +110,6 @@ class BookController extends Controller
         $i = 0;
         echo "Filename: ". $bman->getFilename(); 
 
-        echo "<pre>";  print_r($this->array_file); echo "</pre>";
         return new response("yata");
         foreach ($this->array_file as $book) {
             $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
