@@ -10,14 +10,14 @@
 		{% endif %}
 
 
-{{ form_start(form) }}
+{#   {{ form_start(form) }}   #}
 		{% if lista is defined %}
 
 			{% for key, item in choices %}
-		      	  {{ form_widget(form.choice1[key]) }} {{ lista[item] | raw}}			
+		      	  {#   {{ form_widget(form.choice1[key]) }}  #} {{ lista[item] | raw}}			
 	      	{% endfor %}      	      
 		{% endif %}
-{{ form_end(form) }}
+{#   {{ form_end(form) }}  #}
 
 
 		{% if tabla is defined %}

@@ -2,31 +2,50 @@
 
 namespace Trinity\LibuBundle\Books;
 
-class BookManager {
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-	public $file; 
+class BookManager extends Controller {
 
-	public $filename; 
+	static protected $file; 
+
+	static protected $filename; 
+
+	static protected $array_file; 
+
+    public function __construct() {
+    	self::$file = ""; 
+    	self::$filename = ""; 
+    	self::$array_file = ""; 
+    }	
 
     public function setFilename($filename) {
-    	$this->filename = $filename;   	
+    	self::$filename = $filename;   	
     }
 
     public function getFilename() {
-    	return $this->filename;
+    	return self::$filename;
     }
 
     public function setFile($file) {
-    	$this->file = $file;  	
+    	self::$file = $file;  	
     }
 
     public function getFile() {
-    	return $this->file;
+    	return self::$file;
+    }
+
+    public function convertArrayFile() {
+        self::$array_file = array_map('str_getcsv', file(self::$file));
+        echo "<meta charset='UTF-8' />"; echo "<pre>";  print_r(self::$array_file); echo "</pre>";
+        return self::$array_file;
     }
 
     public function getArrayFile() {
-        $csv = array_map('str_getcsv', file($this->file));
-        echo "<meta charset='UTF-8' />"; echo "<pre>";  print_r($csv); echo "</pre>";
+    	return self::$array_file; 
+    }
+
+    public function saluda() {
+    	echo "<br>Hola";
     }
 
 }

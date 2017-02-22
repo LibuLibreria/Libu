@@ -49,6 +49,8 @@ use Symfony\Component\CssSelector\CssSelectorConverter;
 class BookController extends Controller
 {
 
+    protected $array_file; 
+
     /**
      * @Route("/book/csv", name="bookcsv")
      */
@@ -83,8 +85,9 @@ class BookController extends Controller
 
                     $bman->setFilename($uplfile->getClientOriginalName());
                     $bman->setFile($file);
-                    $bman->getArrayFile();
-                    return new Response("<br>Se ha subido correctamente");
+                    $this->array_file = $bman->convertArrayFile();
+
+                    return $this->redirect($this->generateUrl('booklista'));
 
                 } else {
                     $mensaje = "El archivo subido no es csv";
@@ -99,6 +102,58 @@ class BookController extends Controller
             'form' => $form->createView(),
         ));
     }
+
+
+
+    /**
+     * @Route("/book/lista", name="booklista")
+     */
+    public function bookListaAction(Request $request)  {
+
+        $bman = $this->get('app.books');
+        $bman->saluda();
+
+        $text = "<h1>Libros encontrados:</h1>"; 
+        $lista = array();
+        $i = 0;
+        echo "Filename: ". $bman->getFilename(); 
+
+        echo "<pre>";  print_r($this->array_file); echo "</pre>";
+        return new response("yata");
+        foreach ($this->array_file as $book) {
+            $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
+            if ($isbn != "") {
+                $lista[$i][] = $i;
+                $choices[] = $i;
+                foreach ($book as $col) {
+                    $lista[$i] = $book;
+                }                
+            } else {      
+                if ($i != 0);   
+            }
+            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
+            $arrayprecios = $this->buscaIsbn($book[0]);
+            if ($arrayprecios) {
+                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
+            } else {
+                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
+            }
+        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
+            $i++; 
+        }
+
+        return $this->render('LibuBundle:libu:books.html.twig', array(
+ //           'lista' => $lista,
+            'texto_previo' => $text,
+            'lista' => $html_text,
+            'choices' => $choices,
+ //           'form' => $form->createView(),
+
+
+        ));        
+
+    }
+
 
 
     /**
