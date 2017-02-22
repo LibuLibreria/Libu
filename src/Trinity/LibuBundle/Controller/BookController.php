@@ -82,17 +82,34 @@ class BookController extends Controller
 
                 // Crea el array de libros con los datos
                 $arrayLibros = $bman->creaArrayLibros();
+
+                // Renderiza la tabla con los libros de arrayLibros
+                return $this->render('LibuBundle:libu:books.html.twig', array(
+                    'titulo' => 'Lista de libros subidos',
+                    'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
+                    'lista' => $arrayLibros,
+                    ));
+                   // 'lista' => $lista,
+                   //  'texto_previo' => $text,
+                   //  'lista' => $html_text,
+                   //  'choices' => $choices,
+                   // 'form' => $form->createView(),
+
+
+
                 echo "<pre>";  print_r($arrayLibros); echo "</pre>";
-                 
-
             }
-        }
 
-        return $this->render('LibuBundle:libu:libro.html.twig', array(
-            'mensaje' => $mensaje,
-            'titulo' => "Libro",
-            'form' => $form->createView(),
-        ));
+
+
+        } else {
+
+            return $this->render('LibuBundle:libu:libro.html.twig', array(
+                'mensaje' => $mensaje,
+                'titulo' => "Libro",
+                'form' => $form->createView(),
+            ));
+        }
     }
 
 
