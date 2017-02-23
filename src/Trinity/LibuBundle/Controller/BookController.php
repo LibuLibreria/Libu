@@ -80,13 +80,24 @@ class BookController extends Controller
                 // Convertimos el archivo en un array
                 $this->array_file = $bman->convertArrayFile();
 
-                // Crea el array de libros con los datos
-                $arrayLibros = $bman->creaArrayLibros();
+                // Crea el array de libros con los datos del csv
+                $arrayLibros = $bman->creaArrayLibrosCsv();
 
                 // Guarda los libros en la base de datos
                 $bman->persisteArrayLibros($arrayLibros);
 
               //  return $this->redirectToRoute('booksubir');
+
+                // TAREAS: 
+                // - Quitar las siguientes líneas de código y dejar el redirect
+                // - Crear una nueva columna en Libro que sea la del status: PROVisional
+                // - Cambiar persisteArrayLibros para que añada status = PROV
+                // - Crear leerArrayLibros en caso que status = PROV
+                // - Crear nuevo servicio Abebooks para interactuar con su web
+                // - Utilizar función subirAbebooks para subir los libros, en BookManager
+                // - Crear los Assets de Validación en la entity Libro
+                // - Crear un nuevo array de errores en ArrayLibros
+                // - Adaptar toda la lectura de datos al nuevo array de errores. 
 
         $form = $this->createFormBuilder()
             ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))

@@ -3,6 +3,8 @@
 namespace Trinity\LibuBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Libro
@@ -37,6 +39,10 @@ class Libro
      * @var string
      *
      * @ORM\Column(name="isbn", type="string", length=20, nullable=true)
+     * @Assert\Isbn(
+     *     type = "null",
+     *     message = "El Isbn no es válido."
+     * )     
      */
     private $isbn;
 

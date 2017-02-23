@@ -18,9 +18,12 @@ class BookManager implements ContainerAwareInterface  {
 
 	protected $em;
 
-	public function __construct($em)
+	protected $validator; 
+
+	public function __construct($em, $validator)
 	{ 
 	    $this->em = $em;
+	    $this->validator = $validator; 
 	}
 
     public function setFilename($filename) {
@@ -69,7 +72,7 @@ class BookManager implements ContainerAwareInterface  {
         } 
     }
 
-    public function creaArrayLibros() {
+    public function creaArrayLibrosCsv() {
 
     	// Este array indica la correspondencia entre las columnas del csv y los atributos de Libro
     	$posicion = array(
@@ -91,11 +94,30 @@ class BookManager implements ContainerAwareInterface  {
         		foreach ($book as $key => $column ) {
         			$caracteristicas[$posicion[$key]] = $column;
         		}
-        		$libro[] = new Libro($caracteristicas);
+        		$libro = new Libro($caracteristicas);
+
+			    $validator = $this->validator;
+
+			    $errors = $validator->validate($libro);
+
+			    if (count($errors) > 0) {
+			        /*
+			         * Uses a __toString method on the $errors variable which is a
+			         * ConstraintViolationList object. This gives us a nice string
+			         * for debugging.
+			         */
+			        $errorsString = (string) $errors;
+
+			        $libro->setAutor($errorsString);
+			    }
+			    $arrayLibros[] = $libro;
     		}
  //           $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
         }
-        return $libro; 
+
+
+
+        return $arrayLibros; 
     }
 
     public function persisteArrayLibros($arrayLibros) {
