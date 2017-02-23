@@ -86,18 +86,56 @@ easy_admin:
                     - { type: 'group', css_class: 'col-sm-6'}
                     - { property: 'codigo', label: 'Producto', help: 'Máximo 20 caracteres', type_options: { trim: true } }
                     - { property: 'vendedor', label: 'Vendedor', help: 'Máximo 20 caracteres', type_options: { trim: true } }
+                    - { property: 'proveedor', label: 'Proveedor'}
+                    - { property: 'tipo', label: 'Tipo producto'}                    
                     - { property: 'precio', label: 'Precio', type_options: { trim: true } }
                     - { property: 'activo', label: '¿Activo?', type: 'choice', type_options: { trim: true, choices: {si: 'si', no: 'no'} } }
             list: 
                 title: 'Lista de productos en venta'
-                fields: [{ property: 'Codigo', label:'Producto'}, 'Vendedor', 'Precio', 'Activo']
-
-   #     - LibuBundle\Entity\Tematica
-    #    - LibuBundle\Entity\Responsable
-     #   - LibuBundle\Entity\ProductoVendido
-      #  - LibuBundle\Entity\Tipo
-      #  Venta: 
-       #     class: Trinity\LibuBundle\Entity\Venta
+                fields: [{ property: 'Codigo', label:'Producto'}, 'Proveedor', 'Vendedor', 'Tipo','Precio', 'Activo']
+        Proveedor:
+            class: Trinity\LibuBundle\Entity\Proveedor
+            label: 'Lista Proveedores'
+            form: 
+                fields: 
+                    - { property: 'nombre', label: 'Nombre'}
+                    - { property: 'direccion', label: 'Dirección'}
+                    - { property: 'cif', label: 'Cif'}
+                    - { property: 'telefono', label: 'Teléfono'}
+                    - { property: 'activo', label: '¿Activo?', type: 'choice', type_options: { trim: true, choices: {si: 'si', no: 'no'} } }
+            list: 
+                title: 'Lista de proveedores'
+                fields: ['Nombre', 'Direccion', 'Cif', 'Telefono', 'Activo']
+        Tipo:
+            class: Trinity\LibuBundle\Entity\Tipo
+            label: 'Tipos de producto'
+            form: 
+                fields: 
+                    - { property: 'tipo', label: 'Tipo'}
+                    - { property: 'activo', label: '¿Activo?', type: 'choice', type_options: { trim: true, choices: {si: 'si', no: 'no'} } }
+            list: 
+                title: 'Tipos de producto'
+                fields: ['Tipo', 'Activo']
+        Tematica:
+            class: Trinity\LibuBundle\Entity\Tematica
+            label: 'Temáticas de los libros'
+            form: 
+                fields: 
+                    - { property: 'nombre', label: 'Temática'}
+                    - { property: 'activo', label: '¿Activo?', type: 'choice', type_options: { trim: true, choices: {si: 'si', no: 'no'} } }
+            list: 
+                title: 'Temáticas'
+                fields: [{ property: 'Nombre', label:'Temática'}, 'Activo']
+        Concepto:
+            class: Trinity\LibuBundle\Entity\Concepto
+            label: 'Conceptos de gasto'
+            form: 
+                fields: 
+                    - { property: 'nombre', label: 'Concepto'}
+                    - { property: 'activo', label: '¿Activo?', type: 'choice', type_options: { trim: true, choices: {si: 'si', no: 'no'} } }
+            list: 
+                title: 'Conceptos gasto'
+                fields: [{ property: 'Nombre', label:'Concepto'}, 'Activo']
 #        Venta:
  #           class: Trinity\LibuBundle\Entity\Venta
 #            label: 'Lista Ventas'
@@ -119,7 +157,10 @@ easy_admin:
         color_scheme: 'light'
         menu:
             - Producto 
-#            - Venta
-            - { label: 'Volver a Venta', url: 'http://localhost/Libu/web/app.php/libu/venta' }
+            - Proveedor
+            - Tipo
+            - Tematica
+            - Concepto
+            - { label: 'Volver a Venta', url: '../libu/venta' }
 
 

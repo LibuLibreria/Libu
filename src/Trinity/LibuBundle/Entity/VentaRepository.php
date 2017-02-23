@@ -118,6 +118,39 @@ class VentaRepository extends EntityRepository
 
 
     /*
+    * Obtiene las ventas de un determinado proveedor entre dos fechas determinadas
+    */
+    public function ventasProveedor($fecha, $fechasig, $proveedor) {
+
+        $parameters = array( 
+            'fecha' => $fecha->format('Y-m-d'),
+            'fechasig' => $fechasig->format('Y-m-d'),
+            'proveedor' => $proveedor,
+        );
+
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT v.factura, v.diahora, pv.idPv, pv.cantidad, pr.idProd, pr.codigo as producto, 
+            pr.precio, (pv.cantidad * pr.precio) as ingreso, v.id
+            FROM LibuBundle:Venta v,LibuBundle:ProductoVendido pv, LibuBundle:Producto pr 
+            WHERE pv.idVenta = v.id 
+            AND v.factura IS NOT NULL             
+            AND v.diahora >= :fecha AND v.diahora < :fechasig
+            AND pr.proveedor = :proveedor             
+            AND pr.idProd = pv.idProd 
+            ORDER BY v.diahora"
+        )->setParameters($parameters);
+
+        $ventasProv = $query->getResult();  
+        return array(
+            'ventas' => $ventasProv,
+            'ingreso' => $this->SumaColumna($ventasProv, 'ingreso'), 
+        );
+    }
+
+
+
+
+    /*
     * Hace la suma de todos los valores de una columna
     */
     public function SumaColumna($matriz, $columna) {
