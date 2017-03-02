@@ -28,4 +28,4 @@ security:
         - { path: ^/admin, roles: ROLE_USER }
         - { path: ^/register, roles: ROLE_USER }
         - { path: ^/_profiler, roles: ROLE_USER }  
-        - { path: ^/_error, roles: ROLE_USER }              
+        - { path: ^/_error, roles: ROLE_USER }

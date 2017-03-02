@@ -85,14 +85,13 @@ easy_admin:
                 fields:
                     - { type: 'group', css_class: 'col-sm-6'}
                     - { property: 'codigo', label: 'Producto', help: 'Máximo 20 caracteres', type_options: { trim: true } }
-                    - { property: 'vendedor', label: 'Vendedor', help: 'Máximo 20 caracteres', type_options: { trim: true } }
                     - { property: 'proveedor', label: 'Proveedor'}
                     - { property: 'tipo', label: 'Tipo producto'}                    
                     - { property: 'precio', label: 'Precio', type_options: { trim: true } }
                     - { property: 'activo', label: '¿Activo?', type: 'choice', type_options: { trim: true, choices: {si: 'si', no: 'no'} } }
             list: 
                 title: 'Lista de productos en venta'
-                fields: [{ property: 'Codigo', label:'Producto'}, 'Proveedor', 'Vendedor', 'Tipo','Precio', 'Activo']
+                fields: [{ property: 'Codigo', label:'Producto'}, 'Proveedor', 'Tipo','Precio', 'Activo']
         Proveedor:
             class: Trinity\LibuBundle\Entity\Proveedor
             label: 'Lista Proveedores'
