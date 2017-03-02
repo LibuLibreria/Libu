@@ -33,6 +33,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 // use Symfony\Component\Form\Extension\Core\Type\TextType;
 // use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+
 
 // use Symfony\Component\Serializer\Serializer;
 // use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -47,12 +49,167 @@ use Symfony\Component\CssSelector\CssSelectorConverter;
 class BookController extends Controller
 {
 
+    protected $array_file; 
+
+    /**
+     * @Route("/book/csv", name="bookcsv")
+     */
+    public function booksubirCsvAction(Request $request)  {
+        $form = $this->createFormBuilder()
+            ->add('archivocsv', FileType::class, array(
+                "label" => "Archivo csv:",
+            ))
+            ->add('enviar', SubmitType::class, array('label' => 'Enviar'))            
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        $bman = $this->get('app.books');
+
+        $mensaje = ""; 
+
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($form->get('enviar')->isClicked()) {
+
+                // Guardamos el fichero con la orden guardaFile($archivo, $directorio)
+                $bman->guardaFile($form['archivocsv']->getData(), 
+                            $this->getParameter('directorio_uploads')."/archivoscsv");
+
+                // Convertimos el archivo en un array
+                $this->array_file = $bman->convertArrayFile();
+
+                // Crea el array de libros con los datos del csv
+                $arrayLibros = $bman->creaArrayLibrosCsv();
+
+                // Guarda los libros en la base de datos
+                $bman->persisteArrayLibros($arrayLibros);
+
+              //  return $this->redirectToRoute('booksubir');
+
+                // TAREAS: 
+                // - Quitar las siguientes líneas de código y dejar el redirect
+                // - Crear una nueva columna en Libro que sea la del status: PROVisional
+                // - Cambiar persisteArrayLibros para que añada status = PROV
+                // - Crear leerArrayLibros en caso que status = PROV
+                // - Crear nuevo servicio Abebooks para interactuar con su web
+                // - Utilizar función subirAbebooks para subir los libros, en BookManager
+                // - Crear los Assets de Validación en la entity Libro
+                // - Crear un nuevo array de errores en ArrayLibros
+                // - Adaptar toda la lectura de datos al nuevo array de errores. 
+
+        $form = $this->createFormBuilder()
+            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
+            ->add('stop', SubmitType::class, array('label' => 'No subir'))            
+            ->getForm();
+
+        // Renderiza la tabla con los libros de arrayLibros
+        return $this->render('LibuBundle:libu:books.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Lista de libros subidos',
+            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
+            'lista' => $arrayLibros,
+            ));
+
+                // echo "<pre>";  print_r($arrayLibros); echo "</pre>";
+            }
+
+            if ($form->get('subir')->isClicked()) {
+                return new Response("Enviado!");
+            }
+
+
+        } else {
+
+            return $this->render('LibuBundle:libu:libro.html.twig', array(
+                'mensaje' => $mensaje,
+                'titulo' => "Libro",
+                'form' => $form->createView(),
+            ));
+        }
+    }
+
+
+
+    /**
+     * @Route("/book/lista", name="booklista")
+     */
+    public function bookListaAction(Request $request)  {
+
+        $bman = $this->get('app.books');
+        $bman->saluda();
+
+        $text = "<h1>Libros encontrados:</h1>"; 
+        $lista = array();
+        $i = 0;
+        echo "Filename: ". $bman->getFilename(); 
+
+        return new response("yata");
+        foreach ($this->array_file as $book) {
+            $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
+            if ($isbn != "") {
+                $lista[$i][] = $i;
+                $choices[] = $i;
+                foreach ($book as $col) {
+                    $lista[$i] = $book;
+                }                
+            } else {      
+                if ($i != 0);   
+            }
+            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
+            $arrayprecios = $this->buscaIsbn($book[0]);
+            if ($arrayprecios) {
+                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
+            } else {
+                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
+            }
+        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
+            $i++; 
+        }
+
+        return $this->render('LibuBundle:libu:books.html.twig', array(
+ //           'lista' => $lista,
+            'texto_previo' => $text,
+            'lista' => $html_text,
+            'choices' => $choices,
+ //           'form' => $form->createView(),
+
+
+        ));        
+
+    }
+
+
+
     /**
      * @Route("/book/subir", name="booksubir")
      */
     public function booksubirAction(Request $request)  {
         // Lee el archivo de excel en formato csv guardado en /home/libu/ y lo convierte en un array
-        $csv = array_map('str_getcsv', file('/home/libu/libros.csv'));
+
+        $bman = $this->get('app.books');
+
+        $arrayLibros = $bman->leerArrayLibros();
+
+
+        $form = $this->createFormBuilder()
+            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
+            ->add('stop', SubmitType::class, array('label' => 'No subir'))            
+            ->getForm();
+
+        // Renderiza la tabla con los libros de arrayLibros
+        return $this->render('LibuBundle:libu:books.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => 'Lista de libros subidos',
+            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
+            'lista' => $arrayLibros,
+            ));
+
+
+
+
+
 
         // echo "<pre>"; print_r($csv); echo "</pre>";
 

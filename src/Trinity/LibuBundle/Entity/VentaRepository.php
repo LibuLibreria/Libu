@@ -13,11 +13,11 @@ class VentaRepository extends EntityRepository
     public function fechasIngresos($limit = 10)
     {
         $sql = 
-            "SELECT count(*) as cantidad, diaHora as dias
+            "SELECT diaHora as dias
             FROM venta 
             WHERE factura > 0 
             AND tipo_movim = 'ven'
-            GROUP BY DATE(diaHora) 
+            GROUP BY dias
             ORDER BY dias DESC
             LIMIT ".$limit
         ;
@@ -39,10 +39,9 @@ class VentaRepository extends EntityRepository
             FROM producto_vendido pv, producto p 
             WHERE pv.id_prod = p.id_prod 
             AND pv.id_venta = '.$venta;
-       $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();    
-
     }        
 
 
@@ -63,8 +62,11 @@ class VentaRepository extends EntityRepository
         return $result['factura'];
     }
         
-    public function findVentasConFactura() {
 
+
+
+        
+    public function findVentasConFactura() {
         $parameters = array();
         $query = $this->getEntityManager()->createQuery(
             "SELECT v
@@ -74,6 +76,7 @@ class VentaRepository extends EntityRepository
         )->setParameters($parameters);
         return $query->getResult(); 
     }
+
 
     /*
     * Obtiene las ventas que hay entre dos determinadas fechas
@@ -96,27 +99,63 @@ class VentaRepository extends EntityRepository
             ORDER BY v.diahora"
         )->setParameters($parameters);
 
-        // Si la opción prodvend está activada, añadimos una matriz de productos a cada registro
+        $ventas = $query->getResult();  
+
+        // Si la opción prodvend está activada, añadimos una matriz de productos vendidos a cada registro
         if ($prodvend) {
-            $ventas = $query->getResult(); 
             $repoProdVend = $this->getEntityManager()->getRepository('LibuBundle:ProductoVendido');
             $sartuProd = function(&$vent) use (&$repoProdVend)    {
                     $vent['prodvendidos'] = $repoProdVend->findByIdVenta($vent['id']); 
- /*                   $suma = 0;
-                    foreach ($vent['prodvendidos'] as $pvend) {
-                        $suma += ($pvend->getCantidad() * $pvend->getIdProd()->getPrecio());
-                    }
-                    $vent['sumaprods'] = $suma; 
-                    $vent['sumalibros'] = $vent['ingreso'] - $vent['sumaprods'];
- */               };
+            };
             array_walk($ventas, $sartuProd );
-            return $ventas;
-        } else {
-            return $query->getResult();
-        }
+        } 
+        return array(
+            'ventas' => $ventas,
+            'ingreso' => $this->SumaColumna($ventas, 'ingreso'), 
+            'ingresolibros' => $this->SumaColumna($ventas, 'ingresolibros'),
+        );
     }
 
 
+    /*
+    * Obtiene las ventas de un determinado proveedor entre dos fechas determinadas
+    */
+    public function ventasProveedor($fecha, $fechasig, $proveedor) {
+
+        $parameters = array( 
+            'fecha' => $fecha->format('Y-m-d'),
+            'fechasig' => $fechasig->format('Y-m-d'),
+            'proveedor' => $proveedor,
+        );
+
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT v.factura, v.diahora, pv.idPv, pv.cantidad, pr.idProd, pr.codigo as producto, 
+            pr.precio, (pv.cantidad * pr.precio) as ingreso, v.id
+            FROM LibuBundle:Venta v,LibuBundle:ProductoVendido pv, LibuBundle:Producto pr 
+            WHERE pv.idVenta = v.id 
+            AND v.factura IS NOT NULL             
+            AND v.diahora >= :fecha AND v.diahora < :fechasig
+            AND pr.proveedor = :proveedor             
+            AND pr.idProd = pv.idProd 
+            ORDER BY v.diahora"
+        )->setParameters($parameters);
+
+        $ventasProv = $query->getResult();  
+        return array(
+            'ventas' => $ventasProv,
+            'ingreso' => $this->SumaColumna($ventasProv, 'ingreso'), 
+        );
+    }
+
+
+
+
+    /*
+    * Hace la suma de todos los valores de una columna
+    */
+    public function SumaColumna($matriz, $columna) {
+        return array_sum(array_column($matriz, $columna));
+    }
 
 
     /*
@@ -138,13 +177,19 @@ class VentaRepository extends EntityRepository
             AND v.tipomovim = 'ven'
             GROUP BY dia"
         )->setParameters($parameters);
-            $ventas = $query->getResult(); 
-            $formatoFecha = function(&$vent)   {
-                $vent['fechalink'] = date("Ymd",strtotime($vent['dia']));
-            };
 
-            array_walk($ventas, $formatoFecha );
-            return $ventas;
+        $ventas = $query->getResult(); 
+
+        $formatoFecha = function(&$vent)   {
+            $vent['fechalink'] = date("Ymd",strtotime($vent['dia']));
+        };
+        array_walk($ventas, $formatoFecha );
+
+        return array(
+            'ventas' => $ventas,
+            'ingreso' => $this->SumaColumna($ventas, 'ingreso'), 
+            'ingresolibros' => $this->SumaColumna($ventas, 'ingresolibros'),
+        );
     }
 
 }

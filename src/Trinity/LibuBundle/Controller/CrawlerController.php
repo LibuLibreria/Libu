@@ -48,6 +48,7 @@ use Symfony\Component\CssSelector\CssSelectorConverter;
 class CrawlerController extends Controller
 {
 
+//  CUIDADO CON ESTE ROUTE QUE NO ESTÁ EN SECURITY Y SE PUEDE ACCEDER
     /**
      * @Route("/crawler", name="crawler")
      */

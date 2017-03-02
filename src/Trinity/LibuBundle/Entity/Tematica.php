@@ -63,4 +63,33 @@ class Tematica
     {
         return $this->idTem;
     }
+    /**
+     * @var string
+     */
+    private $activo;
+
+
+    /**
+     * Set activo
+     *
+     * @param string $activo
+     *
+     * @return Tematica
+     */
+    public function setActivo($activo)
+    {
+        $this->activo = $activo;
+
+        return $this;
+    }
+
+    /**
+     * Get activo
+     *
+     * @return string
+     */
+    public function getActivo()
+    {
+        return $this->activo;
+    }
 }
