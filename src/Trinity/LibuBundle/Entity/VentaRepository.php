@@ -130,13 +130,13 @@ class VentaRepository extends EntityRepository
         );
 
         $query = $this->getEntityManager()->createQuery(
-            "SELECT v.id as id, SUBSTRING(v.diahora,1,10) as dia, 
+            "SELECT SUBSTRING(v.diahora,1,10) as dia, 
             SUM(v.ingreso) as ingreso, SUM(v.ingresolibros) AS ingresolibros
             FROM LibuBundle:Venta v
             WHERE v.diahora >= :fecha AND v.diahora < :fechasig
             AND v.factura IS NOT NULL
             AND v.tipomovim = 'ven'
-            GROUP BY dia, id"
+            GROUP BY dia"
         )->setParameters($parameters);
             $ventas = $query->getResult(); 
             $formatoFecha = function(&$vent)   {
