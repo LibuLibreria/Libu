@@ -183,10 +183,10 @@ class CajaController extends Controller
 
 
     /**
-     * @Route("/libu/caja/proveedor", defaults={"prov": 5}, name="proveedor_index")
+     * @Route("/libu/caja/proveedor", defaults={"prov": 11}, name="proveedor_index")
      * @Route("/libu/caja/proveedor/{prov}/{mes}", requirements={"prov": "[1-9]\d*"}, name="proveedor")     
      */
-    public function cajaProveedorAction(Request $request, $prov = '11', $mes = '201702')
+    public function cajaProveedorAction(Request $request, $prov, $mes ="1")
     {
         $fecha = ($mes != 1) ? \DateTime::createFromFormat('Ym', $mes) : new \DateTime(); 
         $fecha->modify('first day of this month');
