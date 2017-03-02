@@ -182,6 +182,79 @@ class CajaController extends Controller
 
 
 
+    /**
+     * @Route("/libu/caja/proveedor", defaults={"prov": 5}, name="proveedor_index")
+     * @Route("/libu/caja/proveedor/{prov}/{mes}", requirements={"prov": "[1-9]\d*"}, name="proveedor")     
+     */
+    public function cajaProveedorAction(Request $request, $prov = '5', $mes = '201607')
+    {
+        $fecha = ($mes != 1) ? \DateTime::createFromFormat('Ym', $mes) : new \DateTime(); 
+        $fecha->modify('first day of this month');
+        $fechasig = clone $fecha;   // nueva instancia para que no afecten las modify a $fecha
+        $fechasig->modify('last day of this month')->modify('+1 day');
+
+        // 
+        $em = $this->getDoctrine()->getManager();
+
+        $proveedor = $em->getRepository('LibuBundle:Proveedor')->findOneById($prov); 
+
+        $listaProveedores = $em->getRepository('LibuBundle:Proveedor')->findAll();
+
+        foreach ($listaProveedores as $provd) {
+            $listaProvs[$provd->getNombre()] = $provd->getId(); 
+        }
+      
+        // Buscamos las ventas proveedor marcado por $fecha con la función ventasProveedor()
+        $ventas = $em->getRepository('LibuBundle:Venta')->ventasProveedor($fecha, $fechasig, $proveedor);
+
+        $hoy =  new \DateTime();
+        $mesesanteriores = $hoy->modify('+1 month');
+
+        for ($i=0; $i<12; $i++) {
+ //         $hilabete = strtotime($hoy);        // marca Unix de tiempo
+            $anoactual = $hoy->modify('-1 month')->format('Y');
+            $textochoice = $this->mesescast[$hoy->format('n')]."-".$anoactual;
+            $meseslista[$textochoice] = date($hoy->format('Ym'));     // array para los choices 
+        }
+
+        $form = $this->createFormBuilder(array())
+           ->add('mesesventas', ChoiceType::class, array(
+                'choices'  => $meseslista,
+               'expanded' => false,
+               'multiple' => false,
+            ))   
+            ->add('provs', ChoiceType::class, array(
+                'choices'  => $listaProvs,
+               'expanded' => false,
+               'multiple' => false,
+            ))    
+            ->add('fecha', SubmitType::class, array('label' => 'Buscar en esa fecha'))            
+            ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('fecha')->isClicked()) {
+                $data = $form->getData();
+
+                return $this->redirectToRoute('proveedor', array('mes' => $data['mesesventas'], 
+                                                                'prov' => $data['provs']));
+            }              
+            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+        }
+
+       $fechatit = " ".$this->mesescast[$fecha->format('n')]." ".$fecha->format('Y');
+
+        return $this->render('LibuBundle:libu:proveedor.html.twig',array(
+            'form' => $form->createView(),
+            'proveedor' => $proveedor,
+            'ventasmes' => $ventas,
+            'fecha' => $fechatit,
+            'mesescast' => $this->mesescast,                
+            ));    
+    }
+
 
 
     /**
