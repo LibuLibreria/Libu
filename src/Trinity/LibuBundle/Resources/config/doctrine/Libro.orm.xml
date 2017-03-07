@@ -68,6 +68,16 @@
         <option name="unsigned"/>
       </options>
     </field>
+    <field name="estatus" type="string" column="estatus" length="5" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="abebooks" type="datetime" column="abebooks" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>        
     <many-to-one field="idVenta" target-entity="Venta" fetch="LAZY">
       <join-columns>
         <join-column name="id_venta" referenced-column-name="id"/>

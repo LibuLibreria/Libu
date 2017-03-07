@@ -109,6 +109,20 @@ class Libro
      */
     private $notas;
 
+
+    /**
+     * @var string
+     */
+    private $estatus;
+
+
+    /**
+     * @var \DateTime
+     */
+    private $abebooks;
+
+
+
     /**
      * @var integer
      *
@@ -143,7 +157,10 @@ class Libro
         if (isset($valores['notas'])) $this->setNotas($valores['notas']); 
         if (isset($valores['idventa'])) $this->setIdVenta($valores['idventa']); 
         if (isset($valores['balda'])) $this->setBalda($valores['balda']);   
-        if (isset($valores['estanteria'])) $this->setEstanteria($valores['estanteria']);                                                                                            
+        if (isset($valores['estanteria'])) $this->setEstanteria($valores['estanteria']);         
+        if (isset($valores['abebooks'])) $this->setEstanteria($valores['abebooks']);                                                                                            
+        if (isset($valores['estatus'])) $this->setEstanteria($valores['estatus']);                                                                                            
+
     }
 
 
@@ -491,5 +508,54 @@ class Libro
     public function getBalda()
     {
         return $this->balda;
+    }
+
+
+    /**
+     * Set estatus
+     *
+     * @param string $estatus
+     *
+     * @return Libro
+     */
+    public function setEstatus($estatus)
+    {
+        $this->estatus = $estatus;
+
+        return $this;
+    }
+
+    /**
+     * Get estatus
+     *
+     * @return string
+     */
+    public function getEstatus()
+    {
+        return $this->estatus;
+    }
+
+    /**
+     * Set abebooks
+     *
+     * @param \DateTime $abebooks
+     *
+     * @return Libro
+     */
+    public function setAbebooks($abebooks)
+    {
+        $this->abebooks = $abebooks;
+
+        return $this;
+    }
+
+    /**
+     * Get abebooks
+     *
+     * @return \DateTime
+     */
+    public function getAbebooks()
+    {
+        return $this->abebooks;
     }
 }
