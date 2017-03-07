@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Producto
  *
- * @ORM\Table(name="producto", indexes={@ORM\Index(name="id_venta", columns={"id_venta"}), @ORM\Index(name="tipo", columns={"tipo"})})
+ * @ORM\Table(name="producto", indexes={@ORM\Index(name="id_venta", columns={"id_venta"}), @ORM\Index(name="tipo", columns={"tipo"}), @ORM\Index(name="vendedor", columns={"vendedor"})})
  * @ORM\Entity
  */
 class Producto
@@ -225,5 +225,34 @@ class Producto
     public function getActivo()
     {
         return $this->activo;
+    }
+    /**
+     * @var \Trinity\LibuBundle\Entity\Proveedor
+     */
+    private $proveedor;
+
+
+    /**
+     * Set proveedor
+     *
+     * @param \Trinity\LibuBundle\Entity\Proveedor $proveedor
+     *
+     * @return Producto
+     */
+    public function setProveedor(\Trinity\LibuBundle\Entity\Proveedor $proveedor = null)
+    {
+        $this->proveedor = $proveedor;
+
+        return $this;
+    }
+
+    /**
+     * Get proveedor
+     *
+     * @return \Trinity\LibuBundle\Entity\Proveedor
+     */
+    public function getProveedor()
+    {
+        return $this->proveedor;
     }
 }

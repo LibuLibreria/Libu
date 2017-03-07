@@ -1,8 +1,10 @@
 {#
    Base template
 #}
-{% form_theme form 'bootstrap_3_layout.html.twig' %}
 
+{% if form is defined %}
+    {% form_theme form 'bootstrap_3_layout.html.twig' %}
+{% endif %}
 <!DOCTYPE html>
 <html>
     <head>

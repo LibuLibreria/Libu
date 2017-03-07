@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Trinity\LibuBundle\Entity\Proveedor" table="proveedor" repository-class="Trinity\LibuBundle\Repository\ProveedorRepository">
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="nombre" type="string" column="nombre" length="40" >
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="cif" type="string" column="cif" length="12" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="direccion" type="string" column="direccion" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>    
+    <field name="activo" type="string" column="activo" length="2">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="telefono" type="string" column="telefono" length="20" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>  
+  </entity>
+</doctrine-mapping>

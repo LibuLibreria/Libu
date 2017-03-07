@@ -3,6 +3,8 @@
 namespace Trinity\LibuBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Libro
@@ -37,6 +39,10 @@ class Libro
      * @var string
      *
      * @ORM\Column(name="isbn", type="string", length=20, nullable=true)
+     * @Assert\Isbn(
+     *     type = "null",
+     *     message = "El Isbn no es válido."
+     * )     
      */
     private $isbn;
 
@@ -122,6 +128,23 @@ class Libro
      */
     private $idVenta;
 
+
+    public function __construct(array $valores = array()) {
+        if (isset($valores['codigo'])) $this->setCodigo($valores['codigo']);
+        if (isset($valores['tipo'])) $this->setTipo($valores['tipo']);
+        if (isset($valores['titulo'])) $this->setTitulo($valores['titulo']);
+        if (isset($valores['isbn'])) $this->setIsbn($valores['isbn']);
+        if (isset($valores['autor'])) $this->setAutor($valores['autor']);
+        if (isset($valores['editorial'])) $this->setEditorial($valores['editorial']);
+        if (isset($valores['anno'])) $this->setAnno($valores['anno']);
+        if (isset($valores['precio'])) $this->setPrecio($valores['precio']);
+        if (isset($valores['tapas'])) $this->setTapas($valores['tapas']);
+        if (isset($valores['conservacion'])) $this->setConservacion($valores['conservacion']);    
+        if (isset($valores['notas'])) $this->setNotas($valores['notas']); 
+        if (isset($valores['idventa'])) $this->setIdVenta($valores['idventa']); 
+        if (isset($valores['balda'])) $this->setBalda($valores['balda']);   
+        if (isset($valores['estanteria'])) $this->setEstanteria($valores['estanteria']);                                                                                            
+    }
 
 
     /**

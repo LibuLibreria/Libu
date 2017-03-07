@@ -9,5 +9,10 @@
         <option name="fixed"/>
       </options>
     </field>
+    <field name="activo" type="string" column="activo" length="2">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>    
   </entity>
 </doctrine-mapping>

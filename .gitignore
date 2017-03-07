@@ -21,3 +21,5 @@ bower.json
 cacheclear.sh
 update.sh
 copiaseg.sh
+web/bundles/libu/uploads/*
+src/Trinity/LibuBundle/Resources/public/uploads/*
