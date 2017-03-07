@@ -83,8 +83,8 @@ class BookController extends Controller
                 // Crea el array de libros con los datos del csv
                 $arrayLibros = $bman->creaArrayLibrosCsv();
 
-                // Guarda los libros en la base de datos
-                $bman->persisteArrayLibros($arrayLibros);
+                // Guarda los libros en la base de datos con estatus provisional
+                $bman->persisteArrayLibros($arrayLibros, "PROV");
 
               //  return $this->redirectToRoute('booksubir');
 

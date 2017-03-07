@@ -120,11 +120,12 @@ class BookManager implements ContainerAwareInterface  {
         return $arrayLibros; 
     }
 
-    public function persisteArrayLibros($arrayLibros) {
+    public function persisteArrayLibros($arrayLibros, $estatus) {
 
         $em = $this->em;
 
     	foreach ($arrayLibros as $libro) {
+            $libro->setEstatus($estatus);
 	        try {
 	            $em->persist($libro);
 	            $em->flush();

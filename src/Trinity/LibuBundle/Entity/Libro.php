@@ -98,6 +98,8 @@ class Libro
     
     /**
      * @var integer
+     *
+     * @ORM\Column(name="balda", type="integer", nullable=true)     
      */
     private $balda;
 
@@ -112,12 +114,16 @@ class Libro
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="estatus", type="string", length=5, nullable=true)     
      */
     private $estatus;
 
 
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(name="abebooks", type="datetime", nullable=true)     
      */
     private $abebooks;
 
