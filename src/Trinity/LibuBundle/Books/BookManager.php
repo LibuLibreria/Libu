@@ -138,9 +138,21 @@ class BookManager implements ContainerAwareInterface  {
     }
 
 
-    public function leerArrayLibros() {
+    public function leerArrayLibros($estatus) {
+        $em = $this->em;
+        $parameters = array( 
+            'estatus' => $estatus,
+        );
 
+        $query = $em->createQuery(
+            'SELECT l
+            FROM LibuBundle:Libro l
+            WHERE l.estatus = :estatus
+            '
+        )->setParameters($parameters);
+        return $query->getResult();        
     }
+
 
     public function saluda() {
     	echo "<br>Hola";

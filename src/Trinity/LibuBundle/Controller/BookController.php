@@ -86,39 +86,16 @@ class BookController extends Controller
                 // Guarda los libros en la base de datos con estatus provisional
                 $bman->persisteArrayLibros($arrayLibros, "PROV");
 
-              //  return $this->redirectToRoute('booksubir');
+                return $this->redirectToRoute('booksubir');
 
                 // TAREAS: 
-                // - Quitar las siguientes líneas de código y dejar el redirect
-                // - Crear una nueva columna en Libro que sea la del status: PROVisional
-                // - Cambiar persisteArrayLibros para que añada status = PROV
-                // - Crear leerArrayLibros en caso que status = PROV
                 // - Crear nuevo servicio Abebooks para interactuar con su web
                 // - Utilizar función subirAbebooks para subir los libros, en BookManager
                 // - Crear los Assets de Validación en la entity Libro
                 // - Crear un nuevo array de errores en ArrayLibros
                 // - Adaptar toda la lectura de datos al nuevo array de errores. 
 
-        $form = $this->createFormBuilder()
-            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
-            ->add('stop', SubmitType::class, array('label' => 'No subir'))            
-            ->getForm();
-
-        // Renderiza la tabla con los libros de arrayLibros
-        return $this->render('LibuBundle:libu:books.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Lista de libros subidos',
-            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
-            'lista' => $arrayLibros,
-            ));
-
-                // echo "<pre>";  print_r($arrayLibros); echo "</pre>";
             }
-
-            if ($form->get('subir')->isClicked()) {
-                return new Response("Enviado!");
-            }
-
 
         } else {
 
@@ -190,7 +167,7 @@ class BookController extends Controller
 
         $bman = $this->get('app.books');
 
-        $arrayLibros = $bman->leerArrayLibros();
+        $arrayLibros = $bman->leerArrayLibros("PROV");
 
 
         $form = $this->createFormBuilder()
