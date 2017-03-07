@@ -89,12 +89,12 @@ class BookController extends Controller
               //  return $this->redirectToRoute('booksubir');
 
                 // TAREAS: 
+                // - Crear nuevo servicio Abebooks para interactuar con su web
+                // - Utilizar función subirAbebooks para subir los libros, en BookManager
                 // - Quitar las siguientes líneas de código y dejar el redirect
                 // - Crear una nueva columna en Libro que sea la del status: PROVisional
                 // - Cambiar persisteArrayLibros para que añada status = PROV
                 // - Crear leerArrayLibros en caso que status = PROV
-                // - Crear nuevo servicio Abebooks para interactuar con su web
-                // - Utilizar función subirAbebooks para subir los libros, en BookManager
                 // - Crear los Assets de Validación en la entity Libro
                 // - Crear un nuevo array de errores en ArrayLibros
                 // - Adaptar toda la lectura de datos al nuevo array de errores. 
