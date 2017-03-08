@@ -27,7 +27,7 @@
 		    {% endfor %}
 		    <tr><td><b> Total:</b></td><td><b>{{ ventasdia.ingreso  |round(1,'common') }} euros</b></td>
 		    	<td><b>{{ ventasdia.ingresolibros  |round(1,'common') }} euros</b></td>
-		    	<td><b>{{ ventasdia.ingreso - ventasdia.ingresolibros  |round(1,'common') }} euros</b></td><td></tr>
+		    	<td><b>{{ (ventasdia.ingreso - ventasdia.ingresolibros)  |round(1,'common') }} euros</b></td><td></tr>
 			</tbody>
 		</table>
 
@@ -37,12 +37,16 @@
             {{ form_widget(form.mesesventas) }}
             {{ form_label(form.fecha) }}
             {{ form_widget(form.fecha) }}
+
+            {{ form_widget(form.archivo ) }}
+            
         </div>
         <p>&nbsp;</p>
 
         <div>
             {{ form_widget(form.menu, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}} ) }}
         </div>
+       
 	    {{ form_row(form._token) }}
 	    {{ form_end(form)}}        
     </div>

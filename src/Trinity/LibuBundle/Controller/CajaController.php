@@ -141,7 +141,7 @@ class CajaController extends Controller
         $hoy =  new \DateTime();
         $mesesanteriores = $hoy->modify('+1 month');
 
-        for ($i=0; $i<6; $i++) {
+        for ($i=0; $i<12; $i++) {
  //         $hilabete = strtotime($hoy);        // marca Unix de tiempo
             $anoactual = $hoy->modify('-1 month')->format('Y');
             $textochoice = $this->mesescast[$hoy->format('n')]."-".$anoactual;
@@ -153,9 +153,11 @@ class CajaController extends Controller
                 'choices'  => $meseslista,
                'expanded' => false,
                'multiple' => false,
+               'data' => date($fecha->format('Ym'))
             ))       
             ->add('fecha', SubmitType::class, array('label' => 'Buscar en esa fecha'))            
             ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
+            ->add('archivo', SubmitType::class, array('label' => 'Emitir archivo IAD'))            
 
             ->getForm();
 
@@ -168,6 +170,10 @@ class CajaController extends Controller
                 return $this->redirectToRoute('cajamensual_fecha', array('mes' => $data['mesesventas']));
             }              
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+            if ($form->get('archivo')->isClicked()) {
+                $data = $form->getData();                
+                return $this->redirectToRoute('conta_fecha', array('mes' => $data['mesesventas']));
+            }
         }
 
        $fechatit = " ".$this->mesescast[$fecha->format('n')]." ".$fecha->format('Y');

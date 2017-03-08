@@ -45,8 +45,10 @@ class ContabilidadController extends Controller
 
     /**
      * @Route("/conta", name="conta")
+     * @Route("/conta/{mes}", requirements={"mes": "[1-9]\d*"}, name="conta_fecha")     
+
      */
-    public function contaAction(Request $request)
+    public function contaAction(Request $request, $mes)
     {
 
 		$estructura_venta = array(
@@ -119,11 +121,16 @@ class ContabilidadController extends Controller
 		$iva = 0.04; 
 
 
+        $fecha = ($mes != 1) ? \DateTime::createFromFormat('Ym', $mes) : new \DateTime(); 
+        $fecha->modify('first day of this month');
+        $fechasig = clone $fecha;   // nueva instancia para que no afecten las modify a $fecha
+        $fechasig->modify('last day of this month')->modify('+1 day');
 
 
+//		$fecha =  \DateTime::createFromFormat('d/m/Y', "15/07/2016");
+//		$fechasig = \DateTime::createFromFormat('d/m/Y', "16/07/2016");
 
-		$fecha =  \DateTime::createFromFormat('d/m/Y', "15/07/2016");
-		$fechasig = \DateTime::createFromFormat('d/m/Y', "16/07/2016");
+        $asientos = array();
 
 		$em = $this->getDoctrine()->getManager();
 		$ventas = $em->getRepository('LibuBundle:Venta')->ventasFechas($fecha, $fechasig, false);
@@ -134,6 +141,9 @@ class ContabilidadController extends Controller
 				'factura' => $venta['factura'],
 				'fecha' => $venta['hora']->format('d/m/Y')
 			);
+		}
+		if (count($ventas) == 0) {
+			$contents = "";
 		}
 //		echo "<pre>"; print_r($leido); echo "</pre>";	
 
@@ -176,12 +186,12 @@ class ContabilidadController extends Controller
 //		fclose($myfile);
 
     $response = new Response();
-    $filename = 17;
+    $filename = "".$fecha->format('d_m_Y')."--".$fechasig->modify('-1 day')->format('d_m_Y');
 
     //set headers
     $response->headers->set('Content-Type', 'text/txt');
     $response->headers->set('charset', 'utf-8');
-    $response->headers->set('Content-Disposition', 'attachment; filename=archivo'.$filename.'.IAD');
+    $response->headers->set('Content-Disposition', 'attachment; filename=Ventas_'.$filename.'.IAD');
 
 	$response->sendHeaders();
 
