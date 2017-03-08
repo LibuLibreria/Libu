@@ -118,16 +118,24 @@ class ContabilidadController extends Controller
 
 		$iva = 0.04; 
 
-		$asientos[0] = array(
-				'ingreso' => 4,
-				'factura' => 4641,
-				'fecha' => "15/06/2016"
+
+
+
+
+		$fecha =  \DateTime::createFromFormat('d/m/Y', "15/07/2016");
+		$fechasig = \DateTime::createFromFormat('d/m/Y', "16/07/2016");
+
+		$em = $this->getDoctrine()->getManager();
+		$ventas = $em->getRepository('LibuBundle:Venta')->ventasFechas($fecha, $fechasig, false);
+		$leido = "";
+		foreach ($ventas['ventas'] as $venta) {
+			$asientos[] = array(
+				'ingreso' => $venta['ingresolibros'],
+				'factura' => $venta['factura'],
+				'fecha' => $venta['hora']->format('d/m/Y')
 			);
-		$asientos[1] = array(
-				'ingreso' => 5.5,
-				'factura' => 4642,
-				'fecha' => "16/07/2016"
-			);
+		}
+//		echo "<pre>"; print_r($leido); echo "</pre>";	
 
 
 		// create a file pointer connected to the output stream
@@ -175,9 +183,9 @@ class ContabilidadController extends Controller
     $response->headers->set('charset', 'utf-8');
     $response->headers->set('Content-Disposition', 'attachment; filename=archivo'.$filename.'.IAD');
 
-$response->sendHeaders();
+	$response->sendHeaders();
 
-$response->setContent($contents);
+	$response->setContent($contents);
 
 //    $response->send();
     return $response; 
