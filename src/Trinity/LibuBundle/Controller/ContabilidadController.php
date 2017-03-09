@@ -136,11 +136,13 @@ class ContabilidadController extends Controller
 		$ventas = $em->getRepository('LibuBundle:Venta')->ventasFechas($fecha, $fechasig, false);
 		$leido = "";
 		foreach ($ventas['ventas'] as $venta) {
-			$asientos[] = array(
-				'ingreso' => $venta['ingresolibros'],
-				'factura' => $venta['factura'],
-				'fecha' => $venta['hora']->format('d/m/Y')
-			);
+			if ($venta['ingresolibros'] != 0) {
+				$asientos[] = array(
+					'ingreso' => $venta['ingresolibros'],
+					'factura' => $venta['factura'],
+					'fecha' => $venta['hora']->format('d/m/Y')
+				);
+			}
 		}
 		if (count($ventas) == 0) {
 			$contents = "";
