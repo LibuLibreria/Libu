@@ -92,7 +92,8 @@ class BookManager implements ContainerAwareInterface  {
         foreach ($this->array_file as $book) {
         	if ($book[0] != "isbn") {
         		foreach ($book as $key => $column ) {
-        			$caracteristicas[$posicion[$key]] = $column;
+                    $col = ($column == "") ? NULL : $column;
+        			$caracteristicas[$posicion[$key]] = $col;
         		}
         		$libro = new Libro($caracteristicas);
 
