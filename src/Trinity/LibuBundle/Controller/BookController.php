@@ -73,18 +73,18 @@ class BookController extends Controller
 
             if ($form->get('enviar')->isClicked()) {
 
-                // Guardamos el fichero con la orden guardaFile($archivo, $directorio)
-                $bman->guardaFileEnDirectorio($form['archivocsv']->getData(), 
+                $filecsv = $bman->guardaFileEnDirectorio($form['archivocsv']->getData(), 
                             $this->getParameter('directorio_uploads')."/archivoscsv");
 
-                // Convertimos el archivo csv en un array
-                $arrayfile = $bman->creaArrayDesdeCsv();
+                $arrayfile = $bman->creaArrayDesdeCsv($filecsv['data']);
 
-                // Crea el array de libros con los datos del csv
-                $arrayLibros = $bman->creaArraylibrosDesdeArray();
+
+                $arrayLibros = $bman->creaArraylibrosDesdeArray($arrayfile);
 
                 // Guarda los libros en la base de datos con estatus provisional
-                $bman->persisteArrayLibros($arrayLibros, "PROV");
+                $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");
+
+                echo "<pre>"; print_r($arrayLibros['erroresent']);print_r($arrayLibros['errorescol']); echo "</pre>";
 
                 return $this->redirectToRoute('booksubir');
 

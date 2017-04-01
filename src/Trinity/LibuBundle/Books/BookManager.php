@@ -52,19 +52,20 @@ class BookManager implements ContainerAwareInterface  {
         return $this->array_file; 
     }
 
+
+    // Guardamos el fichero con la orden guardaFileEnDirectorio($archivo, $directorio)
     public function guardaFileEnDirectorio($uplfile, $directorio) {
         if ($uplfile->guessExtension() == 'txt') {
 
-            // Guardamos el fichero en $directorio; $file nos devuelve el contenido del archivo
-            $file = $uplfile->move(
+            // Guardamos el fichero en $directorio; $filecsv nos devuelve el contenido del archivo
+            $filecsv = $uplfile->move(
                 $directorio,
                 $uplfile->getClientOriginalName()
             );
 
-            $this->setFilename($uplfile->getClientOriginalName());
-            $this->setFile($file);
+//            $this->setFilename($uplfile->getClientOriginalName());
             
-            return $this->array_file;
+            return array('data' => $filecsv, 'name' => $uplfile->getClientOriginalName());
 
 //            return $this->redirect($this->generateUrl('booklista'));
         } else {
@@ -73,54 +74,55 @@ class BookManager implements ContainerAwareInterface  {
     }
 
 
-
+    // Convertimos el archivo csv en un array
     public function creaArrayDesdeCsv($filecsv) 
     {
         return array_map('str_getcsv', file($filecsv));
     }
 
-    
-    public function creaArraylibrosDesdeArray() {
 
+    // Crea el array de libros con los datos del csv    
+    public function creaArraylibrosDesdeArray($arrayfile) 
+    {
+        foreach ((array)array_slice($arrayfile, 1) as $book) {
 
-        foreach ($this->array_file as $book) {
-            if ($book[0] != "isbn") {
+            $error_entity = false; 
+            $errores_ent = array(); 
+            $errores_col = array();
 
-                $this->validacionPorColumna($book);
+            $book = $this->cambiaKeysDelArray($book);
 
+            $errores_columna = $this->validacionPorColumna($book);
 
-                if (isset($error_libro)) {
-                    $erroneos['errores'] = $error_libro;
-                    $erroneos['col_correctas'] = $caracteristicas;
+            if (false == $errores_columna) {
+                
+                $libro = new Libro($book);
+
+                $error_entity = $this->validacionDeEntity($libro);
+
+                // Solamente guarda el libro en el array si pasa las 2 validaciones
+                if (false == $error_entity) {
+                    $arrayLibros[] = $libro; 
                 } else {
-                    $libro = new Libro($caracteristicas);
-                    $validator = $this->validator;
-                    $errors = $validator->validate($libro);
-                    if (count($errors) > 0) {
-                        /*
-                         * Uses a __toString method on the $errors variable which is a
-                         * ConstraintViolationList object. This gives us a nice string
-                         * for debugging.
-                         */
-                        $errorsString = (string) $errors;
-                        $libro->setAutor($errorsString);
-                    } else {
-                        $arrayLibros[] = $libro;        // Solamente guarda el libro en el array si pasa las 2 validaciones
-                    }
-                } 
+                    $errores_ent[] = array('libro' => $libro, 'error' => $error_entity);
+                }
+            } else {
+                $errores_col[] = array('arraylibro' => $book, 'errores' => $errores_columna); 
             }
- //           $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
+
+//           $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
         }
 
-
-
-        return $arrayLibros; 
+        return array(
+                        'arraylibros' => $arrayLibros,
+                        'erroresent' => $errores_ent,
+                        'errorescol' => $errores_col,
+                    );
     }
 
 
-    public function validacionPorColumna($book) 
+    public function cambiaKeysDelArray($book) 
     {
-
         // Este array indica la correspondencia entre las columnas del csv y los atributos de Libro
         $posicion = array(
             0 => "isbn",
@@ -133,27 +135,66 @@ class BookManager implements ContainerAwareInterface  {
             7 => "tapas",
             8 => "precio",
             9 => "notas",
-            10 => "no utilizado",
+            10 => "no_utilizado",
         );
 
-        // Primera validación, columna a columna
         foreach ($book as $key => $col ) {
 
             // Sustituye los strings vacíos por NULL
             $col = ($col == "") ? NULL : $col;
 
+            $caracteristicas[$posicion[$key]] = $col;                       
+        }
+
+        return $caracteristicas;
+    }
+
+
+
+    public function validacionPorColumna($book) 
+    {
+
+        $errores_libro = array();
+
+        // Primera validación, columna a columna
+        foreach ($book as $key => $col ) {
+
+
             // Validaciones y errores
-            if ($posicion[$key] == "precio"){
+            if ($key == "precio"){
                 $col = preg_replace( '/[^0-9.,]/', '', $col );                        
             } 
 
-            if (1 == 2) {
-                $error_libro[$posicion[$key]] = array( 'codigo' => '1', 'texto' => 'Error ...');
-            } 
-            $caracteristicas[$posicion[$key]] = $col;                    
+            if ($col == '405') {
+                $errores_libro[$key] = array( 'error_code' => '1', 'texto' => 'Error ...');
+            }
+            
         }
+        if (0 === count($errores_libro)) {
+            return $errores_libro;
+        } else {
+            return false;
+        }
+    }
 
 
+
+    public function validacionDeEntity($libro)
+    {
+        $validator = $this->validator;
+        $errors = $validator->validate($libro);
+        if (count($errors) > 0) {
+            /*
+             * Uses a __toString method on the $errors variable which is a
+             * ConstraintViolationList object. This gives us a nice string
+             * for debugging.
+             */
+            
+            $libro->setAutor($errorsString);
+            return  (string) $errors;
+        } else {
+            return false; 
+        }
     }
 
 
@@ -171,7 +212,22 @@ class BookManager implements ContainerAwareInterface  {
                 $this->addFlash('error', 'Error al guardar los datos de uno de los libros');
             } 
         } 
-    
+    }
+
+
+    public function persisteLibro($libro, $estatus) {
+
+        $em = $this->em;
+
+        $libro->setEstatus($estatus);
+
+        try {
+            $em->persist($libro);
+            $em->flush();
+        }
+        catch(\Doctrine\ORM\ORMException $e){
+            $this->addFlash('error', 'Error al guardar los datos de uno de los libros');
+        } 
     }
 
 
