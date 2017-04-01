@@ -5,6 +5,7 @@ namespace Trinity\LibuBundle\Books;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Trinity\LibuBundle\Entity\Libro;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class BookManager implements ContainerAwareInterface  {
 
@@ -82,25 +83,26 @@ class BookManager implements ContainerAwareInterface  {
 
 
     // Crea el array de libros con los datos del csv    
-    public function creaArraylibrosDesdeArray($arrayfile) 
+    public function creaArraylibrosValidado($arrayfile) 
     {
-        foreach ((array)array_slice($arrayfile, 1) as $book) {
 
-            $error_entity = false; 
-            $errores_ent = array(); 
-            $errores_col = array();
+        $errores_ent = array(); 
+        $errores_col = array();
+
+        foreach ((array)array_slice($arrayfile, 1) as $book) {
 
             $book = $this->cambiaKeysDelArray($book);
 
             $errores_columna = $this->validacionPorColumna($book);
 
+            // Si no hay errores en las columnas
             if (false == $errores_columna) {
                 
                 $libro = new Libro($book);
 
                 $error_entity = $this->validacionDeEntity($libro);
 
-                // Solamente guarda el libro en el array si pasa las 2 validaciones
+                // Si no hay errores en la entidad
                 if (false == $error_entity) {
                     $arrayLibros[] = $libro; 
                 } else {
@@ -113,7 +115,7 @@ class BookManager implements ContainerAwareInterface  {
 //           $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
         }
 
-        return array(
+        return  array(
                         'arraylibros' => $arrayLibros,
                         'erroresent' => $errores_ent,
                         'errorescol' => $errores_col,
@@ -170,10 +172,11 @@ class BookManager implements ContainerAwareInterface  {
             }
             
         }
-        if (0 === count($errores_libro)) {
-            return $errores_libro;
-        } else {
+
+        if (empty($errores_libro)) {
             return false;
+        } else {
+            return $errores_libro;
         }
     }
 
@@ -190,7 +193,7 @@ class BookManager implements ContainerAwareInterface  {
              * for debugging.
              */
             
-            $libro->setAutor($errorsString);
+//            $libro->setAutor($errorsString);
             return  (string) $errors;
         } else {
             return false; 

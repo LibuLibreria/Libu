@@ -78,13 +78,10 @@ class BookController extends Controller
 
                 $arrayfile = $bman->creaArrayDesdeCsv($filecsv['data']);
 
-
-                $arrayLibros = $bman->creaArraylibrosDesdeArray($arrayfile);
+                $arrayLibros = $bman->creaArraylibrosValidado($arrayfile);
 
                 // Guarda los libros en la base de datos con estatus provisional
                 $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");
-
-                echo "<pre>"; print_r($arrayLibros['erroresent']);print_r($arrayLibros['errorescol']); echo "</pre>";
 
                 return $this->redirectToRoute('booksubir');
 
