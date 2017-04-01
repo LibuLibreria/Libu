@@ -78,7 +78,7 @@ class BookController extends Controller
                             $this->getParameter('directorio_uploads')."/archivoscsv");
 
                 // Convertimos el archivo csv en un array
-                $this->array_file = $bman->creaArrayDesdeCsv();
+                $arrayfile = $bman->creaArrayDesdeCsv();
 
                 // Crea el array de libros con los datos del csv
                 $arrayLibros = $bman->creaArraylibrosDesdeArray();
