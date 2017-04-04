@@ -1,21 +1,19 @@
-{% extends "LibuBundle::libu/base.html.twig" %}
-{# libu/Resources/views/libu/venta.html.twig #}
+{% extends "LibuBundle::libu/tabla_layout.html.twig" %}
 
-{% form_theme form 'bootstrap_3_layout.html.twig' %}
-{# {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %} #}
 
-{% block body %}
-    <div class = 'col-sm-12 form-inline'>
-    	<h1>Caja</h1>
-    	<h3><br>Día: {{ fecha | localizeddate('full', 'none', app.request.locale )}}</h3>
+    	{% block titulo %}  	
+	    	<h1>Caja</h1>
+	    	<h3><br>Día: {{ fecha | localizeddate('full', 'none', app.request.locale )}}</h3>
+    	{% endblock %}
 
-    	<table class='table table-striped table-condensed'>
-    		<thead>
-    			<tr>
-    				<th>Hora</th><th>Ingreso</th><th>Libros</th><th>Productos</th><th>Cliente</th><th>Lista prods.</th>
-				</tr>
-			</thead>
-			<tbody>
+
+		{% block cabecera %}    				
+			<th>Hora</th><th>Ingreso</th><th>Libros</th><th>Productos</th><th>Cliente</th><th>Lista prods.</th>
+		{% endblock %}
+
+
+		{% block contenido %}
+
 		    {% for vent in ventasdia.ventas %}
 		    	<tr>
 		        	<td>{{ vent['hora'] | localizeddate('none', 'short', app.request.locale ) }}</td>
@@ -33,28 +31,31 @@
 		        	</td>
 	        	</tr>
 		    {% endfor %}
+
 		    <tr><td><b> Total:</b></td><td><b>{{ ventasdia.ingreso }} euros</b></td><td><b>{{ ventasdia.ingresolibros }} euros </b>
 		    	</td><td><b>{{ ventasdia.ingreso - ventasdia.ingresolibros }} euros</b></td><td></td><td></td></tr>
-			</tbody>
-		</table>
-
-	    {{ form_start(form) }}
-        <div>
-            {{ form_errors(form.diasventas) }}
-            {{ form_widget(form.diasventas) }}
-
-            {{ form_label(form.fecha) }}
-            {{ form_widget(form.fecha) }}
-        </div>
-        <p>&nbsp;</p>
+		{% endblock %}		    
 
 
-        <p>&nbsp;</p>
+		{% block formulario %}
 
-        <div>
-            {{ form_widget(form.menu, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}} ) }}
-        </div>
-	    {{ form_row(form._token) }}
-	    {{ form_end(form)}}        
-    </div>
-{% endblock %}
+		    {{ form_start(form) }}
+	        <div>
+	            {{ form_errors(form.diasventas) }}
+	            {{ form_widget(form.diasventas) }}
+
+	            {{ form_label(form.fecha) }}
+	            {{ form_widget(form.fecha) }}
+	        </div>
+	        <p>&nbsp;</p>
+
+
+	        <p>&nbsp;</p>
+
+	        <div>
+	            {{ form_widget(form.menu, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}} ) }}
+	        </div>
+		    {{ form_row(form._token) }}
+		    {{ form_end(form)}}  
+
+    	{% endblock %}		    

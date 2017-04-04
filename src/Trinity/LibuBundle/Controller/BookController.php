@@ -83,7 +83,27 @@ class BookController extends Controller
                 // Guarda los libros en la base de datos con estatus provisional
                 $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");
 
-                return $this->redirectToRoute('booksubir');
+//                return $this->redirectToRoute('booksubir');
+
+                unset($form);
+
+                $form = $this->createFormBuilder()
+                    ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
+                    ->add('stop', SubmitType::class, array('label' => 'No subir'))            
+                    ->getForm();
+
+                // Renderiza la tabla con los libros de arrayLibros
+                return $this->render('LibuBundle:libu:books.html.twig', array(
+                    'form' => $form->createView(),
+                    'titulo' => 'Lista de libros subidos',
+                    'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
+                    'lista' => $arrayLibros['arraylibros'],
+                    ));
+            }
+
+            if ($form->get('subir')->isClicked()) {       
+                return new Response('Subir');
+            }              
 
                 // TAREAS: 
                 // - Crear nuevo servicio Abebooks para interactuar con su web
@@ -92,8 +112,8 @@ class BookController extends Controller
                 // - Crear un nuevo array de errores en ArrayLibros
                 // - Adaptar toda la lectura de datos al nuevo array de errores. 
 
-            }
-
+              
+            
         } else {
 
             return $this->render('LibuBundle:libu:libro.html.twig', array(
@@ -148,7 +168,6 @@ class BookController extends Controller
             'lista' => $html_text,
             'choices' => $choices,
  //           'form' => $form->createView(),
-
 
         ));        
 
@@ -360,6 +379,71 @@ class BookController extends Controller
         }
     }
 
+
+
+    /**
+     * @Route("/book/pedidos", name="bookpedidos")
+     */
+    public function BooksPedidos() {
+        $xmlpedidos = $this->AbebooksVerPedidos();
+//         dump($xmlpedidos); 
+        $sxmlpedidos = new \SimpleXMLElement($xmlpedidos);
+        $pedidos = $sxmlpedidos->purchaseOrderList;     
+        $numpedidos = $pedidos->count();   
+        if ($numpedidos > 0) {
+            for ($i=0; $i < $numpedidos; $i++) {
+                $pedido = $pedidos->purchaseOrder;
+                $idpedido = (string) $pedido->attributes();
+                echo $idpedido;
+               dump($pedidos->children());
+            }
+            
+        }   
+
+        return new Response ('Ok');
+    }
+
+
+
+
+    private function AbebooksVerPedidos() {
+
+                // Crear un nuevo recurso cURL
+                $ch = curl_init();
+                
+                // Lee usuario y contraseña 
+                $abe_user = $this->getParameter('mailer_user');
+                $abe_pass = $this->getParameter('mailer_password');  
+
+                $cfile = '<?xml version="1.0" encoding="ISO-8859-1"?>
+                <orderUpdateRequest version="1.0">
+                    <action name="getAllNewOrders">
+                        <username>'.$abe_user.'</username>
+                        <password>'.$abe_pass.'</password>
+                    </action>
+                </orderUpdateRequest>
+                ';
+//                 dump($cfile); 
+
+                // Establecer URL y otras opciones apropiadas
+                // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
+                curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");        
+                curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+                curl_setopt($ch, CURLOPT_ENCODING ,"");
+
+                // Capturar la URL y pasarla al navegador
+                $resultado = curl_exec($ch);
+
+                // Cerrar el recurso cURL y liberar recursos del sistema
+                curl_close($ch);
+     
+                // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
+                dump($resultado); // die();
+                return $resultado;
+            }
 
 
     private function AbebookAdd($book, $csv) {
