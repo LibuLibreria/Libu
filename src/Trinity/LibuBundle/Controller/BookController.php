@@ -388,14 +388,36 @@ class BookController extends Controller
         $xmlpedidos = $this->AbebooksVerPedidos();
 //         dump($xmlpedidos); 
         $sxmlpedidos = new \SimpleXMLElement($xmlpedidos);
-        $pedidos = $sxmlpedidos->purchaseOrderList;     
-        $numpedidos = $pedidos->count();   
+        $pedidos = $sxmlpedidos->purchaseOrderList->children(); 
+
+        $numpedidos = $pedidos->count();  
+        echo "<br>Numero de pedidos: ". $numpedidos; 
+
         if ($numpedidos > 0) {
-            for ($i=0; $i < $numpedidos; $i++) {
-                $pedido = $pedidos->purchaseOrder;
-                $idpedido = (string) $pedido->attributes();
-                echo $idpedido;
-               dump($pedidos->children());
+            foreach ($pedidos as $pedido) {
+
+                $idpedido = $pedido['id'];
+                echo "<br>Id del pedido: ".$idpedido;
+
+                $idpedidobuyer = $pedido->buyerPurchaseOrder['id'];
+//                echo "<br>idpedidobuyer: ". $idpedidobuyer; 
+
+                $orderitem = $pedido->purchaseOrderItemList->children();
+
+                $numlibrospedido = $orderitem->count(); 
+                echo "<br>En el pedido hay ".$numlibrospedido." libro/s";
+
+                foreach ($orderitem as $libropedido) {
+                    $idpedidoitem = $libropedido['id'];
+//                    echo "<br>idpedidoitem: ". $idpedidoitem; 
+
+                    $idpedidobook = $libropedido->book['id'];
+//                    echo "<br>idpedidobook: ". $idpedidobook;
+
+                    $vendorkey = $libropedido->book->vendorKey; 
+                    echo "<br>Identificador del libro (vendorkey): ". $vendorkey; 
+                }
+
             }
             
         }   
@@ -441,7 +463,7 @@ class BookController extends Controller
                 curl_close($ch);
      
                 // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
-                dump($resultado); // die();
+//                dump($resultado); // die();
                 return $resultado;
             }
 
