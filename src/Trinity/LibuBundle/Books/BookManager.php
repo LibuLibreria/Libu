@@ -78,7 +78,7 @@ class BookManager implements ContainerAwareInterface  {
     // Convertimos el archivo csv en un array
     public function creaArrayDesdeCsv($filecsv) 
     {
-        return array_map('str_getcsv', file($filecsv));
+        return array_map('str_getcsv', $filecsv);
     }
 
 

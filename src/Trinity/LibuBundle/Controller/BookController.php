@@ -35,6 +35,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 
+use Symfony\Component\HttpFoundation\Session\Session;
 
 // use Symfony\Component\Serializer\Serializer;
 // use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -76,29 +77,14 @@ class BookController extends Controller
                 $filecsv = $bman->guardaFileEnDirectorio($form['archivocsv']->getData(), 
                             $this->getParameter('directorio_uploads')."/archivoscsv");
 
-                $arrayfile = $bman->creaArrayDesdeCsv($filecsv['data']);
 
-                $arrayLibros = $bman->creaArraylibrosValidado($arrayfile);
+                $session = $request->getSession();
 
-                // Guarda los libros en la base de datos con estatus provisional
-                $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");
+                $session->set('filename', $filecsv['name']);
 
-//                return $this->redirectToRoute('booksubir');
 
-                unset($form);
 
-                $form = $this->createFormBuilder()
-                    ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
-                    ->add('stop', SubmitType::class, array('label' => 'No subir'))            
-                    ->getForm();
-
-                // Renderiza la tabla con los libros de arrayLibros
-                return $this->render('LibuBundle:libu:books.html.twig', array(
-                    'form' => $form->createView(),
-                    'titulo' => 'Lista de libros subidos',
-                    'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
-                    'lista' => $arrayLibros['arraylibros'],
-                    ));
+                return $this->redirectToRoute('booksubir');
             }
 
             if ($form->get('subir')->isClicked()) {       
@@ -185,6 +171,20 @@ class BookController extends Controller
 
         $arrayLibros = $bman->leerArrayLibros("PROV");
 
+        $session = $request->getSession();
+        $filename = $session->get('filename');
+
+        $dirfile = $this->getParameter('directorio_uploads')."/archivoscsv/".$filename;
+
+        $arrayfile = $bman->creaArrayDesdeCsv(file($dirfile));  
+
+        $arrayLibros = $bman->creaArraylibrosValidado($arrayfile);     
+
+/*                  
+        // Guarda los libros en la base de datos con estatus provisional
+        $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");   */          
+
+dump($arrayLibros); die();        
 
         $form = $this->createFormBuilder()
             ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
