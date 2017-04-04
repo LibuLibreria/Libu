@@ -391,9 +391,11 @@ class BookController extends Controller
         $pedidos = $sxmlpedidos->purchaseOrderList->children(); 
 
         $numpedidos = $pedidos->count();  
-        echo "<br>Numero de pedidos: ". $numpedidos; 
+        echo "<br><strong>Numero de pedidos: ". $numpedidos."</strong>"; 
 
         if ($numpedidos > 0) {
+            echo "<br>-----------------------------";
+
             foreach ($pedidos as $pedido) {
 
                 $idpedido = $pedido['id'];
@@ -405,7 +407,7 @@ class BookController extends Controller
                 $orderitem = $pedido->purchaseOrderItemList->children();
 
                 $numlibrospedido = $orderitem->count(); 
-                echo "<br>En el pedido hay ".$numlibrospedido." libro/s";
+                echo "<br><strong>En el pedido hay ".$numlibrospedido." libro/s</strong>";
 
                 foreach ($orderitem as $libropedido) {
                     $idpedidoitem = $libropedido['id'];
@@ -416,10 +418,13 @@ class BookController extends Controller
 
                     $vendorkey = $libropedido->book->vendorKey; 
                     echo "<br>Identificador del libro (vendorkey): ". $vendorkey; 
+                    echo "<br>Autor: ". $libropedido->book->author;
+                    echo "<br>Título: ". $libropedido->book->title;
                 }
 
             }
-            
+            echo "<br>-----------------------------";
+           
         }   
 
         return new Response ('Ok');
@@ -437,7 +442,7 @@ class BookController extends Controller
                 $abe_user = $this->getParameter('mailer_user');
                 $abe_pass = $this->getParameter('mailer_password');  
 
-                $cfile = '<?xml version="1.0" encoding="ISO-8859-1"?>
+                $cfile = '<?xml version="1.0" encoding="UTF-8"?>
                 <orderUpdateRequest version="1.0">
                     <action name="getAllNewOrders">
                         <username>'.$abe_user.'</username>
@@ -463,7 +468,7 @@ class BookController extends Controller
                 curl_close($ch);
      
                 // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
-//                dump($resultado); // die();
+                dump($resultado); // die();
                 return $resultado;
             }
 
