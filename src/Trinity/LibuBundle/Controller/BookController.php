@@ -184,7 +184,7 @@ class BookController extends Controller
         // Guarda los libros en la base de datos con estatus provisional
         $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");   */          
 
-dump($arrayLibros); die();        
+// dump($arrayLibros); die();        
 
         $form = $this->createFormBuilder()
             ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
@@ -203,36 +203,6 @@ dump($arrayLibros); die();
 
 
 
-
-        // echo "<pre>"; print_r($csv); echo "</pre>";
-
-        // Abrimos un gestionador de repositorio para toda la función
-        $em = $this->getDoctrine()->getManager();
-
-        $text = "<h1>Libros encontrados:</h1>"; 
-        $lista = array();
-        $i = 0;
-        foreach ($csv as $book) {
-            $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
-            if ($isbn != "") {
-                $lista[$i][] = $i;
-                $choices[] = $i;
-                foreach ($book as $col) {
-                    $lista[$i] = $book;
-                }                
-            } else {      
-                if ($i != 0);   
-            }
-            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
-            $arrayprecios = $this->buscaIsbn($book[0]);
-            if ($arrayprecios) {
-                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
-            } else {
-                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
-            }
-        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
-            $i++; 
-        }
 
 
 
@@ -272,14 +242,7 @@ dump($arrayLibros); die();
 
                     $subido = $this->AbebookAdd($book,$csv);
                     // dump($subido); 
-                    $mens_abebooks = new \SimpleXMLElement($subido);
-                    if ($mens_abebooks->code == "600") {
-                        $ok_mess = $mens_abebooks->AbebookList->Abebook->message;
-                        $ok_code = $mens_abebooks->AbebookList->Abebook->code;
-                        $ok_bookId = $mens_abebooks->AbebookList->Abebook->vendorBookID;
-                        echo $ok_bookId." añadido a Abebooks.<br>";
-                    }
-
+     
                     $libro = new Libro(); 
                     $libro->setCodigo($csv[$book][3]);
                     $libro->setAutor($csv[$book][2]);
@@ -330,6 +293,41 @@ dump($arrayLibros); die();
         ));
   
 	}
+
+
+    public function buscaPrecios($arraylibros) {
+
+        // echo "<pre>"; print_r($csv); echo "</pre>";
+
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+
+        $text = "<h1>Libros encontrados:</h1>"; 
+        $lista = array();
+        $i = 0;
+        foreach ($arraylibros as $book) {
+            $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
+            if ($isbn != "") {
+                $lista[$i][] = $i;
+                $choices[] = $i;
+                foreach ($book as $col) {
+                    $lista[$i] = $book;
+                }                
+            } else {      
+                if ($i != 0);   
+            }
+            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
+            $arrayprecios = $this->buscaIsbn($book[0]);
+            if ($arrayprecios) {
+                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
+            } else {
+                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
+            }
+        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
+            $i++; 
+        }
+    }
+
 
 
     public function buscaIsbn($isbn) {
@@ -534,8 +532,19 @@ dump($arrayLibros); die();
                 // Cerrar el recurso cURL y liberar recursos del sistema
                 curl_close($ch);
      
+                $mens_abebooks = new \SimpleXMLElement($resultado);
+
+                $subido['code'] = $mens_abebooks->code; 
+                    if ($subido['code'] == "600") {
+                        $subido['mess'] = $mens_abebooks->AbebookList->Abebook->message;
+                        $subido['code'] = $mens_abebooks->AbebookList->Abebook->code;
+                        $subido['bookId'] = $mens_abebooks->AbebookList->Abebook->vendorBookID;
+ //                       echo $ok_bookId." añadido a Abebooks.<br>";
+                    }
+
+
                 // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
-                return $resultado; 
+                return $subido; 
             }
 }
 

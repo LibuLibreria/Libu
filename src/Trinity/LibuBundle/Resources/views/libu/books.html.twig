@@ -6,7 +6,6 @@
   <div class="row">
 		<div class="col-md-12">
       <h4>{{ titulo }}</h4>
-      {{ form(form) }}
       <div class="table-responsive">
         <table id="mytable" class="table table-bordred table-striped">
           {% if cabecera is defined %}
@@ -21,7 +20,34 @@
           {% endif %}
 
           <tbody>
-            {% for libro in lista %}    
+            {% for errorent in lista.erroresent %}
+              <tr style = "background-color: red;">
+                <hr>Para el libro con este código: {{ errorent.libro.codigo }}<br>
+                se ha reportado el siguiente error: <br>
+                {{ errorent.error }}<br>
+                Revise por favor el archivo. 
+                <hr>
+              </tr>
+            {% endfor %}
+
+            {% for errorcol in lista.errorescol %}
+            <hr>
+            <tr>ERROR EN EL SIGUIENTE LIBRO</tr>
+              {% for columna, valor in errorcol.arraylibro %}
+                <tr>
+                  {{ columna }}: {{ valor }}<br>
+                </tr>
+              {% endfor %}
+              <tr>Se han encontrado los siguientes errores:<br> </tr>
+              {% for col, err in errorcol.errores %}
+                <tr>{{ col }}: {{ err.texto }} <br> </tr>
+              {% endfor %}
+            <hr>
+            {% endfor %}
+
+            {{ form(form) }}
+
+            {% for libro in lista.arraylibros %}    
               <tr>
                 <td><input type="checkbox" class="checkthis" /></td>
                 <td>{{ libro.isbn }}</td>
