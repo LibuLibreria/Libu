@@ -18,8 +18,9 @@ class LibroCortoType extends AbstractType
         $builder
             ->add('isbn')  
             ->add('conservacion')                     
-            ->add('titulo')
-            ->add('autor')            
+            ->add('tapas')
+            ->add('estanteria')            
+            ->add('balda')
             ->add('save', SubmitType::class, array('label' => 'Guardar'))  
             ->getForm();             
         ;

@@ -24,6 +24,9 @@ use Trinity\LibuBundle\Entity\Libro;
 // use Trinity\LibuBundle\Entity\Tipo;
 //use Trinity\LibuBundle\Entity\Concepto;
 //use Trinity\LibuBundle\Entity\VentaRepository;
+use Trinity\LibuBundle\Form\LibroCortoType;
+
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 // use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -106,6 +109,44 @@ class BookController extends Controller
             ));
         }
     }
+
+
+    /**
+     * @Route("/book/agil", name="bookagil")
+     */
+    public function bookAgilAction(Request $request)  {
+
+
+
+        $bman = $this->get('app.books');
+
+        $libro = new Libro(); 
+
+        $form = $this->createForm(LibroCortoType::class, $libro);
+/*        
+        $form = $this->createFormBuilder()
+            ->add('tapas')
+            ->add('subiragil', SubmitType::class, array('label' => 'Subir'))           
+            ->getForm();
+*/
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($form->get('subiragil')->isClicked()) {
+
+            }    
+            
+        } 
+
+        return $this->render('LibuBundle:libu:agil.html.twig', array(
+            'form' => $form->createView(),
+            ));           
+
+
+    }
+
 
 
 
@@ -193,17 +234,26 @@ class BookController extends Controller
 
                     // echo "<pre>"; print_r($csv); echo "</pre>"; 
 
- //                   $subido = $this->AbebookAdd($book);
 
-                    
- //    dump($subido); die();
+
+
+                    $librosisbn = $this->buscaIsbn($book->getIsbn());
+     dump($librosisbn); 
+                    $datosisbn = $librosisbn[0];
+
+                    $book->setTitulo($datosisbn['titulo']);
+                    $book->setAutor($datosisbn['autor']);
+                    $book->setEditorial($datosisbn['editorial']);
+
 
                     $bman->persisteLibro($book, "SUB"); 
 
+                 $subido = $this->AbebookAdd($book);
 
+                 dump($subido); 
 
 /*
-                    $book->setEstatus("SUB");
+
      
                     $libro = new Libro(); 
                     $libro->setCodigo($csv[$book][3]);
@@ -245,6 +295,7 @@ class BookController extends Controller
             if ($form->get('stop')->isClicked()) {
 
             }
+
             return new Response ("Volver a venta");
         }
 
@@ -319,8 +370,10 @@ class BookController extends Controller
                 'verify_peer_name' => false
             ]
         ]);
-        $abebooks_isbn = file_get_contents('https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn, false, $streamContext);
-        //print_r($abebooks_isbn);
+        $url_isbn = 'https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn;
+        $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext);
+
+dump($url_isbn); 
 
         $crawler = new Crawler($abebooks_isbn);
 
@@ -328,25 +381,31 @@ class BookController extends Controller
             $datos = false;
         } else {
             $header = $crawler->filter('#pageHeader > h1');
-//            echo "<h2>".$header->text()."</h2>";
+            echo "<h2>".$header->text()."</h2>";
 
             $precios = $crawler->filter('.result-data');
-            // echo "<br>Text: ".$crawler->filter('p')->last()->text();
-            // echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
+             echo "<br>Text: ".$crawler->filter('p')->last()->text();
+             echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
 
             $i = 0;
             foreach ($precios as $domElement) {
                 $array_crawler[$i] = new Crawler();
                 $array_crawler[$i]->add($domElement);
                 $pr = explode(' ',$array_crawler[$i]->filter('.item-price .price')->text());
-                $precio = end($pr); 
-                $env = explode(' ',$array_crawler[$i]->filter('.shipping .price')->text());
-                $envio = end($env);
-                $libreria = $array_crawler[$i]->filter('.bookseller-info > p > a')->text();        
-                $pais = explode(',',$array_crawler[$i]->filter('.bookseller-info > p > span')->text());         
-                $suma = (float)str_replace(',', '.', $precio) + (float)str_replace(',', '.', $envio);
+                $datos[$i]['precio'] = end($pr); 
+                $dprecio = $array_crawler[$i]->filter('.shipping .price');
+                $env = (isset($dprecio)) ? explode(' ',$dprecio->text())  : 0;
+                $datos[$i]['envio'] = end($env);
+                $datos[$i]['libreria'] = $array_crawler[$i]->filter('.bookseller-info > p > a')->text();        
+                $datos[$i]['titulo'] = $array_crawler[$i]->filter('.result-detail > h2 > a')->text(); 
+                $datos[$i]['autor'] = $array_crawler[$i]->filter('.result-detail > p > strong')->text(); 
+                $datos[$i]['editorial'] = $array_crawler[$i]->filter('#publisher > span')->text();                                                 
+                $datos[$i]['pais'] = explode(',',$array_crawler[$i]->filter('.bookseller-info > p > span')->text());         
+                $datos[$i]['suma'] = (float)str_replace(',', '.', $datos[$i]['precio']) + (float)str_replace(',', '.', $datos[$i]['envio']);
            //      number_format((float)$precio, 2, '.', '') + number_format((float)$envio, 2, '.', '') ;
-                $datos[$i++] = "Librería: <b>".$libreria."</b> - País: ".substr(end($pais), 0, -1)." - Precio: ".$precio." - Envío: ".$envio." - <b>TOTAL: ".$suma."</b><br>";
+//                $datos[$i++]['texto'] = "Librería: <b>".$datos[$i]['libreria']."</b> - País: ".substr(end($datos[$i]['pais']), 0, -1).
+//
+                $i++;
 
          //       var_dump($domElement->nodeName);
             }
@@ -449,7 +508,7 @@ class BookController extends Controller
             }
 
 
-    private function AbebookAdd($book, $csv) {
+    private function AbebookAdd($book) {
 
                 // Crear un nuevo recurso cURL
                 $ch = curl_init();
@@ -467,12 +526,12 @@ class BookController extends Controller
                     <AbebookList>
                         <Abebook>
                             <transactionType>add</transactionType>
-                            <vendorBookID>'.$csv[$book][3].'</vendorBookID>
-                            <author>'.$csv[$book][2].'</author>
-                            <title>'.$csv[$book][1].'</title>
-                            <publisher></publisher>
+                            <vendorBookID>LIB'.$book->getCodigo().'</vendorBookID>
+                            <author>'.$book->getAutor().'</author>
+                            <title>'.$book->getTitulo().'</title>
+                            <publisher>'.$book->getEditorial().'</publisher>
                             <subject></subject>
-                            <price currency="EUR">'.$csv[$book][8].'</price>
+                            <price currency="EUR">'.$book->getPrecio().'</price>
                             <dustJacket></dustJacket>
                             <binding type="hard"></binding>
                             <firstEdition>false</firstEdition>
@@ -483,7 +542,7 @@ class BookController extends Controller
                             <size></size>
                             <jacketCondition>Fine</jacketCondition>
                             <bookType></bookType>
-                            <isbn>'.$csv[$book][0].'</isbn>
+                            <isbn>'.$book->getIsbn().'</isbn>
                             <publishPlace></publishPlace>
                             <publishYear></publishYear>
                             <edition></edition>

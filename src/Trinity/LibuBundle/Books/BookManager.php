@@ -88,7 +88,7 @@ class BookManager implements ContainerAwareInterface  {
 
         $errores_ent = array(); 
         $errores_col = array();
-        $arrayLibro = array();
+        $arrayLibros = array();
         $ceroerr = true; 
 
         foreach ((array)array_slice($arrayfile, 1) as $book) {
