@@ -88,6 +88,8 @@ class BookManager implements ContainerAwareInterface  {
 
         $errores_ent = array(); 
         $errores_col = array();
+        $arrayLibro = array();
+        $ceroerr = true; 
 
         foreach ((array)array_slice($arrayfile, 1) as $book) {
 
@@ -107,9 +109,11 @@ class BookManager implements ContainerAwareInterface  {
                     $arrayLibros[] = $libro; 
                 } else {
                     $errores_ent[] = array('libro' => $libro, 'error' => $error_entity);
+                    $ceroerr = false; 
                 }
             } else {
                 $errores_col[] = array('arraylibro' => $book, 'errores' => $errores_columna); 
+                $ceroerr = false; 
             }
 
 //           $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
@@ -119,6 +123,7 @@ class BookManager implements ContainerAwareInterface  {
                         'arraylibros' => $arrayLibros,
                         'erroresent' => $errores_ent,
                         'errorescol' => $errores_col,
+                        'ceroerr' => $ceroerr,
                     );
     }
 
@@ -167,8 +172,8 @@ class BookManager implements ContainerAwareInterface  {
                 $col = preg_replace( '/[^0-9.,]/', '', $col );                        
             } 
 
-            if ($col == '405') {
-                $errores_libro[$key] = array( 'error_code' => '1', 'texto' => 'Error ...');
+            if (($key == "codigo") && ($col < 400)) {
+                $errores_libro[$key] = array( 'error_code' => '1', 'texto' => 'Valor menor de 400');
             }
             
         }
@@ -218,6 +223,14 @@ class BookManager implements ContainerAwareInterface  {
     }
 
 
+    public function findLibrosEstatus($estatus) {
+
+        $em = $this->em;
+
+        return $em->getRepository('LibuBundle:Libro')->findByEstatus($estatus);
+
+    }
+
     public function persisteLibro($libro, $estatus) {
 
         $em = $this->em;
@@ -229,7 +242,7 @@ class BookManager implements ContainerAwareInterface  {
             $em->flush();
         }
         catch(\Doctrine\ORM\ORMException $e){
-            $this->addFlash('error', 'Error al guardar los datos de uno de los libros');
+            $this->addFlash('error', 'Error al guardar los datos de un libro');
         } 
     }
 

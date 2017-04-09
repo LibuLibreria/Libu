@@ -86,10 +86,7 @@ class BookController extends Controller
 
                 return $this->redirectToRoute('booksubir');
             }
-
-            if ($form->get('subir')->isClicked()) {       
-                return new Response('Subir');
-            }              
+          
 
                 // TAREAS: 
                 // - Crear nuevo servicio Abebooks para interactuar con su web
@@ -118,7 +115,6 @@ class BookController extends Controller
     public function bookListaAction(Request $request)  {
 
         $bman = $this->get('app.books');
-        $bman->saluda();
 
         $text = "<h1>Libros encontrados:</h1>"; 
         $lista = array();
@@ -169,94 +165,63 @@ class BookController extends Controller
 
         $bman = $this->get('app.books');
 
-        $arrayLibros = $bman->leerArrayLibros("PROV");
-
-        $session = $request->getSession();
-        $filename = $session->get('filename');
-
-        $dirfile = $this->getParameter('directorio_uploads')."/archivoscsv/".$filename;
-
-        $arrayfile = $bman->creaArrayDesdeCsv(file($dirfile));  
-
-        $arrayLibros = $bman->creaArraylibrosValidado($arrayfile);     
-
-/*                  
-        // Guarda los libros en la base de datos con estatus provisional
-        $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");   */          
-
-// dump($arrayLibros); die();        
-
         $form = $this->createFormBuilder()
-            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
-            ->add('stop', SubmitType::class, array('label' => 'No subir'))            
-            ->getForm();
-
-        // Renderiza la tabla con los libros de arrayLibros
-        return $this->render('LibuBundle:libu:books.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Lista de libros subidos',
-            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
-            'lista' => $arrayLibros,
-            ));
-
-
-
-
-
-
-
-
-        // echo "<pre>"; print_r($lista); echo "</pre><br>";
-        // echo "<pre>"; print_r($choices); echo "</pre><br>";
-
-//        $tabla["contenido"] = $lista;
-//        $tabla["cabecera_array"] = array("ISBN", "Título", "Autor", "Código");
-
-        // Crea los botones para el formulario
-        $form = $this->createFormBuilder()
-            ->add('choice1', ChoiceType::class, array(
+ /*           ->add('choice1', ChoiceType::class, array(
                 'choices' => $choices,
                 'label' => " ", 
                 'multiple' => true,
                 'expanded' => true, 
-                ))
-            ->add('continue', SubmitType::class, array('label' => 'Subir estos libros'))
+                ))                          */
+            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
             ->add('stop', SubmitType::class, array('label' => 'No subir'))            
             ->getForm();
-
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if ($form->get('continue')->isClicked()) {
+            if ($form->get('subir')->isClicked()) {
 
-                $datos = $form->getData();
+                // $datos = $form->getData();
                 // echo "<pre>"; print_r($datos); echo "</pre>";
 
-                foreach($datos['choice1'] as $book) {
+                $librosasubir = $bman->findLibrosEstatus("PROV");
+
+                foreach($librosasubir as $book) {
 
                     // echo "BOOK: ".$book."<br>";
 
                     // echo "<pre>"; print_r($csv); echo "</pre>"; 
 
-                    $subido = $this->AbebookAdd($book,$csv);
-                    // dump($subido); 
+ //                   $subido = $this->AbebookAdd($book);
+
+                    
+ //    dump($subido); die();
+
+                    $bman->persisteLibro($book, "SUB"); 
+
+
+
+/*
+                    $book->setEstatus("SUB");
      
                     $libro = new Libro(); 
                     $libro->setCodigo($csv[$book][3]);
                     $libro->setAutor($csv[$book][2]);
                     $libro->setTitulo($csv[$book][1]);
-                    $libro->setIsbn($csv[$book][0]);
+                    $libro->setIsbn($csv[$book][0]);                
 
                     // Subimos todos los datos a la base de datos
                     try {
-                            $em->persist($libro);
+                            $em->persist($book);
                             $em->flush();
                         }
                     catch(\Doctrine\ORM\ORMException $e) {
-                        $this->addFlash('error', 'Error al guardar los datos');
+                        $this->addFlash('error', 'Error al guardar los datos en BookController::BookSubirAction');
                     }
+
+
+                                */
                 }
 
                 // Adjunta el archivo xml
@@ -283,15 +248,28 @@ class BookController extends Controller
             return new Response ("Volver a venta");
         }
 
+        $session = $request->getSession();
+        $filename = $session->get('filename');
 
+        $dirfile = $this->getParameter('directorio_uploads')."/archivoscsv/".$filename;
+
+        $arrayfile = $bman->creaArrayDesdeCsv(file($dirfile));  
+
+        $arrayLibros = $bman->creaArraylibrosValidado($arrayfile);     
+
+                  
+        // Guarda los libros en la base de datos con estatus provisional
+        if ($arrayLibros['ceroerr']) $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");   
+
+        // Renderiza la tabla con los libros de arrayLibros
         return $this->render('LibuBundle:libu:books.html.twig', array(
- //           'lista' => $lista,
-            'texto_previo' => $text,
-            'lista' => $html_text,
-            'choices' => $choices,
             'form' => $form->createView(),
-        ));
-  
+            'titulo' => 'Lista de libros subidos',
+            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
+            'lista' => $arrayLibros,
+            ));
+
+
 	}
 
 
