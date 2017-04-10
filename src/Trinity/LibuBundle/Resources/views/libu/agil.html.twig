@@ -57,10 +57,16 @@ function mostrarInformacionCaracter(evObject) {
 
 </script>
 
+<div id="texto_inicial">
+    {{ texto }}
+</div>
+
 <div id="cabecera"><h2>Nuevo libro: </h2></div>
 
 {{ form_start(form) }}
     {{ form_errors(form) }}
+
+        {{ form_row(form.codigo) }} 
 
         {{ form_row(form.tapas) }}    
      
@@ -71,7 +77,7 @@ function mostrarInformacionCaracter(evObject) {
         {{ form_row(form.conservacion) }}                         
 
         {{ form_row(form.isbn) }}
-        
+
 {{ form_end(form) }}
 
 

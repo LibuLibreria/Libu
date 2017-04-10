@@ -220,9 +220,7 @@ class BookManager implements ContainerAwareInterface  {
                 }
             } 
 
-            if ($key == "tapas") {
-                if (!is_int($col)) $nuevo_book[$key] = array_search($col, $this->valores_tapas);
-            }
+            if ($key == "tapas") $nuevo_book[$key] = $this->validaTapas($col);
 
             if ($key == "conservacion") {
                 if (!is_int($col)) $nuevo_book[$key] = array_search($col, $this->valores_conservacion);
@@ -253,6 +251,12 @@ class BookManager implements ContainerAwareInterface  {
         }
     }
 
+
+    public function validaTapas($col) {
+        if (!is_int($col)) {
+            return array_search($col, $this->valores_tapas);
+        }
+    }
 
 
     public function validacionDeEntity($libro)

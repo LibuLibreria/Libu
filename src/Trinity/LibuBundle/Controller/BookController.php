@@ -130,20 +130,27 @@ class BookController extends Controller
             ->getForm();
 */
 
+        $texto = "";
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             if ($form->get('subiragil')->isClicked()) {
-                $data = $form->getData();
-
-                dump($data); die();
+                $librosub = $form->getData();
+                $biensubido = $bman->persisteLibro($librosub, "AGIL");
+                if ($biensubido) {
+                    $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
+                } else {
+                    $texto = "El libro no se ha subido correctamente"; 
+                }
             }    
             
         } 
 
         return $this->render('LibuBundle:libu:agil.html.twig', array(
             'form' => $form->createView(),
+            'texto' => $texto, 
             ));           
 
 
@@ -240,7 +247,7 @@ class BookController extends Controller
 
 
                     $librosisbn = $this->buscaIsbn($book->getIsbn());
-     dump($librosisbn); 
+
                     $datosisbn = $librosisbn[0];
 
                     $book->setTitulo($datosisbn['titulo']);
@@ -250,9 +257,9 @@ class BookController extends Controller
 
                     $bman->persisteLibro($book, "SUB"); 
 
-                 $subido = $this->AbebookAdd($book);
+//                 $subido = $this->AbebookAdd($book);
 
-                 dump($subido); 
+                 dump($book); die();
 
 /*
 
