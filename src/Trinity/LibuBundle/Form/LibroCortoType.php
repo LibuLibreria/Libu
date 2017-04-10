@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
 
 class LibroCortoType extends AbstractType
 {
@@ -17,7 +19,10 @@ class LibroCortoType extends AbstractType
     {
         $builder
             ->add('isbn')  
-            ->add('conservacion')                     
+            ->add('conservacion', TextType::class, array(
+                 'label' => 'Cubiertas',
+                 'data' => 'Tapa blanda'
+            ))                    
             ->add('tapas')
             ->add('estanteria')            
             ->add('balda')
