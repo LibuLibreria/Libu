@@ -87,6 +87,12 @@ class BookManager implements ContainerAwareInterface  {
     }
 
 
+    public function leeConfig($valor) {
+        $query = $this->em->getRepository('LibuBundle:Configuracion')->findOneBy(array('nombre' => $valor));
+        return $query->getValor();
+    }
+
+
     // Guardamos el fichero con la orden guardaFileEnDirectorio($archivo, $directorio)
     public function guardaFileEnDirectorio($uplfile, $directorio) {
         if ($uplfile->guessExtension() == 'txt') {

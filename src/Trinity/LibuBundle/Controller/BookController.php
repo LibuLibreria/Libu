@@ -116,26 +116,25 @@ class BookController extends Controller
      */
     public function bookAgilAction(Request $request)  {
 
- // Abrimos un gestionador de repositorio para toda la función
+        // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
 
-        // La variable $product es un array de todos los objetos Producto existentes
-        $libro = $em->getRepository('LibuBundle:Libro')->buscaLibros();
-        dump($libro); die(); 
-
-
-
         $bman = $this->get('app.books');
+
+        // La variable $product es un array de todos los objetos Producto existentes
+        $ultlibro = $em->getRepository('LibuBundle:Libro')->mayorCodigo();
+        $siglibro = ($ultlibro[0]['codigo'] + 1); 
+
+        $ultbalda = $bman->leeConfig('balda');
+        $ultestanteria = $bman->leeConfig('estanteria');
 
         $libro = new Libro(); 
 
         $form = $this->createForm(LibroCortoType::class, $libro);
-/*        
-        $form = $this->createFormBuilder()
-            ->add('tapas')
-            ->add('subiragil', SubmitType::class, array('label' => 'Subir'))           
-            ->getForm();
-*/
+
+        $form->get('balda')->setData($ultbalda);
+        $form->get('estanteria')->setData($ultestanteria);
+        $form->get('codigo')->setData($siglibro);
 
         $texto = "";
 
@@ -145,6 +144,7 @@ class BookController extends Controller
 
             if ($form->get('subiragil')->isClicked()) {
                 $librosub = $form->getData();
+
                 $biensubido = $bman->persisteLibro($librosub, "AGIL");
                 if ($biensubido) {
                     $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
@@ -152,7 +152,7 @@ class BookController extends Controller
                     $texto = "El libro no se ha subido correctamente"; 
                 }
             }    
-            
+            return $this->redirect($request->getUri());
         } 
 
         return $this->render('LibuBundle:libu:agil.html.twig', array(

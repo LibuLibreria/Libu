@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 class LibroRepository extends EntityRepository
 {
 	/*
-	*  Obtiene todas las fechas en las que hay ingresos
+	*  Obtiene libros
 	*/
     public function buscaLibros($limit = 10)
     {
@@ -27,5 +27,23 @@ class LibroRepository extends EntityRepository
         $stmt->execute();
         return $stmt->fetchAll();           
     }
+
+
+    /*
+    *  Obtiene el código del último libro subido
+    */
+    public function mayorCodigo()
+    {
+        $sql = 
+            "SELECT codigo
+            FROM libro 
+            ORDER BY codigo DESC
+            LIMIT 1"
+        ;
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();           
+    }
+
 
 }
