@@ -420,168 +420,59 @@ dump($url_isbn);
      * @Route("/book/pedidos", name="bookpedidos")
      */
     public function BooksPedidos() {
-        $xmlpedidos = $this->AbebooksVerPedidos();
-//         dump($xmlpedidos); 
-        $sxmlpedidos = new \SimpleXMLElement($xmlpedidos);
-        $pedidos = $sxmlpedidos->purchaseOrderList->children(); 
 
-        $numpedidos = $pedidos->count();  
-        echo "<br><strong>Numero de pedidos: ". $numpedidos."</strong>"; 
+        $bman = $this->get('app.books');
+
+        $xmlpedidos = $bman->AbebooksVerPedidos();
+
+        $sxmlpedidos = new \SimpleXMLElement($xmlpedidos);
+        if ($sxmlpedidos->code[0] == 110) return new Response( 'Usuario o contraseña incorrectos'); 
+
+        $pedidos = $sxmlpedidos->purchaseOrderList; 
+
+        $numpedidos = ( null !== $pedidos->children() ) ? $pedidos->children()->count() : 0;
+        $texto = "<br><strong>Numero de pedidos: ". $numpedidos."</strong>"; 
 
         if ($numpedidos > 0) {
-            echo "<br>-----------------------------";
+            $texto .= "<br>-----------------------------";
 
             foreach ($pedidos as $pedido) {
 
                 $idpedido = $pedido['id'];
-                echo "<br>Id del pedido: ".$idpedido;
+                $texto .= "<br>Id del pedido: ".$idpedido;
 
                 $idpedidobuyer = $pedido->buyerPurchaseOrder['id'];
-//                echo "<br>idpedidobuyer: ". $idpedidobuyer; 
+//                $texto .= "<br>idpedidobuyer: ". $idpedidobuyer; 
 
                 $orderitem = $pedido->purchaseOrderItemList->children();
 
                 $numlibrospedido = $orderitem->count(); 
-                echo "<br><strong>En el pedido hay ".$numlibrospedido." libro/s</strong>";
+                $texto .= "<br><strong>En el pedido hay ".$numlibrospedido." libro/s</strong>";
 
                 foreach ($orderitem as $libropedido) {
                     $idpedidoitem = $libropedido['id'];
-//                    echo "<br>idpedidoitem: ". $idpedidoitem; 
+//                    $texto .= "<br>idpedidoitem: ". $idpedidoitem; 
 
                     $idpedidobook = $libropedido->book['id'];
-//                    echo "<br>idpedidobook: ". $idpedidobook;
+//                    $texto .= "<br>idpedidobook: ". $idpedidobook;
 
                     $vendorkey = $libropedido->book->vendorKey; 
-                    echo "<br>Identificador del libro (vendorkey): ". $vendorkey; 
-                    echo "<br>Autor: ". $libropedido->book->author;
-                    echo "<br>Título: ". $libropedido->book->title;
+                    $texto .= "<br>Identificador del libro (vendorkey): ". $vendorkey; 
+                    $texto .= "<br>Autor: ". $libropedido->book->author;
+                    $texto .= "<br>Título: ". $libropedido->book->title;
                 }
 
             }
-            echo "<br>-----------------------------";
+            $texto .= "<br>-----------------------------";
            
+        } else {
+            $texto = "No hay ningún pedido"; 
         }   
 
-        return new Response ('Ok');
+        return new Response ("<h2>Pedidos</h2><br>".$texto);
     }
 
 
 
-
-    private function AbebooksVerPedidos() {
-
-                // Crear un nuevo recurso cURL
-                $ch = curl_init();
-                
-                // Lee usuario y contraseña 
-                $abe_user = $this->getParameter('mailer_user');
-                $abe_pass = $this->getParameter('mailer_password');  
-
-                $cfile = '<?xml version="1.0" encoding="UTF-8"?>
-                <orderUpdateRequest version="1.0">
-                    <action name="getAllNewOrders">
-                        <username>'.$abe_user.'</username>
-                        <password>'.$abe_pass.'</password>
-                    </action>
-                </orderUpdateRequest>
-                ';
-//                 dump($cfile); 
-
-                // Establecer URL y otras opciones apropiadas
-                // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
-                curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");        
-                curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-                curl_setopt($ch, CURLOPT_ENCODING ,"");
-
-                // Capturar la URL y pasarla al navegador
-                $resultado = curl_exec($ch);
-
-                // Cerrar el recurso cURL y liberar recursos del sistema
-                curl_close($ch);
-     
-                // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
-                dump($resultado); // die();
-                return $resultado;
-            }
-
-
-    private function AbebookAdd($book) {
-
-                // Crear un nuevo recurso cURL
-                $ch = curl_init();
-                
-                // Lee usuario y contraseña 
-                $abe_user = $this->getParameter('mailer_user');
-                $abe_pass = $this->getParameter('mailer_password');  
-
-                $cfile = '<?xml version="1.0" encoding="ISO-8859-1"?>
-                <inventoryUpdateRequest version="1.0">
-                    <action name="bookupdate">
-                        <username>'.$abe_user.'</username>
-                        <password>'.$abe_pass.'</password>
-                    </action>
-                    <AbebookList>
-                        <Abebook>
-                            <transactionType>add</transactionType>
-                            <vendorBookID>LIB'.$book->getCodigo().'</vendorBookID>
-                            <author>'.$book->getAutor().'</author>
-                            <title>'.$book->getTitulo().'</title>
-                            <publisher>'.$book->getEditorial().'</publisher>
-                            <subject></subject>
-                            <price currency="EUR">'.$book->getPrecio().'</price>
-                            <dustJacket></dustJacket>
-                            <binding type="hard"></binding>
-                            <firstEdition>false</firstEdition>
-                            <signed>false</signed>
-                            <booksellerCatalogue></booksellerCatalogue>
-                            <description></description>
-                            <bookCondition>Fine</bookCondition>
-                            <size></size>
-                            <jacketCondition>Fine</jacketCondition>
-                            <bookType></bookType>
-                            <isbn>'.$book->getIsbn().'</isbn>
-                            <publishPlace></publishPlace>
-                            <publishYear></publishYear>
-                            <edition></edition>
-                            <inscriptionType></inscriptionType>
-                            <quantity amount="1"></quantity>
-                        </Abebook>
-                    </AbebookList>
-                </inventoryUpdateRequest>
-                ';
-                // dump($cfile);
-
-                // Establecer URL y otras opciones apropiadas
-                // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
-                curl_setopt($ch, CURLOPT_URL, "https://inventoryupdate.abebooks.com:10027");        
-                curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-                curl_setopt($ch, CURLOPT_ENCODING ,"");
-
-                // Capturar la URL y pasarla al navegador
-                $resultado = curl_exec($ch);
-
-                // Cerrar el recurso cURL y liberar recursos del sistema
-                curl_close($ch);
-     
-                $mens_abebooks = new \SimpleXMLElement($resultado);
-
-                $subido['code'] = $mens_abebooks->code; 
-                    if ($subido['code'] == "600") {
-                        $subido['mess'] = $mens_abebooks->AbebookList->Abebook->message;
-                        $subido['code'] = $mens_abebooks->AbebookList->Abebook->code;
-                        $subido['bookId'] = $mens_abebooks->AbebookList->Abebook->vendorBookID;
- //                       echo $ok_bookId." añadido a Abebooks.<br>";
-                    }
-
-
-                // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
-                return $subido; 
-            }
 }
 

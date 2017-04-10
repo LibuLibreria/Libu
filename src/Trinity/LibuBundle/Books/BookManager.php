@@ -21,10 +21,43 @@ class BookManager implements ContainerAwareInterface  {
 
     protected $validator; 
 
-    public function __construct($em, $validator)
+    protected $muser; 
+
+    protected $mpass; 
+
+    public $numaletra, $letraanum; 
+
+    private $valores_tapas = array(
+            1 => "Tapa blanda",
+            2 => "Tapa dura",
+        );
+
+    private $valores_tapas_ing = array(
+            1 => "soft",
+            2 => "hard",
+        );
+
+    private $valores_conservacion = array(
+            1 => 'Nuevo',                        
+            2 => 'Como nuevo',
+            3 => 'Excelente', 
+            4 => 'Muy bien', 
+            5 => 'Bien',
+            6 => 'Aceptable',
+            7 => 'Regular',
+            8 => 'Mal estado',            
+        );    
+
+    public function __construct($em, $validator, $muser, $mpass)
     { 
         $this->em = $em;
         $this->validator = $validator; 
+        $this->muser = $muser; 
+        $this->mpass = $mpass; 
+
+        $this->numaletra = array_combine(range(1,26), range('A', 'Z'));
+        $this->letraanum = array_flip($this->numaletra); 
+
     }
 
     public function setFilename($filename) 
@@ -98,9 +131,9 @@ class BookManager implements ContainerAwareInterface  {
             $errores_columna = $this->validacionPorColumna($book);
 
             // Si no hay errores en las columnas
-            if (false == $errores_columna) {
+            if (false == $errores_columna['errores']) {
                 
-                $libro = new Libro($book);
+                $libro = new Libro($errores_columna['book_corregido']);
 
                 $error_entity = $this->validacionDeEntity($libro);
 
@@ -112,7 +145,9 @@ class BookManager implements ContainerAwareInterface  {
                     $ceroerr = false; 
                 }
             } else {
-                $errores_col[] = array('arraylibro' => $book, 'errores' => $errores_columna); 
+                $errores_col[] = array('arraylibro' => $errores_columna['book_corregido'], 
+                                        'errores' => $errores_columna['errores']); 
+
                 $ceroerr = false; 
             }
 
@@ -166,22 +201,55 @@ class BookManager implements ContainerAwareInterface  {
         // Primera validación, columna a columna
         foreach ($book as $key => $col ) {
 
+            $nuevo_book[$key] = $col;
 
             // Validaciones y errores
             if ($key == "precio"){
                 $col = preg_replace( '/[^0-9.,]/', '', $col );                        
+                $col = preg_replace( '/[,]/', '.', $col ); 
+                $trozos = explode('.', $col );    
+                if (sizeof($trozos) == 3) {
+                    $col = $trozos[0].$trozos[1].".".$trozos[2];
+                } elseif (sizeof($trozos) > 3) {
+                    $errores_libro[$key] = array( 'error_code' => '4', 'texto' => 'El precio ('.$col.') no es un número correcto, demasiados puntos o comas');
+                }
+                if (is_float((float) $col)) {
+                    $nuevo_book[$key] = number_format($col, 2, '.', '');
+                } else {
+                    $errores_libro[$key] = array( 'error_code' => '1', 'texto' => 'El precio ('.$col.') no es un número');
+                }
             } 
 
-            if (($key == "codigo") && ($col < 400)) {
-                $errores_libro[$key] = array( 'error_code' => '1', 'texto' => 'Valor menor de 400');
+            if ($key == "tapas") {
+                if (!is_int($col)) $nuevo_book[$key] = array_search($col, $this->valores_tapas);
+            }
+
+            if ($key == "conservacion") {
+                if (!is_int($col)) $nuevo_book[$key] = array_search($col, $this->valores_conservacion);
+            }
+
+            if ($key == "codigo") {
+                if (!is_int((int) $col)) {
+                    $errores_libro[$key] = array( 'error_code' => '2', 'texto' => 'El código ('.$col.') no es un número entero');
+                }
+            }
+
+            if ($key == "balda") {
+                if ( (ctype_alpha($col)) && (strlen($col) == 1) ) {
+                    $nuevo_book[$key] = $this->letraanum[$col]; 
+                } elseif (is_int($col)) {
+                    $nuevo_book[$key] = $col; 
+                } else {
+                    $errores_libro[$key] = array( 'error_code' => '3', 'texto' => 'La balda ('.$col.') no es un número entero o una única letra');                        
+                }
             }
             
         }
 
         if (empty($errores_libro)) {
-            return false;
+            return array('book_corregido' => $nuevo_book, 'errores' =>false);
         } else {
-            return $errores_libro;
+            return array('book_corregido' => $nuevo_book, 'errores' => $errores_libro);
         }
     }
 
@@ -208,18 +276,14 @@ class BookManager implements ContainerAwareInterface  {
 
     public function persisteArrayLibros($arrayLibros, $estatus) {
 
-        $em = $this->em;
+        $repetidos = array(); 
 
         foreach ($arrayLibros as $libro) {
-            $libro->setEstatus($estatus);
-            try {
-                $em->persist($libro);
-                $em->flush();
-            }
-            catch(\Doctrine\ORM\ORMException $e){
-                $this->addFlash('error', 'Error al guardar los datos de uno de los libros');
+            if ( $this->persisteLibro($libro, $estatus) === false ) { 
+                $repetidos[] = $libro->getCodigo(); 
             } 
         } 
+        return $repetidos; 
     }
 
 
@@ -234,6 +298,10 @@ class BookManager implements ContainerAwareInterface  {
     public function persisteLibro($libro, $estatus) {
 
         $em = $this->em;
+        $repetido = $em->getRepository('LibuBundle:Libro')->findByCodigo($libro->getCodigo())  ;
+        if (!empty($repetido)) {
+            return false; 
+        }
 
         $libro->setEstatus($estatus);
 
@@ -244,6 +312,8 @@ class BookManager implements ContainerAwareInterface  {
         catch(\Doctrine\ORM\ORMException $e){
             $this->addFlash('error', 'Error al guardar los datos de un libro');
         } 
+
+        return true; 
     }
 
 
@@ -261,6 +331,130 @@ class BookManager implements ContainerAwareInterface  {
         )->setParameters($parameters);
         return $query->getResult();        
     }
+
+
+
+
+    public function AbebooksVerPedidos() {
+
+                // Crear un nuevo recurso cURL
+                $ch = curl_init();
+                
+                // Lee usuario y contraseña 
+                $abe_user = $this->muser;
+                $abe_pass = $this->mpass;  
+
+                $cfile = '<?xml version="1.0" encoding="UTF-8"?>
+                <orderUpdateRequest version="1.0">
+                    <action name="getAllNewOrders">
+                        <username>'.$abe_user.'</username>
+                        <password>'.$abe_pass.'</password>
+                    </action>
+                </orderUpdateRequest>
+                ';
+//                 dump($cfile); 
+
+                // Establecer URL y otras opciones apropiadas
+                // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
+                curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");        
+                curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+                curl_setopt($ch, CURLOPT_ENCODING ,"");
+
+                // Capturar la URL y pasarla al navegador
+                $resultado = curl_exec($ch);
+
+                // Cerrar el recurso cURL y liberar recursos del sistema
+                curl_close($ch);
+     
+                // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
+                // dump($resultado); // die();
+                return $resultado;
+            }
+
+
+
+
+
+    private function AbebookAdd($book) {
+
+        // Crear un nuevo recurso cURL
+        $ch = curl_init();
+        
+        // Lee usuario y contraseña 
+        $abe_user = $this->muser;
+        $abe_pass = $this->mpass;   
+
+        $cfile = '<?xml version="1.0" encoding="ISO-8859-1"?>
+        <inventoryUpdateRequest version="1.0">
+            <action name="bookupdate">
+                <username>'.$abe_user.'</username>
+                <password>'.$abe_pass.'</password>
+            </action>
+            <AbebookList>
+                <Abebook>
+                    <transactionType>add</transactionType>
+                    <vendorBookID>LIB'.$book->getCodigo().'</vendorBookID>
+                    <author>'.$book->getAutor().'</author>
+                    <title>'.$book->getTitulo().'</title>
+                    <publisher>'.$book->getEditorial().'</publisher>
+                    <subject></subject>
+                    <price currency="EUR">'.$book->getPrecio().'</price>
+                    <dustJacket></dustJacket>
+                    <binding type="'.$valores_tapas_ing($book->getTapas()).'">
+                            '.$valores_tapas($book->getTapas()).'</binding>
+                    <firstEdition>false</firstEdition>
+                    <signed>false</signed>
+                    <booksellerCatalogue></booksellerCatalogue>
+                    <description></description>
+                    <bookCondition>'.$valores_conservacion($book->getConservacion()).'</bookCondition>
+                    <size></size>
+                    <jacketCondition>Fine</jacketCondition>
+                    <bookType></bookType>
+                    <isbn>'.$book->getIsbn().'</isbn>
+                    <publishPlace></publishPlace>
+                    <publishYear></publishYear>
+                    <edition></edition>
+                    <inscriptionType></inscriptionType>
+                    <quantity amount="1"></quantity>
+                </Abebook>
+            </AbebookList>
+        </inventoryUpdateRequest>
+        ';
+        // dump($cfile);
+
+        // Establecer URL y otras opciones apropiadas
+        // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
+        curl_setopt($ch, CURLOPT_URL, "https://inventoryupdate.abebooks.com:10027");        
+        curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+        curl_setopt($ch, CURLOPT_ENCODING ,"");
+
+        // Capturar la URL y pasarla al navegador
+        $resultado = curl_exec($ch);
+
+        // Cerrar el recurso cURL y liberar recursos del sistema
+        curl_close($ch);
+
+        $mens_abebooks = new \SimpleXMLElement($resultado);
+
+        $subido['code'] = $mens_abebooks->code; 
+            if ($subido['code'] == "600") {
+                $subido['mess'] = $mens_abebooks->AbebookList->Abebook->message;
+                $subido['code'] = $mens_abebooks->AbebookList->Abebook->code;
+                $subido['bookId'] = $mens_abebooks->AbebookList->Abebook->vendorBookID;
+//                       echo $ok_bookId." añadido a Abebooks.<br>";
+            }
+
+
+        // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
+        return $subido; 
+    }
+            
 
 
     public function saluda() {
