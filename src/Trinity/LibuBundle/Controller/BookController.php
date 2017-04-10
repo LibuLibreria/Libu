@@ -135,7 +135,9 @@ class BookController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             if ($form->get('subiragil')->isClicked()) {
+                $data = $form->getData();
 
+                dump($data); die();
             }    
             
         } 

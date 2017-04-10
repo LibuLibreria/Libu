@@ -42,7 +42,7 @@ function mostrarInformacionCaracter(evObject) {
                         if (elCaracter == 'i') msgest = 'Pobre';                                                               
 
                         libro_corto_tapas.setAttribute( "value", msgtapa ); 
-                        estado.setAttribute( "value", msgest ); 
+                        libro_corto_conservacion.setAttribute( "value", msgest ); 
                 }
 
                 if (evObject.which==13) {
@@ -62,14 +62,16 @@ function mostrarInformacionCaracter(evObject) {
 {{ form_start(form) }}
     {{ form_errors(form) }}
 
-        <p></p>Tapas:  <br> {{ form_row(form.tapas) }}
-        <p></p>Estado del libro:  <br><input id="estado" type="text" name="estado" value="Estupendo">
-        <p></p>Estantería:  <br>{{ form_row(form.estanteria) }}
-        <p></p>Balda:  <br><input id="balda" type="text" name="balda" value= "3">
-        <br>ISBN:  <br><input id="isbn" type="text" name="isbn" value=" " autofocus/>
-          <br>
-        <input id="submit" type="submit" value="Submit">
+        {{ form_row(form.tapas) }}    
+     
+        {{ form_row(form.estanteria) }}    
 
+        {{ form_row(form.balda) }}
+
+        {{ form_row(form.conservacion) }}                         
+
+        {{ form_row(form.isbn) }}
+        
 {{ form_end(form) }}
 
 

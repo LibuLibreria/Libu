@@ -18,15 +18,26 @@ class LibroCortoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('isbn')  
+            ->add('isbn', TextType::class, array(
+                'attr' => array(
+                    'autofocus' => 'autofocus'
+                )
+            )) 
             ->add('conservacion', TextType::class, array(
-                 'label' => 'Cubiertas',
-                 'data' => 'Tapa blanda'
+                 'label' => 'Conservación',
+                 'data' => 'Excelente'
             ))                    
-            ->add('tapas')
-            ->add('estanteria')            
-            ->add('balda')
-            ->add('save', SubmitType::class, array('label' => 'Guardar'))  
+            ->add('tapas', TextType::class, array(
+                 'label' => 'Tapas',
+                 'data' => 'Tapa dura'
+            ))                 
+            ->add('estanteria', TextType::class, array(
+                 'label' => 'Estantería',
+            ))                          
+            ->add('balda', TextType::class, array(
+                 'label' => 'Balda',
+            ))              
+            ->add('subiragil', SubmitType::class, array('label' => 'Guardar'))  
             ->getForm();             
         ;
     }
