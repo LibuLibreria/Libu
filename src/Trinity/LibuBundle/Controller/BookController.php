@@ -116,6 +116,13 @@ class BookController extends Controller
      */
     public function bookAgilAction(Request $request)  {
 
+ // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+
+        // La variable $product es un array de todos los objetos Producto existentes
+        $libro = $em->getRepository('LibuBundle:Libro')->buscaLibros();
+        dump($libro); die(); 
+
 
 
         $bman = $this->get('app.books');
