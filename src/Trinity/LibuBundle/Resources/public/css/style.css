@@ -65,3 +65,14 @@
 .cuerpo_form {
     margin-left: 30px;
 }
+
+.book-wrapper {
+    background-color: red; 
+    font-size: 2em;
+
+}
+
+.book-wrapper .form-control {
+    font-size: 3em;
+    height: 90px;
+}

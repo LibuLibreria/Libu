@@ -40,10 +40,10 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 use Symfony\Component\HttpFoundation\Session\Session;
 
-// use Symfony\Component\Serializer\Serializer;
-// use Symfony\Component\Serializer\Encoder\XmlEncoder;
-// use Symfony\Component\Serializer\Encoder\JsonEncoder;
-// use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\CssSelector\CssSelectorConverter;
@@ -140,18 +140,26 @@ class BookController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
+            if  ($form->isValid()) {
 
-            if ($form->get('subiragil')->isClicked()) {
-                $librosub = $form->getData();
+                if ($form->get('subiragil')->isClicked()) {
+                    $librosub = $form->getData();
 
-                $biensubido = $bman->persisteLibro($librosub, "AGIL");
-                if ($biensubido) {
-                    $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
-                } else {
-                    $texto = "El libro no se ha subido correctamente"; 
-                }
-            }    
+                    $texttapas = $librosub->getTapas(); 
+                    $librosub->setTapas($bman->validaTapas($texttapas));
+                    $textconservacion = $librosub->getConservacion();
+                    $librosub->setConservacion($bman->validaConservacion($textconservacion));
+
+                    $biensubido = $bman->persisteLibro($librosub, "AGIL");
+                    if ($biensubido) {
+                        $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
+                    } else {
+                        $texto = "El libro no se ha subido correctamente"; 
+                    }
+                }    
+            }
+
             return $this->redirect($request->getUri());
         } 
 
@@ -164,6 +172,31 @@ class BookController extends Controller
     }
 
 
+
+    /**
+     * @Route("/book/enviajson", name="bookenviajson")
+     */
+    public function bookEnviaJsonAction(Request $request)  {
+
+
+        $em = $this->getDoctrine()->getManager();
+        $bman = $this->get('app.books');
+
+        $librosagil = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGIL");
+
+        $fecha = new \DateTime(); 
+        $filename = "".$fecha->format('d_m_Y'); 
+
+
+        $encoders = array(new XmlEncoder(), new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $contents = $serializer->serialize($librosagil, 'json');
+
+        return $bman->enviaArchivo($filename, $contents); 
+    }
 
 
     /**

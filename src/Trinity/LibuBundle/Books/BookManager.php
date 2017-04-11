@@ -7,6 +7,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Trinity\LibuBundle\Entity\Libro;
 use Symfony\Component\HttpFoundation\Session\Session;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 class BookManager implements ContainerAwareInterface  {
 
     use ContainerAwareTrait;
@@ -60,6 +63,34 @@ class BookManager implements ContainerAwareInterface  {
 
     }
 
+
+
+    public function leeConfig($valor) {
+        $query = $this->em->getRepository('LibuBundle:Configuracion')->findOneBy(array('nombre' => $valor));
+        return $query->getValor();
+    }
+
+
+
+    public function enviaArchivo($filename, $contents) {
+        $response = new Response();
+
+        //set headers
+        $response->headers->set('Content-Type', 'text/txt');
+        $response->headers->set('charset', 'utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename=Libros_'.$filename.'.json');
+
+        $response->sendHeaders();
+
+        $response->setContent($contents);
+
+//      $response->send();
+        return $response;         
+    }
+
+
+
+
     public function setFilename($filename) 
     {
         $this->filename = $filename;    
@@ -84,12 +115,6 @@ class BookManager implements ContainerAwareInterface  {
 
     public function getArrayFile() {
         return $this->array_file; 
-    }
-
-
-    public function leeConfig($valor) {
-        $query = $this->em->getRepository('LibuBundle:Configuracion')->findOneBy(array('nombre' => $valor));
-        return $query->getValor();
     }
 
 
@@ -228,9 +253,8 @@ class BookManager implements ContainerAwareInterface  {
 
             if ($key == "tapas") $nuevo_book[$key] = $this->validaTapas($col);
 
-            if ($key == "conservacion") {
-                if (!is_int($col)) $nuevo_book[$key] = array_search($col, $this->valores_conservacion);
-            }
+            if ($key == "conservacion") $nuevo_book[$key] = $this->validaConservacion($col);
+
 
             if ($key == "codigo") {
                 if (!is_int((int) $col)) {
@@ -261,6 +285,13 @@ class BookManager implements ContainerAwareInterface  {
     public function validaTapas($col) {
         if (!is_int($col)) {
             return array_search($col, $this->valores_tapas);
+        }
+    }
+
+
+    public function validaConservacion($col) {
+        if (!is_int($col))  {
+            return array_search($col, $this->valores_conservacion);       
         }
     }
 

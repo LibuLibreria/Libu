@@ -46,7 +46,7 @@ function mostrarInformacionCaracter(evObject) {
                 }
 
                 if (evObject.which==13) {
-                        document.getElementById("nuevolibro").submit();
+                        document.getElementById("libro_corto").submit();
                 }
 
                 eventoControlado=true;
@@ -57,31 +57,55 @@ function mostrarInformacionCaracter(evObject) {
 
 </script>
 
-<div id="texto_inicial">
-    {{ texto }}
+<div class="book-wrapper" >
+
+    <div class="col-md-10">
+
+        <div id="texto_inicial">
+            {{ texto }}
+        </div>
+
+        <div id="cabecera"><h1>Nuevo libro: </h1></div>
+
+            {{ form_start(form) }}
+
+            {{ form_errors(form) }}
+
+            <div class="col-md-6">
+
+                {{ form_row(form.codigo) }} 
+
+                {{ form_row(form.tapas) }}    
+
+
+                {{ form_row(form.conservacion) }}                         
+
+                {{ form_row(form.isbn) }} 
+
+            </div>
+
+            <div class="col-md-3">
+             
+                {{ form_row(form.estanteria) }}    
+
+                {{ form_row(form.balda) }} 
+
+            </div>
+
+    </div>
+
+    <div class="col-md-10">
+        <hr> 
+
+
+        {{ form_end(form) }}
+
+        <a href= "{{ path('bookenviajson')}}">Envía documento</a>
+
+        <div id="control"> </div>
+
+    </div>
+
 </div>
-
-<div id="cabecera"><h2>Nuevo libro: </h2></div>
-
-{{ form_start(form) }}
-    {{ form_errors(form) }}
-
-        {{ form_row(form.codigo) }} 
-
-        {{ form_row(form.tapas) }}    
-     
-        {{ form_row(form.estanteria) }}    
-
-        {{ form_row(form.balda) }}
-
-        {{ form_row(form.conservacion) }}                         
-
-        {{ form_row(form.isbn) }}
-
-{{ form_end(form) }}
-
-
-<div id="control"> </div>
-
 
 {% endblock %}   

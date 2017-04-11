@@ -15,17 +15,19 @@ class LibroRepository extends EntityRepository
 	/*
 	*  Obtiene libros
 	*/
-    public function buscaLibros($limit = 10)
+    public function buscaLibros($estatus)
     {
-        $sql = 
-            "SELECT isbn
-            FROM libro 
-            WHERE estatus = 'AGIL'
-            LIMIT ".$limit
-        ;
-        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll();           
+        $parameters = array( 
+            'estatus' => $estatus, 
+        );
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT l
+            FROM LibuBundle:Libro l
+            WHERE l.estatus = :estatus'
+        )->setParameters($parameters);
+        
+        $libros  = $query->getResult();  
+        return $libros;          
     }
 
 
