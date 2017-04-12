@@ -232,12 +232,72 @@ class BookController extends Controller
 
         $serializer = new Serializer($normalizers, $encoders);
 
-        $contents = $serializer->serialize($librosagil, 'json');
+        $contents = ""; 
+        foreach ($librosagil as $libroajson) {
+            $contents .= $serializer->serialize($libroajson, 'json')."\n";
+        }
 
         $em->getRepository('LibuBundle:Libro')->cambiaEstatusLibros("AGIL", "AGILP");
 
         return $bman->enviaArchivo($filename, $contents); 
     }
+
+
+
+    /**
+     * @Route("/book/leejson", name="bookleejson")
+     */
+    public function bookLeeJsonAction(Request $request)  {
+
+        $form = $this->createFormBuilder()
+            ->add('archivojson', FileType::class, array(
+                "label" => "Archivo Json:",
+            ))
+            ->add('enviar', SubmitType::class, array('label' => 'Enviar'))            
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        $bman = $this->get('app.books');
+
+        $mensaje = ""; 
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($form->get('enviar')->isClicked()) {
+
+                $encoders = array(new XmlEncoder(), new JsonEncoder());
+                $normalizers = array(new ObjectNormalizer());
+
+                $serializer = new Serializer($normalizers, $encoders);                
+
+                $datos = $form->getData(); 
+              
+                $filejson = file($datos['archivojson']);
+//                dump($filejson); die(); 
+
+                foreach ($filejson as $librobajado) {
+                    $libroobj[] = $serializer->deserialize($librobajado, Libro::class, 'json');  
+                }
+
+                $bman->persisteArrayLibros($libroobj, "AGILS", true);
+                
+
+            }
+
+        }
+
+        return $this->render('LibuBundle:libu:libro.html.twig', array(
+            'mensaje' => $mensaje,
+            'titulo' => "Archivo json",
+            'form' => $form->createView(),
+        ));        
+
+
+    }
+
+
+
 
 
     /**

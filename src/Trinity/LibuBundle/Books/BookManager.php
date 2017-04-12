@@ -74,7 +74,7 @@ class BookManager implements ContainerAwareInterface  {
     public function escribeConfig($nombre, $valor) {
 
         $em = $this->em;
-                
+
         $query = $this->em->getRepository('LibuBundle:Configuracion')->findOneBy(array('nombre' => $nombre));
         $newconfig = $query->setValor($valor);
 
@@ -333,12 +333,13 @@ class BookManager implements ContainerAwareInterface  {
     }
 
 
-    public function persisteArrayLibros($arrayLibros, $estatus) {
+    public function persisteArrayLibros($arrayLibros, $estatus, $reescribir = false) {
 
         $repetidos = array(); 
 
         foreach ($arrayLibros as $libro) {
-            if ( $this->persisteLibro($libro, $estatus) === false ) { 
+
+            if ( $this->persisteLibro($libro, $estatus, $reescribir) === false ) { 
                 $repetidos[] = $libro->getCodigo(); 
             } 
         } 
@@ -354,12 +355,16 @@ class BookManager implements ContainerAwareInterface  {
 
     }
 
-    public function persisteLibro($libro, $estatus) {
+    public function persisteLibro($libro, $estatus, $reescribir = false) {
 
         $em = $this->em;
         $repetido = $em->getRepository('LibuBundle:Libro')->findByCodigo($libro->getCodigo())  ;
         if (!empty($repetido)) {
-            return false; 
+            if ($reescribir) {
+                $libro = $repetido[0]; 
+            } else {
+                return false; 
+            }
         }
 
         $libro->setEstatus($estatus);
