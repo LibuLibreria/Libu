@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 class LibroRepository extends EntityRepository
 {
 	/*
-	*  Obtiene libros
+	*  Obtiene libros con determinado status
 	*/
     public function buscaLibros($estatus)
     {
@@ -32,19 +32,41 @@ class LibroRepository extends EntityRepository
 
 
     /*
+    *  Cambia un estatus por otro
+    */
+    public function cambiaEstatusLibros($estatusActual, $estatusNuevo)
+    {
+        $parameters = array( 
+            'estatusActual' => $estatusActual, 
+            'estatusNuevo' => $estatusNuevo,            
+        );
+
+        $query = $this->getEntityManager()->createQuery(
+            "UPDATE LibuBundle:Libro l
+            SET l.estatus = :estatusNuevo 
+            WHERE l.estatus = :estatusActual"
+        )->setParameters($parameters);
+        
+        $libros  = $query->getResult();  
+        return $libros; 
+    }
+
+
+
+    /*
     *  Obtiene el código del último libro subido
     */
     public function mayorCodigo()
     {
-        $sql = 
-            "SELECT codigo
-            FROM libro 
-            ORDER BY codigo DESC
-            LIMIT 1"
-        ;
-        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll();           
+        $parameters = array();
+
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT l.codigo
+            FROM LibuBundle:Libro l
+            ORDER BY l.codigo DESC"
+        )->setParameters($parameters);
+        $libros  = $query->getResult();  
+        return $libros;   
     }
 
 

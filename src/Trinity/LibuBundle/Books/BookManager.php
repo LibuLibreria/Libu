@@ -65,11 +65,29 @@ class BookManager implements ContainerAwareInterface  {
 
 
 
-    public function leeConfig($valor) {
-        $query = $this->em->getRepository('LibuBundle:Configuracion')->findOneBy(array('nombre' => $valor));
+    public function leeConfig($nombre) {
+        $query = $this->em->getRepository('LibuBundle:Configuracion')->findOneBy(array('nombre' => $nombre));
         return $query->getValor();
     }
 
+
+    public function escribeConfig($nombre, $valor) {
+
+        $em = $this->em;
+                
+        $query = $this->em->getRepository('LibuBundle:Configuracion')->findOneBy(array('nombre' => $nombre));
+        $newconfig = $query->setValor($valor);
+
+        try {
+            $em->persist($newconfig);
+            $em->flush();
+        }
+        catch(\Doctrine\ORM\ORMException $e){
+            $this->addFlash('error', 'Error al guardar los datos de un libro');
+        } 
+        return true;
+
+    }
 
 
     public function enviaArchivo($filename, $contents) {

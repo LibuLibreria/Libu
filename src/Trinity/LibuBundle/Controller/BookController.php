@@ -25,7 +25,7 @@ use Trinity\LibuBundle\Entity\Libro;
 //use Trinity\LibuBundle\Entity\Concepto;
 //use Trinity\LibuBundle\Entity\VentaRepository;
 use Trinity\LibuBundle\Form\LibroCortoType;
-
+use Trinity\LibuBundle\Form\BaldaEstantType;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -167,9 +167,48 @@ class BookController extends Controller
             'form' => $form->createView(),
             'texto' => $texto, 
             ));           
-
-
     }
+
+
+
+    /**
+     * @Route("/book/baldaestant", name="bookbaldaestant")
+     */
+    public function bookBaldaEstantAction(Request $request)  {
+
+        $bman = $this->get('app.books');
+
+        $form = $this->createForm(BaldaEstantType::class, array());      
+
+
+        $ultbalda = $bman->leeConfig('balda');
+        $ultestanteria = $bman->leeConfig('estanteria');
+
+        $form->get('balda')->setData($ultbalda);
+        $form->get('estanteria')->setData($ultestanteria); 
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+                if ($form->get('enviar')->isClicked()) {
+                    $datos = $form->getData();
+                    $bman->escribeConfig('balda', $datos['balda']);
+                    $bman->escribeConfig('estanteria', $datos['estanteria']);
+
+                }
+
+            return $this->redirectToRoute('bookagil');
+
+        }
+
+        return $this->render('LibuBundle:libu:form.html.twig', array(
+            'form' => $form->createView(), 
+            'titulo' => "Cambiar balda y Estantería",             
+            )); 
+    }
+
+
+
 
 
 
@@ -194,6 +233,8 @@ class BookController extends Controller
         $serializer = new Serializer($normalizers, $encoders);
 
         $contents = $serializer->serialize($librosagil, 'json');
+
+        $em->getRepository('LibuBundle:Libro')->cambiaEstatusLibros("AGIL", "AGILP");
 
         return $bman->enviaArchivo($filename, $contents); 
     }

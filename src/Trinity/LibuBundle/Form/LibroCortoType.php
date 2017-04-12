@@ -27,7 +27,7 @@ class LibroCortoType extends AbstractType
             ))                    
             ->add('tapas', TextType::class, array(
                  'label' => 'Tapas',
-                 'data' => 'Tapa dura'
+                 'data' => 'Tapa blanda'
             ))                 
             ->add('estanteria', TextType::class, array(
                  'label' => 'Estantería',
@@ -40,7 +40,12 @@ class LibroCortoType extends AbstractType
                     'autofocus' => 'autofocus'
                 )
             ))                     
-            ->add('subiragil', SubmitType::class, array('label' => 'Guardar'))  
+            ->add('subiragil', SubmitType::class, array(
+                'label' => 'Guardar',
+                'attr' => array(
+                    'class' => 'btn-lg btn-primary'
+                )                
+            ))  
             ->getForm();             
         ;
     }

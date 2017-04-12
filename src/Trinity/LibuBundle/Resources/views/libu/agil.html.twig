@@ -82,14 +82,26 @@ function mostrarInformacionCaracter(evObject) {
 
                 {{ form_row(form.isbn) }} 
 
+                {{ form_widget(form.subiragil) }}  
+
+                {{ form_row(form.subiragil) }}  
+
             </div>
 
             <div class="col-md-3">
              
                 {{ form_row(form.estanteria) }}    
 
-                {{ form_row(form.balda) }} 
+                {{ form_row(form.balda) }}                
 
+                <div class="botones_agil">
+                <a  href= "{{ path('bookbaldaestant')}}">Cambiar balda y estantería</a><br>   
+                </div>
+
+                <div class="botones_agil">
+                <a href= "{{ path('bookenviajson')}}">Enviar documento</a><br>
+                </div>
+                
             </div>
 
     </div>
@@ -100,7 +112,7 @@ function mostrarInformacionCaracter(evObject) {
 
         {{ form_end(form) }}
 
-        <a href= "{{ path('bookenviajson')}}">Envía documento</a>
+
 
         <div id="control"> </div>
 
