@@ -1,0 +1,136 @@
+{% extends "LibuBundle::libu/base.html.twig" %}
+
+{#    {% form_theme form 'bootstrap_3_layout.html.twig' %}  
+
+{% import _self as forms %}   #}
+
+{% block body %}
+  <div class="row">
+		<div class="col-md-12">
+      <h1>{{ titulo }}</h1>
+      <div class="table-responsive">
+
+              {{ form_start(form) }}
+
+              {% for libro in librosventa %}   
+                <h3>ISBN: {{ libro.isbn }} </h3><br>
+                {% if libro.resultados is empty %}
+                  No se han encontrado libros a la venta en Abebooks<br>
+                {% else %}
+
+                    Título: {{ libro.resultados.0.titulo }}<br>
+                    Autor: {{ libro.resultados.0.autor }}<br>
+                    Precio mínimo: {{ libro.resultados.0.suma }} <br>
+
+
+
+                  <table class="table table-bordred table-striped">
+
+                    <tbody>
+                      <thead>
+                        <tr>
+                          {% for cab in cabecera %}
+                              <th> {{ cab }}</th>
+                          {% endfor %}
+                        </tr>
+                      </thead>
+
+                    {% for libroenc in libro.resultados %}
+                      <tr>
+                        <td>{{ libroenc.libreria }}</td>
+                        <td>{{ libroenc.editorial }}</td>                        
+                        <td>{{ libroenc.titulo }}</td>
+                        <td>{{ libroenc.autor }}</td>
+                        <td>{{ libroenc.suma }}</td>       
+                      </tr>              
+
+                    {% endfor %}
+
+                    </tbody>      
+
+                  </table>
+
+                {% endif %}
+                <hr>
+              {% endfor %}  
+
+              {{ form_row(form.aceptar)}}
+
+              {{ form_row(form.rechazar)}}
+
+              {{ form_end(form)}}    
+
+        {#
+          <div class="clearfix"></div>
+          <ul class="pagination pull-right">
+            <li class="disabled"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+          </ul>
+ 
+
+        {{ forms.miniform('3453453453', '13.5')}}
+        #} 
+
+      </div>  
+    </div>
+	</div>
+        {#
+
+        {% macro miniform(isbn, precio, ordinal) %}
+
+  <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+        <div class="modal-dialog">
+      <div class="modal-content">
+            <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+          <h4 class="modal-title custom_align" id="Heading">Nuevo precio para {{ isbn }}</h4>
+        </div>
+            <div class="modal-body">
+          <div class="form-group">
+            <label class="control-label" for="producto_{{ ordinal }}">
+              Precio
+            </label>
+            <input id="producto_{{ ordinal }}" name="producto[{{ ordinal }}]" class="form-control" type="text" placeholder= {{ precio }}>
+          </div>
+
+        </div>
+            <div class="modal-footer ">
+          <button type="button" class="btn btn-warning btn-lg" style="width: 100%;"><span class="glyphicon glyphicon-ok-sign"></span> Actualizar</button>
+        </div>
+          </div>
+      <!-- /.modal-content --> 
+    </div>
+        <!-- /.modal-dialog --> 
+      </div>
+{% endmacro %}    
+    
+    
+    <div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+      <div class="modal-dialog">
+    <div class="modal-content">
+          <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+        <h4 class="modal-title custom_align" id="Heading">Borrar este libro</h4>
+      </div>
+          <div class="modal-body">
+       
+       <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>¿Seguro que quieres borrarlo?</div>
+       
+      </div>
+        <div class="modal-footer ">
+        <button type="button" class="btn btn-success" ><span class="glyphicon glyphicon-ok-sign"></span> Si</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> No</button>
+      </div>
+        </div>
+    <!-- /.modal-content --> 
+  </div>
+      <!-- /.modal-dialog --> 
+    </div>
+
+        #}     
+{% endblock %}    

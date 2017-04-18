@@ -26,6 +26,7 @@ use Trinity\LibuBundle\Entity\Libro;
 //use Trinity\LibuBundle\Entity\VentaRepository;
 use Trinity\LibuBundle\Form\LibroCortoType;
 use Trinity\LibuBundle\Form\BaldaEstantType;
+use Trinity\LibuBundle\Form\BookPrecioType;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -209,6 +210,64 @@ class BookController extends Controller
 
 
 
+
+    /**
+     * @Route("/book/precio", name="bookprecio")
+     */
+    public function bookPrecioAction(Request $request)  {
+
+        $jump = 2; 
+
+        $em = $this->getDoctrine()->getManager();
+        $bman = $this->get('app.books');
+
+        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP");
+
+        $session = $request->getSession();        
+
+        $n = 4;
+
+        $fin = (($n + $jump) > sizeof($librosp)) ? sizeof($librosp) : $n + $jump; 
+
+        $datos = array(); 
+
+        for ($i = $n; $i < $fin; $i++ ) {
+            $isbnact = $librosp[$i]->getIsbn();
+            $busqueda = $this->buscaIsbn($isbnact, "ESP");
+
+            if ($busqueda === false) {
+                $busquedaint = $this->buscaIsbn($isbnact, "INT");
+                if ($busquedaint === false) {
+                    return new Response("No se han encontrado ventas en Abebooks con isbn ".$librosp[$i]->getIsbn());
+                }
+            }
+            $datos[] = array('resultados' => $busqueda, 'isbn' => $isbnact); 
+
+ //           echo "<br>".$librosp[$i]->getIsbn()." - ".$librosp[$i]->getCodigo(); 
+                     
+//            $preciomin = $datos[0]['suma']; 
+        }
+// dump($datos); die(); 
+
+        $form = $this->createForm(BookPrecioType::class, array());      
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+                if ($form->get('aceptar')->isClicked()) {
+                    $datos = $form->getData();
+dump($datos); die(); 
+                }
+        }
+
+        return $this->render('LibuBundle:libu:bookprecios.html.twig', array(
+            'form' => $form->createView(), 
+            'titulo' => "Precios",   
+            'librosventa' => $datos,    
+            'cabecera' => array('Librería','Editorial', 'Título', 'Autor', 'Precio'),    
+            )); 
+
+    }
 
 
 
@@ -509,9 +568,9 @@ class BookController extends Controller
 
 
 
-    public function buscaIsbn($isbn) {
-        $libreria_espana = true;
-        $esp = $libreria_espana ? '&n=200000228' : '';
+    public function buscaIsbn($isbn, $entorno) {
+//        $libreria_espana = true;
+        $esp = ($entorno == "ESP") ? '&n=200000228' : '';
 
         // See http://php.net/manual/en/migration56.openssl.php
         $streamContext = stream_context_create([
@@ -523,47 +582,53 @@ class BookController extends Controller
         $url_isbn = 'https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn;
         $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext);
 
-dump($url_isbn); 
-
         $crawler = new Crawler($abebooks_isbn);
 
         if (! $crawler->filter('#pageHeader > h1')->count()) {
             $datos = false;
+
         } else {
-            $header = $crawler->filter('#pageHeader > h1');
-            echo "<h2>".$header->text()."</h2>";
+//            $header = $crawler->filter('#pageHeader > h1');
+//            echo "<h2>".$header->text()."</h2>";
 
             $precios = $crawler->filter('.result-data');
-             echo "<br>Text: ".$crawler->filter('p')->last()->text();
-             echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
+ //            echo "<br>Text: ".$crawler->filter('p')->last()->text();
+ //            echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
 
             $i = 0;
             foreach ($precios as $domElement) {
-                $array_crawler[$i] = new Crawler();
-                $array_crawler[$i]->add($domElement);
-                $pr = explode(' ',$array_crawler[$i]->filter('.item-price .price')->text());
-                $datos[$i]['precio'] = end($pr); 
-                $dprecio = $array_crawler[$i]->filter('.shipping .price');
-                $env = (isset($dprecio)) ? explode(' ',$dprecio->text())  : 0;
-                $datos[$i]['envio'] = end($env);
-                $datos[$i]['libreria'] = $array_crawler[$i]->filter('.bookseller-info > p > a')->text();        
-                $datos[$i]['titulo'] = $array_crawler[$i]->filter('.result-detail > h2 > a')->text(); 
-                $datos[$i]['autor'] = $array_crawler[$i]->filter('.result-detail > p > strong')->text(); 
-                $datos[$i]['editorial'] = $array_crawler[$i]->filter('#publisher > span')->text();                                                 
-                $datos[$i]['pais'] = explode(',',$array_crawler[$i]->filter('.bookseller-info > p > span')->text());         
-                $datos[$i]['suma'] = (float)str_replace(',', '.', $datos[$i]['precio']) + (float)str_replace(',', '.', $datos[$i]['envio']);
-           //      number_format((float)$precio, 2, '.', '') + number_format((float)$envio, 2, '.', '') ;
-//                $datos[$i++]['texto'] = "Librería: <b>".$datos[$i]['libreria']."</b> - País: ".substr(end($datos[$i]['pais']), 0, -1).
-//
-                $i++;
 
-         //       var_dump($domElement->nodeName);
-            }
+                $array_crawler = new Crawler();
+                $array_crawler->add($domElement);
 
-        return $datos; 
+                $pr = explode(' ',$this->textocraw($array_crawler->filter('.item-price .price') ) );
+                $datos['precio'] = end($pr); 
+                
+                $env = explode(' ', $this->textocraw($array_crawler->filter('.shipping .price')) ); 
+                $datos['envio'] = end($env);                
+                $datos['libreria'] = $this->textocraw($array_crawler->filter('.bookseller-info > p > a') );        
+                $datos['titulo'] = $this->textocraw($array_crawler->filter('.result-detail > h2 > a') ); 
+                $datos['autor'] = $this->textocraw($array_crawler->filter('.result-detail > p > strong') ); 
+                $datos['editorial'] = $this->textocraw($array_crawler->filter('#publisher > span') );                                                 
+                $datos['pais'] = explode(',',$this->textocraw($array_crawler->filter('.bookseller-info > p > span') ));         
+                $datos['suma'] = (float)str_replace(',', '.', $datos['precio']) 
+                                + (float)str_replace(',', '.', $datos['envio']);
+                $datosarray[] = $datos; 
+            } 
+        return $datosarray; 
         }
     }
 
+
+
+    private function textocraw($craw) {
+
+                if ($craw->count() > 0) {
+                    return $craw->text(); 
+                } else {
+                    return ""; 
+                }
+    }
 
 
     /**
