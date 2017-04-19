@@ -2,9 +2,15 @@
    Base template
 #}
 
-{% if form is defined %}
+{% if form is defined and not horizontal is defined %}
     {% form_theme form 'bootstrap_3_layout.html.twig' %}
 {% endif %}
+
+{% if horizontal is defined %}
+    {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
+{% endif %}
+
+
 <!DOCTYPE html>
 <html>
     <head>

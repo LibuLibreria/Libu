@@ -1,20 +1,155 @@
 {% extends "LibuBundle::libu/base.html.twig" %}
 
-{% form_theme form 'bootstrap_3_layout.html.twig' %}
-
 {% block body %}
-	<div 'col-sm-12'>
-		<div class = 'formulario'>	
-			<h3>{{ mensaje }}</h3>
-			<p>&nbsp;</p>
-			<h1>{{ titulo }}</h1>
-			<p>&nbsp;</p>
-			<div class = 'col-sm-6'>
-		          	{{form_start(form, { 'enctype':"multipart/form-data"})}}
-					{{form_end(form)}}   
-				<a href= "{{ path('venta')}}">Volver a venta</a>
-		    </div>
+      	<div class="container form-horizontal" role="form">
+	        <fieldset>
+
+	          <!-- Form Name -->
+	          <legend>{{ titulo }}</legend>
+
+				<h3>{{ mensaje }}</h3>
+
+		          	{{form_start(form)}}
+					<div class = 'row'>
+						<div class = 'col-md-1'>	           
+				            {{ form_label(form.codigo) }}
+			            </div>
+			            <div class = 'col-md-2'> 
+			            	{{ form_widget(form.codigo) }}
+				        </div>
+				        <div class = 'col-md-1'>
+				            {{ form_label(form.isbn) }}			            
+				        </div>
+				        <div class = 'col-md-4'>
+				            {{ form_widget(form.isbn) }}			            
+				            {{ form_errors(form.isbn) }}			            
+				        </div>
+				        <div class = 'col-md-1'>
+				            {{ form_label(form.estatus) }}			            
+				        </div>				        
+				        <div class = 'col-md-3'>
+				            {{ form_widget(form.estatus) }}			            
+				        </div>
+					</div>	        
+					<div class = 'row'>
+						<div class = 'col-md-1'>	           
+				            {{ form_label(form.titulo) }}
+			            </div>
+			            <div class = 'col-md-8'> 
+			            	{{ form_widget(form.titulo) }}
+				        </div>
+				        <div class = 'col-md-1'>
+				            {{ form_label(form.tapas) }}			            
+				        </div>
+				        <div class = 'col-md-2'>
+				            {{ form_widget(form.tapas) }}			            
+				        </div>
+					</div> 				        
+					<div class = 'row'>
+						<div class = 'col-md-1'>	           
+				            {{ form_label(form.autor) }}
+			            </div>
+			            <div class = 'col-md-8'> 
+			            	{{ form_widget(form.autor) }}
+				        </div>
+				        <div class = 'col-md-1'>
+				            {{ form_label(form.conservacion) }}			            
+				        </div>
+				        <div class = 'col-md-2'>
+				            {{ form_widget(form.conservacion) }}			            
+				        </div>					
+				    </div> 				        
+					<div class = 'row'>
+						<div class = 'col-md-1'>	           
+				            {{ form_label(form.editorial) }}
+			            </div>
+			            <div class = 'col-md-4'> 
+			            	{{ form_widget(form.editorial) }}
+				        </div>
+				        <div class = 'col-md-1'>
+				            {{ form_label(form.anno) }}			            
+				        </div>
+				        <div class = 'col-md-2'>
+				            {{ form_widget(form.anno) }}			            
+				        </div>					
+						<div class = 'col-md-1'>	           
+				            {{ form_label(form.estanteria) }}
+			            </div>
+			            <div class = 'col-md-1'> 
+			            	{{ form_widget(form.estanteria) }}
+				        </div>
+				        <div class = 'col-md-1'>
+				            {{ form_label(form.balda) }}			            
+				        </div>
+				        <div class = 'col-md-1'>
+				            {{ form_widget(form.balda) }}			            
+				        </div>									        
+					</div> 				        
+					<div class = 'row'>
+						<div class = 'col-md-1'>	           
+				            {{ form_label(form.precio) }}
+			            </div>
+			            <div class = 'col-md-2'> 
+			            	{{ form_widget(form.precio) }}
+				        </div>
+				        <div class = 'col-md-1'>
+				            {{ form_label(form.notas) }}			            
+				        </div>
+				        <div class = 'col-md-8'>
+				            {{ form_widget(form.notas) }}			            
+				        </div>					
+				    </div> 				      
+				    <div class= 'row'>
+						<div class = 'col-md-1'>	           
+			            </div>
+			            <div class = 'col-md-2'> 				    	
+				    		{{ form_widget(form.save) }}
+			    		</div>
+			    	</div>
+					{{form_end(form)}}  
+			</fieldset>
+
 			<hr>
+			<p>&nbsp;</p>
+
+              {% for busqueda in busquedas %}   
+
+              <legend>{{ busqueda.definicion }}.</legend>
+
+                {% if busqueda.ofertas is empty %}
+                  No se han encontrado libros a la venta en {{ busqueda.definicion }}<br>
+                {% else %}
+
+            	<p>URL: {{ busqueda.ofertas.url }}</p>
+                  <table class="table table-bordred table-striped  table-condensed">
+
+                    <tbody>
+                      <thead>
+                        <tr>
+                          {% for cab in cabecera %}
+                              <th> {{ cab }}</th>
+                          {% endfor %}
+                        </tr>
+                      </thead>
+
+                    {% for libroenc in busqueda.ofertas.datos %}
+                      <tr>
+                        <td>{{ libroenc.libreria }}</td>
+                        <td>{{ libroenc.editorial }}</td>                        
+                        <td>{{ libroenc.titulo }}</td>
+                        <td>{{ libroenc.autor }}</td>
+                        <td>{{ libroenc.suma }}</td>       
+                      </tr>              
+
+                    {% endfor %}
+
+                    </tbody>      
+
+                  </table>
+
+                {% endif %}
+                <hr>
+              {% endfor %}  
 		</div>
-    </div>
+
 {% endblock %}

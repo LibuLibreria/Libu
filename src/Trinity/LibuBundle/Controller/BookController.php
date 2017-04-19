@@ -27,6 +27,7 @@ use Trinity\LibuBundle\Entity\Libro;
 use Trinity\LibuBundle\Form\LibroCortoType;
 use Trinity\LibuBundle\Form\BaldaEstantType;
 use Trinity\LibuBundle\Form\BookPrecioType;
+use Trinity\LibuBundle\Form\LibroType;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -212,6 +213,66 @@ class BookController extends Controller
 
 
     /**
+     * @Route("/book/libro", name="booklibro")
+     */
+    public function bookLibroAction(Request $request)  {
+
+        $em = $this->getDoctrine()->getManager();
+        $bman = $this->get('app.books');
+
+
+        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP"); 
+
+        $i = 0;
+
+        $libro = $librosp[$i]; 
+
+        // Subimos el libro con otro estatus para que no sea de nuevo leído tras ejecutar el formulario
+        $bman->persisteLibro($libro, "CSUB", true); 
+
+        $isbnact = $libro->getIsbn();
+
+
+
+        $busqueda['abe_esp'] = array('definicion' => 'Libros en Abebooks España',
+                                    'ofertas' => $this->buscaIsbn($isbnact, "ESP"));
+        $busqueda['abe_int'] = array('definicion' => 'Libros en Abebooks General',
+                                    'ofertas' => $this->buscaIsbn($isbnact, "INT"));
+
+        if ($busqueda['abe_esp']['ofertas'] !== false) {
+            $libro->setAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']);
+            $libro->setTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']);
+            $libro->setEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']);
+            $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
+        } else {
+            $libro->setPrecio(2.00);
+        }
+
+        $form = $this->createForm(LibroType::class, $libro);      
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+                if ($form->get('save')->isClicked()) {
+                    $submbook = $form->getData();
+                    $bman->persisteLibro($submbook, "SUB", true);
+                }
+        }   
+
+        return $this->render('LibuBundle:libu:libro.html.twig', array(
+            'form' => $form->createView(), 
+            'titulo' => 'Libro',
+            'mensaje' => '',
+            'horizontal' => true, 
+            'busquedas' => $busqueda,       
+            'cabecera' => array('Librería','Editorial', 'Título', 'Autor', 'Precio'),                   
+        )); 
+    }
+
+
+
+
+    /**
      * @Route("/book/precio", name="bookprecio")
      */
     public function bookPrecioAction(Request $request)  {
@@ -219,11 +280,8 @@ class BookController extends Controller
         $jump = 2; 
 
         $em = $this->getDoctrine()->getManager();
-        $bman = $this->get('app.books');
 
-        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP");
-
-        $session = $request->getSession();        
+        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP");       
 
         $n = 4;
 
@@ -615,7 +673,7 @@ dump($datos); die();
                                 + (float)str_replace(',', '.', $datos['envio']);
                 $datosarray[] = $datos; 
             } 
-        return $datosarray; 
+        return array('datos' => $datosarray, 'url' => $url_isbn); 
         }
     }
 
