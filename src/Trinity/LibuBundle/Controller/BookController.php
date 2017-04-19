@@ -142,8 +142,8 @@ class BookController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            if  ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+
 
                 if ($form->get('subiragil')->isClicked()) {
                     $librosub = $form->getData();
@@ -160,7 +160,7 @@ class BookController extends Controller
                         $texto = "El libro no se ha subido correctamente"; 
                     }
                 }    
-            }
+
 
             return $this->redirect($request->getUri());
         } 

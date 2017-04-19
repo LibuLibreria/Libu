@@ -70,13 +70,13 @@
 
 .book-wrapper {
     background-color: red; 
-    font-size: 2em;
+    font-size: 1.4em;
 
 }
 
 .book-wrapper .form-control {
-    font-size: 2.5em;
-    height: 90px;
+    font-size: 1.3em;
+    height: 50px;
 }
 
 .botones_agil {

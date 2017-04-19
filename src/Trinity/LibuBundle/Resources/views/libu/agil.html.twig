@@ -69,7 +69,6 @@ function mostrarInformacionCaracter(evObject) {
 
             {{ form_start(form) }}
 
-            {{ form_errors(form) }}
 
             <div class="col-md-6">
 
@@ -80,9 +79,7 @@ function mostrarInformacionCaracter(evObject) {
 
                 {{ form_row(form.conservacion) }}                         
 
-                {{ form_row(form.isbn) }} 
-
-                {{ form_widget(form.subiragil) }}  
+                {{ form_row(form.isbn) }}
 
                 {{ form_row(form.subiragil) }}  
 
@@ -93,6 +90,8 @@ function mostrarInformacionCaracter(evObject) {
                 {{ form_row(form.estanteria) }}    
 
                 {{ form_row(form.balda) }}                
+        
+                {{ form_end(form) }}
 
                 <div class="botones_agil">
                 <a  href= "{{ path('bookbaldaestant')}}">Cambiar balda y estantería</a><br>   
@@ -106,17 +105,11 @@ function mostrarInformacionCaracter(evObject) {
 
     </div>
 
-    <div class="col-md-10">
-        <hr> 
-
-
-        {{ form_end(form) }}
 
 
 
-        <div id="control"> </div>
 
-    </div>
+
 
 </div>
 
