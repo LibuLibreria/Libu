@@ -104,7 +104,7 @@ class BookController extends Controller
             
         } else {
 
-            return $this->render('LibuBundle:libu:libro.html.twig', array(
+            return $this->render('LibuBundle:libu:leearchivo.html.twig', array(
                 'mensaje' => $mensaje,
                 'titulo' => "Libro",
                 'form' => $form->createView(),
@@ -404,7 +404,7 @@ dump($datos); die();
 
         }
 
-        return $this->render('LibuBundle:libu:libro.html.twig', array(
+        return $this->render('LibuBundle:libu:leearchivo.html.twig', array(
             'mensaje' => $mensaje,
             'titulo' => "Archivo json",
             'form' => $form->createView(),
