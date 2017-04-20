@@ -240,9 +240,9 @@ class BookController extends Controller
                                     'ofertas' => $this->buscaIsbn($isbnact, "INT"));
 
         if ($busqueda['abe_esp']['ofertas'] !== false) {
-            $libro->setAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']);
-            $libro->setTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']);
-            $libro->setEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']);
+            $libro->setAutor($bman->validaAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']));
+            $libro->setTitulo($bman->validaTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']));
+            $libro->setEditorial($bman->validaEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']));
             $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
         } else {
             $libro->setPrecio(2.00);
@@ -397,8 +397,9 @@ dump($datos); die();
                     $libroobj[] = $serializer->deserialize($librobajado, Libro::class, 'json');  
                 }
 
-                $bman->persisteArrayLibros($libroobj, "AGILS", true);
+                $bman->persisteArrayLibros($libroobj, "AGILP", true);
                 
+                return new Response("Se han guardado correctamente los datos");
 
             }
 
