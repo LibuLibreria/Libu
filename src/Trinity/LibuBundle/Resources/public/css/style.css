@@ -1,3 +1,5 @@
+
+
 .col-izda {
     border-right: solid black 2px;
 }
@@ -64,4 +66,25 @@
 }
 .cuerpo_form {
     margin-left: 30px;
+}
+
+.book-wrapper {
+    background-color: red; 
+    font-size: 1.4em;
+
+}
+
+.book-wrapper .form-control {
+    font-size: 1.3em;
+    height: 50px;
+}
+
+.botones_agil {
+    font-size: 0.7em;
+    border-radius: 5px;
+    background: #e1edc3;
+    color: white;
+    margin: 30px 10px 10px 0;
+    padding: 10px;
+    border: 1px black solid;
 }

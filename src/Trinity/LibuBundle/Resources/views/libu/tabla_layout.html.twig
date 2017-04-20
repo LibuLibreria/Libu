@@ -1,0 +1,59 @@
+{% extends "LibuBundle::libu/base.html.twig" %}
+
+{% block body %}
+
+    <div class = 'col-sm-12 form-inline'>
+    	{% block titulo %}
+	    	<h1>Título</h1>
+    	{% endblock %}
+
+
+    	{% block previo %}
+    	{% endblock %}
+
+
+    	{% block tabla %}
+	    	<table class='table table-striped table-condensed'>
+	    		<thead>
+	    			<tr>
+						{% block cabecera %}
+							<th>Cabecera</th>
+						{% endblock %}
+					</tr>
+				</thead>
+
+				<tbody>
+					{% block contenido %}
+
+			    	{% endblock %}		    
+				</tbody>
+			</table>
+    	{% endblock %}
+
+
+    	{% block tabla2 %}
+	    	<table class='table table-striped table-condensed'>
+	    		<thead>
+	    			<tr>
+						{% block cabecera2 %}
+							<th>Cabecera</th>
+						{% endblock %}
+					</tr>
+				</thead>
+
+				<tbody>
+					{% block contenido2 %}
+
+			    	{% endblock %}		    
+				</tbody>
+			</table>
+    	{% endblock %}
+
+
+
+		{% block formulario %}
+ 
+    	{% endblock %}		    
+
+    </div>
+{% endblock %}

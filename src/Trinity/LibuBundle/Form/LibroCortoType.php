@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
 
 class LibroCortoType extends AbstractType
 {
@@ -16,11 +18,34 @@ class LibroCortoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('isbn')  
-            ->add('conservacion')                     
-            ->add('titulo')
-            ->add('autor')            
-            ->add('save', SubmitType::class, array('label' => 'Guardar'))  
+            ->add('codigo', TextType::class, array(
+                 'label' => 'Código'
+            )) 
+            ->add('conservacion', TextType::class, array(
+                 'label' => 'Conservación',
+                 'data' => 'Excelente'
+            ))                    
+            ->add('tapas', TextType::class, array(
+                 'label' => 'Tapas',
+                 'data' => 'Tapa blanda'
+            ))                 
+            ->add('estanteria', TextType::class, array(
+                 'label' => 'Estantería',
+            ))                          
+            ->add('balda', TextType::class, array(
+                 'label' => 'Balda',
+            ))      
+            ->add('isbn', TextType::class, array(
+                'attr' => array(
+                    'autofocus' => 'autofocus'
+                )
+            ))                     
+            ->add('subiragil', SubmitType::class, array(
+                'label' => 'Guardar',
+                'attr' => array(
+                    'class' => 'btn-lg btn-primary'
+                )                
+            ))  
             ->getForm();             
         ;
     }

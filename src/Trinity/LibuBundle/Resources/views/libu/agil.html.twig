@@ -1,0 +1,116 @@
+{% extends "LibuBundle::libu/base.html.twig" %}
+
+{#    {% form_theme form 'bootstrap_3_layout.html.twig' %}   #}
+
+{% block body %}
+
+<script type="text/javascript">
+
+var eventoControlado = false;
+
+window.onload = function() { 
+        document.onkeypress = mostrarInformacionCaracter;
+
+}
+
+function mostrarInformacionCaracter(evObject) {
+
+                var msgtapa = libro_corto_tapas.getAttribute( "value" );
+                var msgest = libro_corto_conservacion.getAttribute( "value");
+                var elCaracter = String.fromCharCode(evObject.which);
+
+                if (evObject.which!=0 && evObject.which!=13) {
+
+                        if (elCaracter == 'b') msgtapa = 'Tapa blanda';
+
+                        if (elCaracter == 'd') msgtapa = 'Tapa dura'; 
+
+                        if (elCaracter == 'q') msgest = 'Nuevo';                        
+
+                        if (elCaracter == 'w') msgest = 'Como nuevo';
+
+                        if (elCaracter == 'e') msgest = 'Excelente'; 
+
+                        if (elCaracter == 'r') msgest = 'Muy Bien'; 
+
+                        if (elCaracter == 't') msgest = 'Bien';
+
+                        if (elCaracter == 'y') msgest = 'Aceptable';
+
+                        if (elCaracter == 'u') msgest = 'Regular';
+
+                        if (elCaracter == 'i') msgest = 'Pobre';                                                               
+
+                        libro_corto_tapas.setAttribute( "value", msgtapa ); 
+                        libro_corto_conservacion.setAttribute( "value", msgest ); 
+                }
+
+                if (evObject.which==13) {
+                        document.getElementById("libro_corto").submit();
+                }
+
+                eventoControlado=true;
+
+}
+
+
+
+</script>
+
+<div class="book-wrapper" >
+
+    <div class="col-md-10">
+
+        <div id="texto_inicial">
+            {{ texto }}
+        </div>
+
+        <div id="cabecera"><h1>Nuevo libro: </h1></div>
+
+            {{ form_start(form) }}
+
+
+            <div class="col-md-6">
+
+                {{ form_row(form.codigo) }} 
+
+                {{ form_row(form.tapas) }}    
+
+
+                {{ form_row(form.conservacion) }}                         
+
+                {{ form_row(form.isbn) }}
+
+                {{ form_row(form.subiragil) }}  
+
+            </div>
+
+            <div class="col-md-3">
+             
+                {{ form_row(form.estanteria) }}    
+
+                {{ form_row(form.balda) }}                
+        
+                {{ form_end(form) }}
+
+                <div class="botones_agil">
+                <a  href= "{{ path('bookbaldaestant')}}">Cambiar balda y estantería</a><br>   
+                </div>
+
+                <div class="botones_agil">
+                <a href= "{{ path('bookenviajson')}}">Enviar documento</a><br>
+                </div>
+                
+            </div>
+
+    </div>
+
+
+
+
+
+
+
+</div>
+
+{% endblock %}   

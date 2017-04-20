@@ -15,4 +15,4 @@ services:
 
     app.books:
         class: Trinity\LibuBundle\Books\BookManager
-        arguments: [ "@doctrine.orm.entity_manager", "@validator" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@validator", "%mailer_user%", "%mailer_password%" ]

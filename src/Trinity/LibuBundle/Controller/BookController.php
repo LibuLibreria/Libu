@@ -24,6 +24,11 @@ use Trinity\LibuBundle\Entity\Libro;
 // use Trinity\LibuBundle\Entity\Tipo;
 //use Trinity\LibuBundle\Entity\Concepto;
 //use Trinity\LibuBundle\Entity\VentaRepository;
+use Trinity\LibuBundle\Form\LibroCortoType;
+use Trinity\LibuBundle\Form\BaldaEstantType;
+use Trinity\LibuBundle\Form\BookPrecioType;
+use Trinity\LibuBundle\Form\LibroType;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 // use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -35,11 +40,12 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 
+use Symfony\Component\HttpFoundation\Session\Session;
 
-// use Symfony\Component\Serializer\Serializer;
-// use Symfony\Component\Serializer\Encoder\XmlEncoder;
-// use Symfony\Component\Serializer\Encoder\JsonEncoder;
-// use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\CssSelector\CssSelectorConverter;
@@ -73,20 +79,19 @@ class BookController extends Controller
 
             if ($form->get('enviar')->isClicked()) {
 
-                // Guardamos el fichero con la orden guardaFile($archivo, $directorio)
-                $bman->guardaFile($form['archivocsv']->getData(), 
+                $filecsv = $bman->guardaFileEnDirectorio($form['archivocsv']->getData(), 
                             $this->getParameter('directorio_uploads')."/archivoscsv");
 
-                // Convertimos el archivo en un array
-                $this->array_file = $bman->convertArrayFile();
 
-                // Crea el array de libros con los datos del csv
-                $arrayLibros = $bman->creaArrayLibrosCsv();
+                $session = $request->getSession();
 
-                // Guarda los libros en la base de datos con estatus provisional
-                $bman->persisteArrayLibros($arrayLibros, "PROV");
+                $session->set('filename', $filecsv['name']);
+
+
 
                 return $this->redirectToRoute('booksubir');
+            }
+          
 
                 // TAREAS: 
                 // - Crear nuevo servicio Abebooks para interactuar con su web
@@ -95,17 +100,321 @@ class BookController extends Controller
                 // - Crear un nuevo array de errores en ArrayLibros
                 // - Adaptar toda la lectura de datos al nuevo array de errores. 
 
-            }
-
+              
+            
         } else {
 
-            return $this->render('LibuBundle:libu:libro.html.twig', array(
+            return $this->render('LibuBundle:libu:leearchivo.html.twig', array(
                 'mensaje' => $mensaje,
                 'titulo' => "Libro",
                 'form' => $form->createView(),
             ));
         }
     }
+
+
+    /**
+     * @Route("/book/agil", name="bookagil")
+     */
+    public function bookAgilAction(Request $request)  {
+
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+
+        $bman = $this->get('app.books');
+
+        // La variable $product es un array de todos los objetos Producto existentes
+        $ultlibro = $em->getRepository('LibuBundle:Libro')->mayorCodigo();
+        $siglibro = ($ultlibro[0]['codigo'] + 1); 
+
+        $ultbalda = $bman->leeConfig('balda');
+        $ultestanteria = $bman->leeConfig('estanteria');
+
+        $libro = new Libro(); 
+
+        $form = $this->createForm(LibroCortoType::class, $libro);
+
+        $form->get('balda')->setData($ultbalda);
+        $form->get('estanteria')->setData($ultestanteria);
+        $form->get('codigo')->setData($siglibro);
+
+        $texto = "";
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+
+                if ($form->get('subiragil')->isClicked()) {
+                    $librosub = $form->getData();
+
+                    $texttapas = $librosub->getTapas(); 
+                    $librosub->setTapas($bman->validaTapas($texttapas));
+                    $textconservacion = $librosub->getConservacion();
+                    $librosub->setConservacion($bman->validaConservacion($textconservacion));
+
+                    $biensubido = $bman->persisteLibro($librosub, "AGIL");
+                    if ($biensubido) {
+                        $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
+                    } else {
+                        $texto = "El libro no se ha subido correctamente"; 
+                    }
+                }    
+
+
+            return $this->redirect($request->getUri());
+        } 
+
+        return $this->render('LibuBundle:libu:agil.html.twig', array(
+            'form' => $form->createView(),
+            'texto' => $texto, 
+            ));           
+    }
+
+
+
+    /**
+     * @Route("/book/baldaestant", name="bookbaldaestant")
+     */
+    public function bookBaldaEstantAction(Request $request)  {
+
+        $bman = $this->get('app.books');
+
+        $form = $this->createForm(BaldaEstantType::class, array());      
+
+
+        $ultbalda = $bman->leeConfig('balda');
+        $ultestanteria = $bman->leeConfig('estanteria');
+
+        $form->get('balda')->setData($ultbalda);
+        $form->get('estanteria')->setData($ultestanteria); 
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+                if ($form->get('enviar')->isClicked()) {
+                    $datos = $form->getData();
+                    $bman->escribeConfig('balda', $datos['balda']);
+                    $bman->escribeConfig('estanteria', $datos['estanteria']);
+
+                }
+
+            return $this->redirectToRoute('bookagil');
+
+        }
+
+        return $this->render('LibuBundle:libu:form.html.twig', array(
+            'form' => $form->createView(), 
+            'titulo' => "Cambiar balda y Estantería",             
+            )); 
+    }
+
+
+
+
+    /**
+     * @Route("/book/libro", name="booklibro")
+     */
+    public function bookLibroAction(Request $request)  {
+
+        $em = $this->getDoctrine()->getManager();
+        $bman = $this->get('app.books');
+
+
+        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP"); 
+
+        $i = 0;
+
+        $libro = $librosp[$i]; 
+
+        // Subimos el libro con otro estatus para que no sea de nuevo leído tras ejecutar el formulario
+        $bman->persisteLibro($libro, "CSUB", true); 
+
+        $isbnact = $libro->getIsbn();
+
+
+
+        $busqueda['abe_esp'] = array('definicion' => 'Libros en Abebooks España',
+                                    'ofertas' => $this->buscaIsbn($isbnact, "ESP"));
+        $busqueda['abe_int'] = array('definicion' => 'Libros en Abebooks General',
+                                    'ofertas' => $this->buscaIsbn($isbnact, "INT"));
+
+        if ($busqueda['abe_esp']['ofertas'] !== false) {
+            $libro->setAutor($bman->validaAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']));
+            $libro->setTitulo($bman->validaTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']));
+            $libro->setEditorial($bman->validaEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']));
+            $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
+        } else {
+            $libro->setPrecio(2.00);
+        }
+
+        $form = $this->createForm(LibroType::class, $libro);      
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+                if ($form->get('save')->isClicked()) {
+                    $submbook = $form->getData();
+                    $bman->persisteLibro($submbook, "SUB", true);
+                }
+        }   
+
+        return $this->render('LibuBundle:libu:libro.html.twig', array(
+            'form' => $form->createView(), 
+            'titulo' => 'Libro',
+            'mensaje' => '',
+            'horizontal' => true, 
+            'busquedas' => $busqueda,       
+            'cabecera' => array('Librería','Editorial', 'Título', 'Autor', 'Precio'),                   
+        )); 
+    }
+
+
+
+
+    /**
+     * @Route("/book/precio", name="bookprecio")
+     */
+    public function bookPrecioAction(Request $request)  {
+
+        $jump = 2; 
+
+        $em = $this->getDoctrine()->getManager();
+
+        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP");       
+
+        $n = 4;
+
+        $fin = (($n + $jump) > sizeof($librosp)) ? sizeof($librosp) : $n + $jump; 
+
+        $datos = array(); 
+
+        for ($i = $n; $i < $fin; $i++ ) {
+            $isbnact = $librosp[$i]->getIsbn();
+            $busqueda = $this->buscaIsbn($isbnact, "ESP");
+
+            if ($busqueda === false) {
+                $busquedaint = $this->buscaIsbn($isbnact, "INT");
+                if ($busquedaint === false) {
+                    return new Response("No se han encontrado ventas en Abebooks con isbn ".$librosp[$i]->getIsbn());
+                }
+            }
+            $datos[] = array('resultados' => $busqueda, 'isbn' => $isbnact); 
+
+ //           echo "<br>".$librosp[$i]->getIsbn()." - ".$librosp[$i]->getCodigo(); 
+                     
+//            $preciomin = $datos[0]['suma']; 
+        }
+// dump($datos); die(); 
+
+        $form = $this->createForm(BookPrecioType::class, array());      
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+                if ($form->get('aceptar')->isClicked()) {
+                    $datos = $form->getData();
+dump($datos); die(); 
+                }
+        }
+
+        return $this->render('LibuBundle:libu:bookprecios.html.twig', array(
+            'form' => $form->createView(), 
+            'titulo' => "Precios",   
+            'librosventa' => $datos,    
+            'cabecera' => array('Librería','Editorial', 'Título', 'Autor', 'Precio'),    
+            )); 
+
+    }
+
+
+
+    /**
+     * @Route("/book/enviajson", name="bookenviajson")
+     */
+    public function bookEnviaJsonAction(Request $request)  {
+
+
+        $em = $this->getDoctrine()->getManager();
+        $bman = $this->get('app.books');
+
+        $librosagil = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGIL");
+
+        $fecha = new \DateTime(); 
+        $filename = "".$fecha->format('d_m_Y'); 
+
+
+        $encoders = array(new XmlEncoder(), new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $contents = ""; 
+        foreach ($librosagil as $libroajson) {
+            $contents .= $serializer->serialize($libroajson, 'json')."\n";
+        }
+
+        $em->getRepository('LibuBundle:Libro')->cambiaEstatusLibros("AGIL", "AGILP");
+
+        return $bman->enviaArchivo($filename, $contents); 
+    }
+
+
+
+    /**
+     * @Route("/book/leejson", name="bookleejson")
+     */
+    public function bookLeeJsonAction(Request $request)  {
+
+        $form = $this->createFormBuilder()
+            ->add('archivojson', FileType::class, array(
+                "label" => "Archivo Json:",
+            ))
+            ->add('enviar', SubmitType::class, array('label' => 'Enviar'))            
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        $bman = $this->get('app.books');
+
+        $mensaje = ""; 
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($form->get('enviar')->isClicked()) {
+
+                $encoders = array(new XmlEncoder(), new JsonEncoder());
+                $normalizers = array(new ObjectNormalizer());
+
+                $serializer = new Serializer($normalizers, $encoders);                
+
+                $datos = $form->getData(); 
+              
+                $filejson = file($datos['archivojson']);
+//                dump($filejson); die(); 
+
+                foreach ($filejson as $librobajado) {
+                    $libroobj[] = $serializer->deserialize($librobajado, Libro::class, 'json');  
+                }
+
+                $bman->persisteArrayLibros($libroobj, "AGILP", true);
+                
+                return new Response("Se han guardado correctamente los datos");
+
+            }
+
+        }
+
+        return $this->render('LibuBundle:libu:leearchivo.html.twig', array(
+            'mensaje' => $mensaje,
+            'titulo' => "Archivo json",
+            'form' => $form->createView(),
+        ));        
+
+
+    }
+
+
 
 
 
@@ -115,7 +424,6 @@ class BookController extends Controller
     public function bookListaAction(Request $request)  {
 
         $bman = $this->get('app.books');
-        $bman->saluda();
 
         $text = "<h1>Libros encontrados:</h1>"; 
         $lista = array();
@@ -152,7 +460,6 @@ class BookController extends Controller
             'choices' => $choices,
  //           'form' => $form->createView(),
 
-
         ));        
 
     }
@@ -167,117 +474,72 @@ class BookController extends Controller
 
         $bman = $this->get('app.books');
 
-        $arrayLibros = $bman->leerArrayLibros("PROV");
-
-
         $form = $this->createFormBuilder()
-            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
-            ->add('stop', SubmitType::class, array('label' => 'No subir'))            
-            ->getForm();
-
-        // Renderiza la tabla con los libros de arrayLibros
-        return $this->render('LibuBundle:libu:books.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Lista de libros subidos',
-            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
-            'lista' => $arrayLibros,
-            ));
-
-
-
-
-
-
-        // echo "<pre>"; print_r($csv); echo "</pre>";
-
-        // Abrimos un gestionador de repositorio para toda la función
-        $em = $this->getDoctrine()->getManager();
-
-        $text = "<h1>Libros encontrados:</h1>"; 
-        $lista = array();
-        $i = 0;
-        foreach ($csv as $book) {
-            $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
-            if ($isbn != "") {
-                $lista[$i][] = $i;
-                $choices[] = $i;
-                foreach ($book as $col) {
-                    $lista[$i] = $book;
-                }                
-            } else {      
-                if ($i != 0);   
-            }
-            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
-            $arrayprecios = $this->buscaIsbn($book[0]);
-            if ($arrayprecios) {
-                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
-            } else {
-                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
-            }
-        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
-            $i++; 
-        }
-
-
-
-        // echo "<pre>"; print_r($lista); echo "</pre><br>";
-        // echo "<pre>"; print_r($choices); echo "</pre><br>";
-
-//        $tabla["contenido"] = $lista;
-//        $tabla["cabecera_array"] = array("ISBN", "Título", "Autor", "Código");
-
-        // Crea los botones para el formulario
-        $form = $this->createFormBuilder()
-            ->add('choice1', ChoiceType::class, array(
+ /*           ->add('choice1', ChoiceType::class, array(
                 'choices' => $choices,
                 'label' => " ", 
                 'multiple' => true,
                 'expanded' => true, 
-                ))
-            ->add('continue', SubmitType::class, array('label' => 'Subir estos libros'))
+                ))                          */
+            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
             ->add('stop', SubmitType::class, array('label' => 'No subir'))            
             ->getForm();
-
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if ($form->get('continue')->isClicked()) {
+            if ($form->get('subir')->isClicked()) {
 
-                $datos = $form->getData();
+                // $datos = $form->getData();
                 // echo "<pre>"; print_r($datos); echo "</pre>";
 
-                foreach($datos['choice1'] as $book) {
+                $librosasubir = $bman->findLibrosEstatus("PROV");
+
+                foreach($librosasubir as $book) {
 
                     // echo "BOOK: ".$book."<br>";
 
                     // echo "<pre>"; print_r($csv); echo "</pre>"; 
 
-                    $subido = $this->AbebookAdd($book,$csv);
-                    // dump($subido); 
-                    $mens_abebooks = new \SimpleXMLElement($subido);
-                    if ($mens_abebooks->code == "600") {
-                        $ok_mess = $mens_abebooks->AbebookList->Abebook->message;
-                        $ok_code = $mens_abebooks->AbebookList->Abebook->code;
-                        $ok_bookId = $mens_abebooks->AbebookList->Abebook->vendorBookID;
-                        echo $ok_bookId." añadido a Abebooks.<br>";
-                    }
 
+
+
+                    $librosisbn = $this->buscaIsbn($book->getIsbn());
+
+                    $datosisbn = $librosisbn[0];
+
+                    $book->setTitulo($datosisbn['titulo']);
+                    $book->setAutor($datosisbn['autor']);
+                    $book->setEditorial($datosisbn['editorial']);
+
+
+                    $bman->persisteLibro($book, "SUB"); 
+
+//                 $subido = $this->AbebookAdd($book);
+
+                 dump($book); die();
+
+/*
+
+     
                     $libro = new Libro(); 
                     $libro->setCodigo($csv[$book][3]);
                     $libro->setAutor($csv[$book][2]);
                     $libro->setTitulo($csv[$book][1]);
-                    $libro->setIsbn($csv[$book][0]);
+                    $libro->setIsbn($csv[$book][0]);                
 
                     // Subimos todos los datos a la base de datos
                     try {
-                            $em->persist($libro);
+                            $em->persist($book);
                             $em->flush();
                         }
                     catch(\Doctrine\ORM\ORMException $e) {
-                        $this->addFlash('error', 'Error al guardar los datos');
+                        $this->addFlash('error', 'Error al guardar los datos en BookController::BookSubirAction');
                     }
+
+
+                                */
                 }
 
                 // Adjunta el archivo xml
@@ -301,24 +563,73 @@ class BookController extends Controller
             if ($form->get('stop')->isClicked()) {
 
             }
+
             return new Response ("Volver a venta");
         }
 
+        $session = $request->getSession();
+        $filename = $session->get('filename');
 
+        $dirfile = $this->getParameter('directorio_uploads')."/archivoscsv/".$filename;
+
+        $arrayfile = $bman->creaArrayDesdeCsv(file($dirfile));  
+
+        $arrayLibros = $bman->creaArraylibrosValidado($arrayfile);     
+
+                  
+        // Guarda los libros en la base de datos con estatus provisional
+        if ($arrayLibros['ceroerr']) $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");   
+
+        // Renderiza la tabla con los libros de arrayLibros
         return $this->render('LibuBundle:libu:books.html.twig', array(
- //           'lista' => $lista,
-            'texto_previo' => $text,
-            'lista' => $html_text,
-            'choices' => $choices,
             'form' => $form->createView(),
-        ));
-  
+            'titulo' => 'Lista de libros subidos',
+            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
+            'lista' => $arrayLibros,
+            ));
+
+
 	}
 
 
-    public function buscaIsbn($isbn) {
-        $libreria_espana = true;
-        $esp = $libreria_espana ? '&n=200000228' : '';
+    public function buscaPrecios($arraylibros) {
+
+        // echo "<pre>"; print_r($csv); echo "</pre>";
+
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+
+        $text = "<h1>Libros encontrados:</h1>"; 
+        $lista = array();
+        $i = 0;
+        foreach ($arraylibros as $book) {
+            $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
+            if ($isbn != "") {
+                $lista[$i][] = $i;
+                $choices[] = $i;
+                foreach ($book as $col) {
+                    $lista[$i] = $book;
+                }                
+            } else {      
+                if ($i != 0);   
+            }
+            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
+            $arrayprecios = $this->buscaIsbn($book[0]);
+            if ($arrayprecios) {
+                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
+            } else {
+                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
+            }
+        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
+            $i++; 
+        }
+    }
+
+
+
+    public function buscaIsbn($isbn, $entorno) {
+//        $libreria_espana = true;
+        $esp = ($entorno == "ESP") ? '&n=200000228' : '';
 
         // See http://php.net/manual/en/migration56.openssl.php
         $streamContext = stream_context_create([
@@ -327,173 +638,115 @@ class BookController extends Controller
                 'verify_peer_name' => false
             ]
         ]);
-        $abebooks_isbn = file_get_contents('https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn, false, $streamContext);
-        //print_r($abebooks_isbn);
+        $url_isbn = 'https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn;
+        $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext);
 
         $crawler = new Crawler($abebooks_isbn);
 
         if (! $crawler->filter('#pageHeader > h1')->count()) {
             $datos = false;
+
         } else {
-            $header = $crawler->filter('#pageHeader > h1');
+//            $header = $crawler->filter('#pageHeader > h1');
 //            echo "<h2>".$header->text()."</h2>";
 
             $precios = $crawler->filter('.result-data');
-            // echo "<br>Text: ".$crawler->filter('p')->last()->text();
-            // echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
+ //            echo "<br>Text: ".$crawler->filter('p')->last()->text();
+ //            echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
 
             $i = 0;
             foreach ($precios as $domElement) {
-                $array_crawler[$i] = new Crawler();
-                $array_crawler[$i]->add($domElement);
-                $pr = explode(' ',$array_crawler[$i]->filter('.item-price .price')->text());
-                $precio = end($pr); 
-                $env = explode(' ',$array_crawler[$i]->filter('.shipping .price')->text());
-                $envio = end($env);
-                $libreria = $array_crawler[$i]->filter('.bookseller-info > p > a')->text();        
-                $pais = explode(',',$array_crawler[$i]->filter('.bookseller-info > p > span')->text());         
-                $suma = (float)str_replace(',', '.', $precio) + (float)str_replace(',', '.', $envio);
-           //      number_format((float)$precio, 2, '.', '') + number_format((float)$envio, 2, '.', '') ;
-                $datos[$i++] = "Librería: <b>".$libreria."</b> - País: ".substr(end($pais), 0, -1)." - Precio: ".$precio." - Envío: ".$envio." - <b>TOTAL: ".$suma."</b><br>";
 
-         //       var_dump($domElement->nodeName);
-            }
+                $array_crawler = new Crawler();
+                $array_crawler->add($domElement);
 
-        return $datos; 
+                $pr = explode(' ',$this->textocraw($array_crawler->filter('.item-price .price') ) );
+                $datos['precio'] = end($pr); 
+                
+                $env = explode(' ', $this->textocraw($array_crawler->filter('.shipping .price')) ); 
+                $datos['envio'] = end($env);                
+                $datos['libreria'] = $this->textocraw($array_crawler->filter('.bookseller-info > p > a') );        
+                $datos['titulo'] = $this->textocraw($array_crawler->filter('.result-detail > h2 > a') ); 
+                $datos['autor'] = $this->textocraw($array_crawler->filter('.result-detail > p > strong') ); 
+                $datos['editorial'] = $this->textocraw($array_crawler->filter('#publisher > span') );                                                 
+                $datos['pais'] = explode(',',$this->textocraw($array_crawler->filter('.bookseller-info > p > span') ));         
+                $datos['suma'] = (float)str_replace(',', '.', $datos['precio']) 
+                                + (float)str_replace(',', '.', $datos['envio']);
+                $datosarray[] = $datos; 
+            } 
+        return array('datos' => $datosarray, 'url' => $url_isbn); 
         }
     }
 
 
+
+    private function textocraw($craw) {
+
+                if ($craw->count() > 0) {
+                    return $craw->text(); 
+                } else {
+                    return ""; 
+                }
+    }
 
 
     /**
      * @Route("/book/pedidos", name="bookpedidos")
      */
     public function BooksPedidos() {
-        $xmlpedidos = $this->AbebooksVerPedidos();
-//         dump($xmlpedidos); 
+
+        $bman = $this->get('app.books');
+
+        $xmlpedidos = $bman->AbebooksVerPedidos();
+
         $sxmlpedidos = new \SimpleXMLElement($xmlpedidos);
-        $pedidos = $sxmlpedidos->purchaseOrderList;     
-        $numpedidos = $pedidos->count();   
+        if ($sxmlpedidos->code[0] == 110) return new Response( 'Usuario o contraseña incorrectos'); 
+
+        $pedidos = $sxmlpedidos->purchaseOrderList; 
+
+        $numpedidos = ( null !== $pedidos->children() ) ? $pedidos->children()->count() : 0;
+        $texto = "<br><strong>Numero de pedidos: ". $numpedidos."</strong>"; 
+
         if ($numpedidos > 0) {
-            for ($i=0; $i < $numpedidos; $i++) {
-                $pedido = $pedidos->purchaseOrder;
-                $idpedido = (string) $pedido->attributes();
-                echo $idpedido;
-               dump($pedidos->children());
+            $texto .= "<br>-----------------------------";
+
+            foreach ($pedidos as $pedido) {
+
+                $idpedido = $pedido['id'];
+                $texto .= "<br>Id del pedido: ".$idpedido;
+
+                $idpedidobuyer = $pedido->buyerPurchaseOrder['id'];
+//                $texto .= "<br>idpedidobuyer: ". $idpedidobuyer; 
+
+                $orderitem = $pedido->purchaseOrderItemList->children();
+
+                $numlibrospedido = $orderitem->count(); 
+                $texto .= "<br><strong>En el pedido hay ".$numlibrospedido." libro/s</strong>";
+
+                foreach ($orderitem as $libropedido) {
+                    $idpedidoitem = $libropedido['id'];
+//                    $texto .= "<br>idpedidoitem: ". $idpedidoitem; 
+
+                    $idpedidobook = $libropedido->book['id'];
+//                    $texto .= "<br>idpedidobook: ". $idpedidobook;
+
+                    $vendorkey = $libropedido->book->vendorKey; 
+                    $texto .= "<br>Identificador del libro (vendorkey): ". $vendorkey; 
+                    $texto .= "<br>Autor: ". $libropedido->book->author;
+                    $texto .= "<br>Título: ". $libropedido->book->title;
+                }
+
             }
-            
+            $texto .= "<br>-----------------------------";
+           
+        } else {
+            $texto = "No hay ningún pedido"; 
         }   
 
-        return new Response ('Ok');
+        return new Response ("<h2>Pedidos</h2><br>".$texto);
     }
 
 
 
-
-    private function AbebooksVerPedidos() {
-
-                // Crear un nuevo recurso cURL
-                $ch = curl_init();
-                
-                // Lee usuario y contraseña 
-                $abe_user = $this->getParameter('mailer_user');
-                $abe_pass = $this->getParameter('mailer_password');  
-
-                $cfile = '<?xml version="1.0" encoding="ISO-8859-1"?>
-                <orderUpdateRequest version="1.0">
-                    <action name="getAllNewOrders">
-                        <username>'.$abe_user.'</username>
-                        <password>'.$abe_pass.'</password>
-                    </action>
-                </orderUpdateRequest>
-                ';
-//                 dump($cfile); 
-
-                // Establecer URL y otras opciones apropiadas
-                // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
-                curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");        
-                curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-                curl_setopt($ch, CURLOPT_ENCODING ,"");
-
-                // Capturar la URL y pasarla al navegador
-                $resultado = curl_exec($ch);
-
-                // Cerrar el recurso cURL y liberar recursos del sistema
-                curl_close($ch);
-     
-                // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
-                dump($resultado); // die();
-                return $resultado;
-            }
-
-
-    private function AbebookAdd($book, $csv) {
-
-                // Crear un nuevo recurso cURL
-                $ch = curl_init();
-                
-                // Lee usuario y contraseña 
-                $abe_user = $this->getParameter('mailer_user');
-                $abe_pass = $this->getParameter('mailer_password');  
-
-                $cfile = '<?xml version="1.0" encoding="ISO-8859-1"?>
-                <inventoryUpdateRequest version="1.0">
-                    <action name="bookupdate">
-                        <username>'.$abe_user.'</username>
-                        <password>'.$abe_pass.'</password>
-                    </action>
-                    <AbebookList>
-                        <Abebook>
-                            <transactionType>add</transactionType>
-                            <vendorBookID>'.$csv[$book][3].'</vendorBookID>
-                            <author>'.$csv[$book][2].'</author>
-                            <title>'.$csv[$book][1].'</title>
-                            <publisher></publisher>
-                            <subject></subject>
-                            <price currency="EUR">'.$csv[$book][8].'</price>
-                            <dustJacket></dustJacket>
-                            <binding type="hard"></binding>
-                            <firstEdition>false</firstEdition>
-                            <signed>false</signed>
-                            <booksellerCatalogue></booksellerCatalogue>
-                            <description></description>
-                            <bookCondition>Fine</bookCondition>
-                            <size></size>
-                            <jacketCondition>Fine</jacketCondition>
-                            <bookType></bookType>
-                            <isbn>'.$csv[$book][0].'</isbn>
-                            <publishPlace></publishPlace>
-                            <publishYear></publishYear>
-                            <edition></edition>
-                            <inscriptionType></inscriptionType>
-                            <quantity amount="1"></quantity>
-                        </Abebook>
-                    </AbebookList>
-                </inventoryUpdateRequest>
-                ';
-                // dump($cfile);
-
-                // Establecer URL y otras opciones apropiadas
-                // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
-                curl_setopt($ch, CURLOPT_URL, "https://inventoryupdate.abebooks.com:10027");        
-                curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-                curl_setopt($ch, CURLOPT_ENCODING ,"");
-
-                // Capturar la URL y pasarla al navegador
-                $resultado = curl_exec($ch);
-
-                // Cerrar el recurso cURL y liberar recursos del sistema
-                curl_close($ch);
-     
-                // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
-                return $resultado; 
-            }
 }
 
