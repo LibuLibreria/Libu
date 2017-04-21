@@ -210,29 +210,26 @@ class BookController extends Controller
     }
 
 
-
-
     /**
-     * @Route("/book/libro", name="booklibro")
+     * @Route(
+     *     "/book/libro/{cod}",
+     *     name="booklibro",
+     *     requirements={
+     *         "cod": "\d+"
+     *     }
+     * )
      */
-    public function bookLibroAction(Request $request)  {
+    public function bookLibroAction(Request $request, $cod)  {
 
         $em = $this->getDoctrine()->getManager();
         $bman = $this->get('app.books');
 
-
-        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP"); 
-
-        $i = 0;
-
-        $libro = $librosp[$i]; 
+        $libro = $em->getRepository('LibuBundle:Libro')->findOneByCodigo($cod);  
 
         // Subimos el libro con otro estatus para que no sea de nuevo leído tras ejecutar el formulario
         $bman->persisteLibro($libro, "CSUB", true); 
 
         $isbnact = $libro->getIsbn();
-
-
 
         $busqueda['abe_esp'] = array('definicion' => 'Libros en Abebooks España',
                                     'ofertas' => $this->buscaIsbn($isbnact, "ESP"));
@@ -254,8 +251,13 @@ class BookController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
                 if ($form->get('save')->isClicked()) {
-                    $submbook = $form->getData();
-                    $bman->persisteLibro($submbook, "SUB", true);
+                    $libro = $form->getData();
+                    $bman->persisteLibro($libro, "SUBID", true);
+
+                    $session = $request->getSession();
+                    $session->set('reenviado', true); 
+
+                    return $this->redirectToRoute('bookprecio');
                 }
         }   
 
@@ -277,52 +279,45 @@ class BookController extends Controller
      */
     public function bookPrecioAction(Request $request)  {
 
-        $jump = 2; 
+//        $jump = 2; 
 
         $em = $this->getDoctrine()->getManager();
 
         $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP");       
 
-        $n = 4;
+        $session = $request->getSession();
 
-        $fin = (($n + $jump) > sizeof($librosp)) ? sizeof($librosp) : $n + $jump; 
+        if (($session->get('reenviado')) == true ) {
 
-        $datos = array(); 
+            $session->set('reenviado', false); 
 
-        for ($i = $n; $i < $fin; $i++ ) {
-            $isbnact = $librosp[$i]->getIsbn();
-            $busqueda = $this->buscaIsbn($isbnact, "ESP");
-
-            if ($busqueda === false) {
-                $busquedaint = $this->buscaIsbn($isbnact, "INT");
-                if ($busquedaint === false) {
-                    return new Response("No se han encontrado ventas en Abebooks con isbn ".$librosp[$i]->getIsbn());
-                }
-            }
-            $datos[] = array('resultados' => $busqueda, 'isbn' => $isbnact); 
-
- //           echo "<br>".$librosp[$i]->getIsbn()." - ".$librosp[$i]->getCodigo(); 
-                     
-//            $preciomin = $datos[0]['suma']; 
+            return $this->redirectToRoute('booklibro', array('cod' => $librosp[0]->getCodigo() ));   
         }
-// dump($datos); die(); 
+
+//       $n = 4;
+
+//       $fin = (($n + $jump) > sizeof($librosp)) ? sizeof($librosp) : $n + $jump; 
+
+//       $datos = array(); 
 
         $form = $this->createForm(BookPrecioType::class, array());      
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-                if ($form->get('aceptar')->isClicked()) {
-                    $datos = $form->getData();
-dump($datos); die(); 
+                if ($form->get('aceptar')->isClicked()) 
+                {
+                    $sig_libro = $librosp[0]->getCodigo(); 
+
+                    return $this->redirectToRoute('booklibro', array('cod' => $librosp[0]->getCodigo() ));  
                 }
         }
 
-        return $this->render('LibuBundle:libu:bookprecios.html.twig', array(
+        return $this->render('LibuBundle:book:precios.html.twig', array(
             'form' => $form->createView(), 
             'titulo' => "Precios",   
-            'librosventa' => $datos,    
-            'cabecera' => array('Librería','Editorial', 'Título', 'Autor', 'Precio'),    
+            'tabla' => $librosp,    
+            'cabecera' => array('Código','Isbn'),    
             )); 
 
     }
