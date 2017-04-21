@@ -254,19 +254,7 @@ class BookManager implements ContainerAwareInterface  {
 
             // Validaciones y errores
             if ($key == "precio"){
-                $col = preg_replace( '/[^0-9.,]/', '', $col );                        
-                $col = preg_replace( '/[,]/', '.', $col ); 
-                $trozos = explode('.', $col );    
-                if (sizeof($trozos) == 3) {
-                    $col = $trozos[0].$trozos[1].".".$trozos[2];
-                } elseif (sizeof($trozos) > 3) {
-                    $errores_libro[$key] = array( 'error_code' => '4', 'texto' => 'El precio ('.$col.') no es un número correcto, demasiados puntos o comas');
-                }
-                if (is_float((float) $col)) {
-                    $nuevo_book[$key] = number_format($col, 2, '.', '');
-                } else {
-                    $errores_libro[$key] = array( 'error_code' => '1', 'texto' => 'El precio ('.$col.') no es un número');
-                }
+            	$nuevo_book[$key] = $this->validaPrecios($col)['result'];
             } 
 
             if ($key == "tapas") $nuevo_book[$key] = $this->validaTapas($col);
@@ -302,17 +290,67 @@ class BookManager implements ContainerAwareInterface  {
 
     public function validaTapas($col) {
         if (!is_int($col)) {
-            return array_search($col, $this->valores_tapas);
+            $num = array_search($col, $this->valores_tapas);
+            return (false === $num)  ? 0 : $num;
+        } else {
+        	return $col;
         }
     }
 
 
     public function validaConservacion($col) {
         if (!is_int($col))  {
-            return array_search($col, $this->valores_conservacion);       
+            $num = array_search($col, $this->valores_conservacion);       
+            return (false === $num) ? 0 : $num; 
+        } else {
+        	return $col; 
         }
     }
 
+    public function validaEditorial($col) {
+    	$longEditorial = 30;
+    	if (strlen($col) > $longEditorial) $col = substr($col, 0, $longEditorial); 
+    	return $col;
+    }
+
+    public function validaAutor($col) {
+    	$longAutor = 40;
+    	if (strlen($col) > $longAutor) $col = substr($col, 0, $longAutor); 
+    	return $col;
+    }
+
+    public function validaTitulo($col) {
+    	$longTitulo = 40;
+    	if (strlen($col) > $longTitulo) $col = substr($col, 0, $longTitulo); 
+    	return $col;
+    }
+
+    public function validaPrecio($col) {
+        $col = preg_replace( '/[^0-9.,]/', '', $col );                        
+        $col = preg_replace( '/[,]/', '.', $col ); 
+        $trozos = explode('.', $col );    
+        if (sizeof($trozos) == 3) {
+            $col = $trozos[0].$trozos[1].".".$trozos[2];
+        } elseif (sizeof($trozos) > 3) {
+            $error = array( 'error_code' => '4', 'texto' => 'El precio ('.$col.') no es un número correcto, demasiados puntos o comas');
+        }
+        if (is_float((float) $col)) {
+            $col = number_format($col, 2, '.', '');
+        } else {
+            $error = array( 'error_code' => '1', 'texto' => 'El precio ('.$col.') no es un número');
+        }
+        return array('result' => $col, 'errores' => $error);
+    }
+
+    public function calculaPrecio($col) {
+    	$col = $this->validaPrecio($col)['result'];
+    	if ($col < 5) {
+    		$res = 2.00;
+    	} else {
+    		$res = $col - 3; 
+    	}
+    	return $col;
+    }
 
     public function validacionDeEntity($libro)
     {
