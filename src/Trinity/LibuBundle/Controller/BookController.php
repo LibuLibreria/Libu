@@ -710,9 +710,14 @@ dump($datos); die();
         if ($numpedidos > 0) {
             $texto .= "<br>-----------------------------";
 
+                if ($numpedidos > 1) $pedidos = $pedidos->purchaseOrder;
+
             foreach ($pedidos as $pedido) {
 
+
+dump($pedido); 
                 $idpedido = $pedido['id'];
+
                 $texto .= "<br>Id del pedido: ".$idpedido;
 
                 $idpedidobuyer = $pedido->buyerPurchaseOrder['id'];
@@ -735,9 +740,9 @@ dump($datos); die();
                     $texto .= "<br>Autor: ". $libropedido->book->author;
                     $texto .= "<br>Título: ". $libropedido->book->title;
                 }
-
+                $texto .= "<br>-----------------------------";
             }
-            $texto .= "<br>-----------------------------";
+
            
         } else {
             $texto = "No hay ningún pedido"; 
