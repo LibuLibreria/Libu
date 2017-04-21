@@ -104,7 +104,7 @@ class BookController extends Controller
             
         } else {
 
-            return $this->render('LibuBundle:libu:libro.html.twig', array(
+            return $this->render('LibuBundle:libu:leearchivo.html.twig', array(
                 'mensaje' => $mensaje,
                 'titulo' => "Libro",
                 'form' => $form->createView(),
@@ -285,6 +285,14 @@ class BookController extends Controller
 
         $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP");       
 
+        if (empty($librosp)) {
+            return $this->render('LibuBundle:book:precios.html.twig', array(
+                'titulo' => "Precios",      
+                'texto_previo' => "No hay libros sin poner precio",    
+                'boton_final' => "Volver a venta"
+                )); 
+        }
+
         $session = $request->getSession();
 
         if (($session->get('reenviado')) == true ) {
@@ -399,7 +407,7 @@ class BookController extends Controller
 
         }
 
-        return $this->render('LibuBundle:libu:libro.html.twig', array(
+        return $this->render('LibuBundle:libu:leearchivo.html.twig', array(
             'mensaje' => $mensaje,
             'titulo' => "Archivo json",
             'form' => $form->createView(),

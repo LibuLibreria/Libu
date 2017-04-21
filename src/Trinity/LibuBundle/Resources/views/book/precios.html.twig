@@ -5,16 +5,14 @@
 {% block body %}
     <div class="clearfix">
 
-		{% if texto_previo is defined %}
-			{{ texto_previo | raw}}
-		{% endif %}
-
 		{% if titulo is defined %}
 			<h2>{{ titulo | raw}}</h2>
 		{% endif %}
 
-		<p>Estos son los libros pendientes de poner precio</p>
-		<p>Pulsar Aceptar para comenzar la serie</p>
+		{% if texto_previo is defined %}
+			{{ texto_previo | raw}}
+		{% endif %}
+
 
 		{% if lista is defined %}
 			<h1></h1>
@@ -26,6 +24,9 @@
 		{% endif %}
 
 		{% if tabla is defined %}
+
+		<p>Estos son los libros pendientes de poner precio</p>
+		<p>Pulsar Aceptar para comenzar la serie</p>		
 			<table class="table table-striped  table-condensed">
 			  <thead>
 			    <tr>
@@ -52,5 +53,11 @@
 			    </div>
 		    </div>
 	    {% endif %}
+
+		{% if boton_final is defined %}
+			<p></p>
+			<a href="{{ path('venta')}}" class="btn btn-info" role="button">{{ boton_final | raw}}</a>			
+		{% endif %}
+
     </div>
 {% endblock %}
