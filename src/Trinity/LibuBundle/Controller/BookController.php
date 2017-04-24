@@ -713,12 +713,13 @@ class BookController extends Controller
         if ($numpedidos > 0) {
             $texto .= "<br>-----------------------------";
 
-                if ($numpedidos > 1) $pedidos = $pedidos->purchaseOrder;
+//                if ($numpedidos > 1) $pedidos = $pedidos->purchaseOrder;
+
+            $pedidos = $pedidos->purchaseOrder;
 
             foreach ($pedidos as $pedido) {
 
 
-dump($pedido); 
                 $idpedido = $pedido['id'];
 
                 $texto .= "<br>Id del pedido: ".$idpedido;
@@ -726,6 +727,7 @@ dump($pedido);
                 $idpedidobuyer = $pedido->buyerPurchaseOrder['id'];
 //                $texto .= "<br>idpedidobuyer: ". $idpedidobuyer; 
 
+dump($pedido); 
                 $orderitem = $pedido->purchaseOrderItemList->children();
 
                 $numlibrospedido = $orderitem->count(); 
