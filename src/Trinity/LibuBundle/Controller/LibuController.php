@@ -172,10 +172,29 @@ class LibuController extends Controller
             }  
 
             // Botón Gasto
-            if ($form->get('gasto')->isClicked()) {
-                echo "gasto";
-                return $this->redirectToRoute('gasto');   
-            }  
+            if ($form->get('gasto_boton')->isClicked()) {
+
+                // Recogemos los datos del formulario
+                $gasto = $form->getData();
+
+                $venta->setDiahora($gasto['diahora']->setTime(date('H'), date('i')));  // Añadimos hora actual
+                $venta->setResponsable($gasto['responsable']);
+                $venta->setConcepto($gasto['gasto_concepto']);
+                $venta->setDescripcion($gasto['gasto_descripcion']);                
+                $venta->setTipomovim('gto');
+                $venta->setGasto($gasto['gasto_cantidad']);
+
+                try {
+                    $em->persist($venta);
+                    $em->flush();
+                } catch (Exception $e) {
+                     $this->get('session')->setFlash('flash_key',"No se ha guardado: " . $e->getMessage());
+                }
+                return $this->redirectToRoute('venta');
+
+            }
+                  
+
 
             // Botón Admin
             if ($form->get('admin')->isClicked()) {

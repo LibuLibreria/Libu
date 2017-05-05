@@ -170,9 +170,53 @@
                     {% endfor %}
 
 
-                    <div class="tab-pane fade" id="tab_gasto">                     
-                        Gasto
+                    <div class="tab-pane fade" id="tab_gasto">  
+
+
+                            <div class='form-group '>
+
+                                    <div class = ''>                        
+                                        {{ form_label(form.gasto_concepto) }}
+                                    </div>
+                                    <div class = ''>                  
+                                        {{ form_errors(form.gasto_concepto) }}
+                                        {{ form_widget(form.gasto_concepto) }}
+                                    </div>
+
+                            </div>
+                            <hr>
+                            <div class='form-group '>
+
+                                    <div class = ''>                        
+                                        {{ form_label(form.gasto_descripcion) }}
+                                    </div>
+                                    <div class = ''>                  
+                                        {{ form_errors(form.gasto_descripcion) }}
+                                        {{ form_widget(form.gasto_descripcion) }}
+                                        <span class="help-block">Max. 40 caracteres</span>
+                                    </div>
+
+                            </div>
+                            <hr>
+                            <div class='form-group '>
+
+                                    <div class = 'col-3'>                        
+                                        {{ form_label(form.gasto_cantidad) }}
+                                    </div>
+                                    <div class = 'col-9'>                  
+                                        {{ form_errors(form.gasto_cantidad) }}
+                                        {{ form_widget(form.gasto_cantidad) }}
+                                    </div>
+
+                            </div>
+                            <hr>
+
+              
+                        {{ form_widget(form.gasto_boton, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}}) }}
+
+
                     </div>
+
 
                     <div class="tab-pane fade in active" id="tab_opciones"> 
                         <h2>Caja: </h2>   
@@ -181,8 +225,8 @@
                         {{ form_widget(form.proveedores) }}  
                     </div>
 
-        {{ form_row(form._token) }}
-        {{ form_end(form, {'render_rest': false})}}
+                    {{ form_row(form._token) }}
+                    {{ form_end(form, {'render_rest': false})}}
 
 
                 </div>
