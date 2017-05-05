@@ -79,9 +79,7 @@
 
             <div >
                 {{ form_widget(form.save, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}}) }}
-                {{ form_widget(form.caja) }}     
-                {{ form_widget(form.mensual) }}     
-                {{ form_widget(form.proveedores) }}                                          
+                                        
             </div>
         </div>
     </div>
@@ -106,11 +104,15 @@
        <h4 class=""><i class="icon-plus-sign-alt"></i>Otros productos</h4>    -->
 
 
-        {% set numtabs = 4 %}
+        {% set numcolum = 3 %}
+        {% set columprod = 10 %}  
+        {% set tope = prodguztiak|length %} 
+        {% set numtabs = (tope / (numcolum * columprod)) | round(0,'ceil') %}  
 
         <div class="panel with-nav-tabs panel-primary">
             <div class="panel-heading">
                     <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_opciones" data-toggle="tab">Opciones</a></li>
                         {% for tab in 1 .. numtabs %}
                             <li ><a href="#tab_prod{{ tab }}" data-toggle="tab">Productos {{ tab }}</a></li>
                         {% endfor %}    
@@ -130,28 +132,24 @@
             <div class="panel-body">
                 <div class="tab-content">
                     {% for t in 1 .. numtabs %}
-                        <div class="tab-pane fade in active" id="tab_prod{{ t }}">                
+                        <div class="tab-pane fade" id="tab_prod{{ t }}">                
 
                             {{ form_label(form.product) }}
                             {{ form_errors(form.product) }}
                             <div class=''>                
 
                                 <div class="form_producto">
-
-                                    {% set numcolum = 3 %}
-                                    {% set tope = prodguztiak|length %} 
-                                    {% set columprod = 10 %}      
+    
                                     {% for i in 0..(numcolum - 1) %}
                                         <div class='col-sm-4 col_producto'>
 
                                             {% set colum = i + (numcolum * (t))  %}
-                                            {{ (t - 1) }} - {{ colum }}                                            
-                                            {% for key in ( ((i * colum)) .. ( ((i*colum) + colum -1 ) ))  %}   
+                                            {% set initkey = (i * columprod) + ( (t-1) * (columprod) * (numcolum) ) %}                                       
+                                            {% for key in ( initkey .. (initkey + columprod -1 ))  %}   
                                                 {% if key < tope %}
                                                 <div class="productitem"> 
                                                     <div class="input_botones">
                                                         <div>
-                                                            {{ i }} - {{ key }}
                                                             <span id='datos_{{ key }}' data-precio='{{ prodguztiak[key].precio }}'></span>
                                                             <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
                                                                 <label class="control-label required" for="venta_product_{{ key }}">{{ prodguztiak[key].codigo }}</label>
@@ -172,8 +170,15 @@
                     {% endfor %}
 
 
-                    <div class="tab-pane fade in active" id="tab_gasto">                     
+                    <div class="tab-pane fade" id="tab_gasto">                     
+                        Gasto
+                    </div>
 
+                    <div class="tab-pane fade in active" id="tab_opciones"> 
+                        <h2>Caja: </h2>   
+                        {{ form_widget(form.caja) }}     
+                        {{ form_widget(form.mensual) }}     
+                        {{ form_widget(form.proveedores) }}  
                     </div>
 
         {{ form_row(form._token) }}
