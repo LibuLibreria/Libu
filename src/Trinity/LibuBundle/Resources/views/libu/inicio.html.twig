@@ -88,7 +88,7 @@
 
     <div class = 'col-dcha col-sm-9 form-inline'> 
         <br>   
-
+    <!-- 
         <div class='boton1'>
             <button class="boton-grande btn btn-primary" type="button" data-toggle="collapse" data-target="#col-productos" aria-expanded="true" aria-controls="col-productos">
               Otros productos
@@ -103,50 +103,85 @@
             </button>
         </div>
         <div id = 'col-productos' class = 'col-sm-12 form-inline collapse'>
-    <!--        <h4 class=""><i class="icon-plus-sign-alt"></i>Otros productos</h4>    -->
+       <h4 class=""><i class="icon-plus-sign-alt"></i>Otros productos</h4>    -->
 
-            <div class="clearfix"></div>
-                    {{ form_label(form.product) }}
-                    {{ form_errors(form.product) }}
-                    <div class=''>                
-                        <div class='col-sm-12'>
-                            <div class="form_producto">
 
-                                {% set numcolum = 3 %}
-                                {% set tope = prodguztiak|length %} 
-                                {% set columprod = 13 %}      
-                                {% for i in 0..(numcolum - 1) %}
-                                    <div class='col-sm-4 col_producto'>
-                                        {% for key in (i * columprod) .. ((i*columprod) + columprod -1 )  %}   
-                                            {% if key < tope %}
-                                            <div class="productitem"> 
-                                                <div class="input_botones">
-                                                    <div>
-                                                        <span id='datos_{{ key }}' data-precio='{{ prodguztiak[key].precio }}'></span>
-                                                        <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
-                                                            <label class="control-label required" for="venta_product_{{ key }}">{{ prodguztiak[key].codigo }}</label>
-                                                            - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
-                                                        </button>                                                        
-                                                        <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 40px" class="form-control" value="0" />
+        {% set numtabs = 4 %}
+
+        <div class="panel with-nav-tabs panel-primary">
+            <div class="panel-heading">
+                    <ul class="nav nav-tabs">
+                        {% for tab in 1 .. numtabs %}
+                            <li ><a href="#tab_prod{{ tab }}" data-toggle="tab">Productos {{ tab }}</a></li>
+                        {% endfor %}    
+                            <li><a href="#tab_gasto" data-toggle="tab">Gasto</a></li>
+<!--                           <li class="dropdown">
+                                <a href="#" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#tab4primary" data-toggle="tab">Primary 4</a></li>
+                                    <li><a href="#tab5primary" data-toggle="tab">Primary 5</a></li>
+                                </ul>
+                            </li>   -->
+                    </ul>
+            </div>
+
+
+
+            <div class="panel-body">
+                <div class="tab-content">
+                    {% for t in 1 .. numtabs %}
+                        <div class="tab-pane fade in active" id="tab_prod{{ t }}">                
+
+                            {{ form_label(form.product) }}
+                            {{ form_errors(form.product) }}
+                            <div class=''>                
+
+                                <div class="form_producto">
+
+                                    {% set numcolum = 3 %}
+                                    {% set tope = prodguztiak|length %} 
+                                    {% set columprod = 10 %}      
+                                    {% for i in 0..(numcolum - 1) %}
+                                        <div class='col-sm-4 col_producto'>
+
+                                            {% set colum = i + (numcolum * (t))  %}
+                                            {{ (t - 1) }} - {{ colum }}                                            
+                                            {% for key in ( ((i * colum)) .. ( ((i*colum) + colum -1 ) ))  %}   
+                                                {% if key < tope %}
+                                                <div class="productitem"> 
+                                                    <div class="input_botones">
+                                                        <div>
+                                                            {{ i }} - {{ key }}
+                                                            <span id='datos_{{ key }}' data-precio='{{ prodguztiak[key].precio }}'></span>
+                                                            <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
+                                                                <label class="control-label required" for="venta_product_{{ key }}">{{ prodguztiak[key].codigo }}</label>
+                                                                - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
+                                                            </button>                                                        
+                                                            <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 40px" class="form-control" value="0" />
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
                             </div>
+
                         </div>
+                    {% endfor %}
 
 
-                        <div class = 'col-sm-6 form-inline'>
-                    <div class="clearfix"></div>
+                    <div class="tab-pane fade in active" id="tab_gasto">                     
 
-            </div>
-        </div>
-    </div>
+                    </div>
 
         {{ form_row(form._token) }}
         {{ form_end(form, {'render_rest': false})}}
 
+
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
