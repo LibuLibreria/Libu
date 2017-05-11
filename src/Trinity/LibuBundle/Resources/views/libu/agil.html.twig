@@ -19,27 +19,54 @@ function mostrarInformacionCaracter(evObject) {
                 var msgest = libro_corto_conservacion.getAttribute( "value");
                 var elCaracter = String.fromCharCode(evObject.which);
 
+
                 if (evObject.which!=0 && evObject.which!=13) {
 
                         if (elCaracter == 'b') msgtapa = 'Tapa blanda';
 
                         if (elCaracter == 'd') msgtapa = 'Tapa dura'; 
 
-                        if (elCaracter == 'q') msgest = 'Nuevo';                        
+                        if (elCaracter == 'q') {
+                            msgest = 'Nuevo';  
+                            libro_corto_isbn.focus(); 
+                            }                      
 
-                        if (elCaracter == 'w') msgest = 'Como nuevo';
+                        if (elCaracter == 'w') {
+                            msgest = 'Como nuevo';
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'e') msgest = 'Excelente'; 
+                        if (elCaracter == 'e') {
+                            msgest = 'Excelente'; 
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'r') msgest = 'Muy Bien'; 
+                        if (elCaracter == 'r') {
+                            msgest = 'Muy Bien'; 
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 't') msgest = 'Bien';
+                        if (elCaracter == 't') {
+                            msgest = 'Bien';
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'y') msgest = 'Aceptable';
+                        if (elCaracter == 'y') {
+                            msgest = 'Aceptable';
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'u') msgest = 'Regular';
+                        if (elCaracter == 'u') {
+                            msgest = 'Regular';
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'i') msgest = 'Pobre';                                                               
+                        if (elCaracter == 'i') {
+                            msgest = 'Pobre';  
+                            libro_corto_isbn.focus(); 
+                            }                             
+
+
 
                         libro_corto_tapas.setAttribute( "value", msgtapa ); 
                         libro_corto_conservacion.setAttribute( "value", msgest ); 
@@ -52,7 +79,6 @@ function mostrarInformacionCaracter(evObject) {
                 eventoControlado=true;
 
 }
-
 
 
 </script>

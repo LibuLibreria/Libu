@@ -37,13 +37,13 @@ class LibroCortoType extends AbstractType
             ))      
             ->add('isbn', TextType::class, array(
                 'attr' => array(
-                    'autofocus' => 'autofocus'
                 )
             ))                     
             ->add('subiragil', SubmitType::class, array(
                 'label' => 'Guardar',
                 'attr' => array(
-                    'class' => 'btn-lg btn-primary'
+                    'class' => 'btn-lg btn-primary',
+                    'autofocus' => 'autofocus',                    
                 )                
             ))  
             ->getForm();             
