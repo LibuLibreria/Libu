@@ -7,6 +7,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 
 class LibroCortoType extends AbstractType
@@ -21,13 +23,28 @@ class LibroCortoType extends AbstractType
             ->add('codigo', TextType::class, array(
                  'label' => 'Código'
             )) 
-            ->add('conservacion', TextType::class, array(
-                 'label' => 'Conservación',
-                 'data' => 'Excelente'
+            ->add('conservacion',  EntityType::class, array(
+                // query choices from this entity
+                'class' => 'LibuBundle:Conservacion',
+
+                // use the User.username property as the visible option string
+                'choice_label' => 'conservacion',
+
+                // used to render a select box, check boxes or radios
+                 'multiple' => false,
+                 'expanded' => true,
             ))                    
-            ->add('tapas', TextType::class, array(
-                 'label' => 'Tapas',
-                 'data' => 'Tapa blanda'
+            ->add('tapas',  EntityType::class, array(
+                // query choices from this entity
+                'class' => 'LibuBundle:Tapas',
+
+                // use the User.username property as the visible option string
+                'choice_label' => 'tapa',
+
+                // used to render a select box, check boxes or radios
+                 'multiple' => false,
+                 'expanded' => true,
+                 'label' => 'Tapas',                 
             ))                 
             ->add('estanteria', TextType::class, array(
                  'label' => 'Estantería',
@@ -37,6 +54,7 @@ class LibroCortoType extends AbstractType
             ))      
             ->add('isbn', TextType::class, array(
                 'attr' => array(
+                    'autofocus' => 'autofocus',
                 )
             ))                     
             ->add('subiragil', SubmitType::class, array(
@@ -46,6 +64,17 @@ class LibroCortoType extends AbstractType
                     'autofocus' => 'autofocus',                    
                 )                
             ))  
+            ->add('descripcion', TextareaType::class, array(
+                'label' => 'Descripción del libro',
+                'required' => false,
+                'attr' => array(
+                    'rows' => '3',
+                )
+            ))
+            ->add('notas', TextType::class, array(
+                'label' => 'Notas (Uso interno)',
+                'required' => false,
+            ))            
             ->getForm();             
         ;
     }

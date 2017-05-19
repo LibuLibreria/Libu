@@ -123,12 +123,16 @@ class BookController extends Controller
 
         $bman = $this->get('app.books');
 
-        // La variable $product es un array de todos los objetos Producto existentes
+        // $ultlibro y $siglibro son el código del último libro guardado y el siguiente código
         $ultlibro = $em->getRepository('LibuBundle:Libro')->mayorCodigo();
         $siglibro = ($ultlibro[0]['codigo'] + 1); 
 
         $ultbalda = $bman->leeConfig('balda');
         $ultestanteria = $bman->leeConfig('estanteria');
+
+        // Escoge los valores por defecto para Tapas y Conservacion
+        $tapabl = $em->getRepository('LibuBundle:Tapas')->findOneByCodigo('1');
+        $conservexc = $em->getRepository('LibuBundle:Conservacion')->findOneByCodigo('3');
 
         $libro = new Libro(); 
 
@@ -137,6 +141,8 @@ class BookController extends Controller
         $form->get('balda')->setData($ultbalda);
         $form->get('estanteria')->setData($ultestanteria);
         $form->get('codigo')->setData($siglibro);
+        $form->get('tapas')->setData($tapabl);
+        $form->get('conservacion')->setData($conservexc);
 
         $texto = "";
 
@@ -147,12 +153,12 @@ class BookController extends Controller
 
                 if ($form->get('subiragil')->isClicked()) {
                     $librosub = $form->getData();
-
+/*
                     $texttapas = $librosub->getTapas(); 
                     $librosub->setTapas($bman->validaTapas($texttapas));
                     $textconservacion = $librosub->getConservacion();
                     $librosub->setConservacion($bman->validaConservacion($textconservacion));
-
+*/
                     $biensubido = $bman->persisteLibro($librosub, "AGIL");
                     if ($biensubido) {
                         $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 

@@ -4,6 +4,8 @@
 
 {% block body %}
 
+
+<!--
 <script type="text/javascript">
 
 var eventoControlado = false;
@@ -82,6 +84,51 @@ function mostrarInformacionCaracter(evObject) {
 
 
 </script>
+-->
+
+
+<script type="text/javascript">
+
+var eventoControlado = false;
+
+window.onload = function() { 
+        document.onclick = autofocusIsbn;
+
+}
+
+function autofocusIsbn(evObject) {
+
+                alert(evObject.which);
+
+                if (evObject.which!=0 && evObject.which!=13) {
+
+                        if (elCaracter == 'b') msgtapa = 'Tapa blanda';
+
+                        if (elCaracter == 'd') msgtapa = 'Tapa dura'; 
+
+                        if (elCaracter == 'q') {
+                            msgest = 'Nuevo';  
+                            libro_corto_isbn.focus(); 
+                            }                      
+
+
+                        libro_corto_isbn.setAttribute( "value", evObject.which ); 
+
+                }
+
+                if (evObject.which==13) {
+                        document.getElementById("libro_corto").submit();
+                }
+
+                eventoControlado=true;
+
+}
+
+
+</script>
+
+
+
 
 <div class="book-wrapper" >
 
@@ -98,14 +145,23 @@ function mostrarInformacionCaracter(evObject) {
 
             <div class="col-md-6">
 
-                {{ form_row(form.codigo) }} 
+                <div class="col-md-6">
 
-                {{ form_row(form.tapas) }}    
+                    {{ form_row(form.codigo) }} 
 
+                    {{ form_row(form.tapas) }}   
 
-                {{ form_row(form.conservacion) }}                         
+                </div>
+
+                <div class="col-md-6">
+
+                    {{ form_row(form.conservacion) }}  
+
+                </div>
 
                 {{ form_row(form.isbn) }}
+
+                {{ form_row(form.descripcion) }}                
 
                 {{ form_row(form.subiragil) }}  
 
@@ -116,6 +172,8 @@ function mostrarInformacionCaracter(evObject) {
                 {{ form_row(form.estanteria) }}    
 
                 {{ form_row(form.balda) }}                
+
+                {{ form_row(form.notas) }}   
         
                 {{ form_end(form) }}
 

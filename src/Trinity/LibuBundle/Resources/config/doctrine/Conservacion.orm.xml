@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Trinity\LibuBundle\Entity\Conservacion" table="conservacion">
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="conservacion" type="string" column="conservacion" length="30">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="abreviatura" type="string" column="abreviatura" length="30"  nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>    
+    <field name="otros" type="string" column="otros" length="30" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>   
+    <field name="codigo" type="string" column="codigo" length="4" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>       
+  </entity>
+</doctrine-mapping>

@@ -256,11 +256,11 @@ class BookManager implements ContainerAwareInterface  {
             if ($key == "precio"){
             	$nuevo_book[$key] = $this->validaPrecios($col)['result'];
             } 
-
+/*
             if ($key == "tapas") $nuevo_book[$key] = $this->validaTapas($col);
 
             if ($key == "conservacion") $nuevo_book[$key] = $this->validaConservacion($col);
-
+*/
 
             if ($key == "codigo") {
                 if (!is_int((int) $col)) {
@@ -287,7 +287,7 @@ class BookManager implements ContainerAwareInterface  {
         }
     }
 
-
+/*
     public function validaTapas($col) {
         if (!is_int($col)) {
             $num = array_search($col, $this->valores_tapas);
@@ -306,7 +306,7 @@ class BookManager implements ContainerAwareInterface  {
         	return $col; 
         }
     }
-
+*/
     public function validaEditorial($col) {
     	$longEditorial = 30;
     	if (strlen($col) > $longEditorial) $col = substr($col, 0, $longEditorial); 
@@ -406,7 +406,7 @@ class BookManager implements ContainerAwareInterface  {
         }
 
         $libro->setEstatus($estatus);
-
+//dump($libro); die(); 
         try {
             $em->persist($libro);
             $em->flush();
