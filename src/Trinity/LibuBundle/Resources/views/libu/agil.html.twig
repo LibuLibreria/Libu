@@ -89,41 +89,9 @@ function mostrarInformacionCaracter(evObject) {
 
 <script type="text/javascript">
 
-var eventoControlado = false;
-
-window.onload = function() { 
-        document.onclick = autofocusIsbn;
-
-}
-
-function autofocusIsbn(evObject) {
-
-                alert(evObject.which);
-
-                if (evObject.which!=0 && evObject.which!=13) {
-
-                        if (elCaracter == 'b') msgtapa = 'Tapa blanda';
-
-                        if (elCaracter == 'd') msgtapa = 'Tapa dura'; 
-
-                        if (elCaracter == 'q') {
-                            msgest = 'Nuevo';  
-                            libro_corto_isbn.focus(); 
-                            }                      
-
-
-                        libro_corto_isbn.setAttribute( "value", evObject.which ); 
-
-                }
-
-                if (evObject.which==13) {
-                        document.getElementById("libro_corto").submit();
-                }
-
-                eventoControlado=true;
-
-}
-
+    function autofocusIsbn() {
+        libro_corto_isbn.focus(); 
+    }
 
 </script>
 
@@ -149,11 +117,13 @@ function autofocusIsbn(evObject) {
 
                     {{ form_row(form.codigo) }} 
 
-                    {{ form_row(form.tapas) }}   
+                    <div  onclick="autofocusIsbn()">
+                        {{ form_row(form.tapas) }}   
+                    </div>
 
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6" onclick="autofocusIsbn()">
 
                     {{ form_row(form.conservacion) }}  
 
