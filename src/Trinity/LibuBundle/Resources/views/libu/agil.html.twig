@@ -137,7 +137,7 @@ function mostrarInformacionCaracter(evObject) {
 
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-6">
              
                 {{ form_row(form.estanteria) }}    
 
@@ -147,8 +147,15 @@ function mostrarInformacionCaracter(evObject) {
         
                 {{ form_end(form) }}
 
+            </div>
+
+            <div class="col-md-3">
                 <div class="botones_agil">
                 <a  href= "{{ path('bookbaldaestant')}}">Cambiar balda y estantería</a><br>   
+                </div>
+
+                <div class="botones_agil">
+                <a  href= "{{ path('booklista')}}">Lista de rellenados</a><br>   
                 </div>
 
                 <div class="botones_agil">

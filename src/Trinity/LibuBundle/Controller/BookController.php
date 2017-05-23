@@ -275,7 +275,8 @@ class BookController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('save')->isClicked()) {
                 $libro = $form->getData();
-                if ( $accion = 'precio' ) {
+
+                if ( $accion == 'precio' ) {
 
                 	$bman->persisteLibro($libro, "SUBID", true);
 
@@ -284,6 +285,8 @@ class BookController extends Controller
 
                 	return $this->redirectToRoute('bookprecio');
             	} else {
+                    $bman->persisteLibro($libro, "AGIL", true);
+
             		return $this->redirectToRoute('booklista');
             	}                    
             }
@@ -313,7 +316,8 @@ class BookController extends Controller
             return $this->render('LibuBundle:book:precios.html.twig', array(
                 'titulo' => "Precios",      
                 'texto_previo' => "No hay libros sin poner precio",    
-                'boton_final' => "Volver a venta"
+                'boton_final' => "Volver a venta", 
+                'path_boton_final' => "venta",
                 )); 
         }
 
@@ -344,7 +348,10 @@ class BookController extends Controller
                 {
                     $sig_libro = $librosp[0]->getCodigo(); 
 
-                    return $this->redirectToRoute('booklibro', array('cod' => $librosp[0]->getCodigo() ));  
+                    return $this->redirectToRoute('booklibro', array(
+                        'cod' => $librosp[0]->getCodigo(),
+                        'accion' => 'precio',
+                        ));  
                 }
         }
 
@@ -374,9 +381,10 @@ class BookController extends Controller
 
         if (empty($librosp)) {
             return $this->render('LibuBundle:book:precios.html.twig', array(
-                'titulo' => "Precios",      
+                'titulo' => "Lista",      
                 'texto_previo' => "No hay libros en la lista",    
-                'boton_final' => "Volver a venta"
+                'boton_final' => "Volver a formulario",
+                'path_boton_final' => "bookagil",
                 )); 
         }
 
@@ -393,8 +401,9 @@ class BookController extends Controller
         }
 
         return $this->render('LibuBundle:book:precios.html.twig', array(
-            'form' => $form->createView(), 
             'titulo' => "Lista",   
+            'boton_final' => "Volver a formulario",
+            'path_boton_final' => "bookagil",
             'tabla' => $librosp,    
             'cabecera' => array('Código','Isbn', 'Tapas', 'Conservación', 'Descripción', 'Notas', 'Estantería', 'Balda'),   
         	'accion' => 'lista', 
@@ -472,7 +481,10 @@ class BookController extends Controller
 
                 $bman->persisteArrayLibros($libroobj, "AGILP", true);
                 
-                return new Response("Se han guardado correctamente los datos");
+                return $this->render('LibuBundle:libu:form.html.twig', array(
+                    'mensaje' => "Se han guardado correctamente los archivos",
+                    'titulo' => "Leído archivo json",
+                ));        
 
             }
 

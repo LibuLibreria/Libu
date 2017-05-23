@@ -1,21 +1,36 @@
 {% extends "LibuBundle::libu/base.html.twig" %}
 
-{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{% if form is defined %}
+	{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{% endif %}
 
-{% block body %}
+{% block formulario %}
 	<div 'col-sm-12'>
 		<div class = 'formulario'>
 		    <div class='formulario_links'>
-			{#    <a href= "{{ path('producto')}}">Nuevo producto</a>
-			    <a href= "{{ path('tipo')}}">Nuevo tipo</a>   #}
+
 		    </div>	
+
 			<p>&nbsp;</p>
+
 			<h1>{{ titulo }}</h1>
+
 			<p>&nbsp;</p>
-			<div class = 'col-sm-3 form cuerpo_form'>
-		        {{ form(form) }}
-				<a href= "{{ path('venta')}}">Volver a venta</a>
-		    </div>
+
+			{% if mensaje is defined %}
+				{{ mensaje }}
+			{% endif %}
+
+			{% if form is defined %}
+				<div class = 'col-sm-3 form cuerpo_form'>
+			        {{ form(form) }}
+					<a href= "{{ path('venta')}}">Volver a venta</a>
+			    </div>
+		    {% endif %}
+		    <p>&nbsp;</p>
+			<a href= "{{ path('venta')}}"><button>Volver a venta</button></a>
+
+
 			<hr>
 
 		</div>

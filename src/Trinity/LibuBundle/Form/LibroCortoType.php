@@ -24,24 +24,18 @@ class LibroCortoType extends AbstractType
                  'label' => 'Código'
             )) 
             ->add('conservacion',  EntityType::class, array(
-                // query choices from this entity
                 'class' => 'LibuBundle:Conservacion',
 
-                // use the User.username property as the visible option string
                 'choice_label' => 'conservacion',
 
-                // used to render a select box, check boxes or radios
                  'multiple' => false,
                  'expanded' => true,
             ))                    
             ->add('tapas',  EntityType::class, array(
-                // query choices from this entity
                 'class' => 'LibuBundle:Tapas',
 
-                // use the User.username property as the visible option string
                 'choice_label' => 'tapa',
 
-                // used to render a select box, check boxes or radios
                  'multiple' => false,
                  'expanded' => true,
                  'label' => 'Tapas',                 

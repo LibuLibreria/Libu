@@ -93,12 +93,20 @@
 			            	{{ form_widget(form.precio) }}
 				        </div>
 				        <div class = 'col-md-1'>
-				            {{ form_label(form.notas) }}			            
+				            {{ form_label(form.descripcion) }}			            
 				        </div>
 				        <div class = 'col-md-8'>
-				            {{ form_widget(form.notas) }}			            
+				            {{ form_widget(form.descripcion) }}			            
 				        </div>					
-				    </div> 				      
+				    </div> 			
+				    <div class= 'row'>
+				        <div class = 'col-md-3'>
+				            <label class="col-sm-6 control-label" for="libro_notas">Notas (uso interno)</label>				            
+				        </div>				    
+			            <div class = 'col-md-9'> 				    	
+				    		{{ form_widget(form.notas) }}
+			    		</div>
+			    	</div>				    	      
 				    <div class= 'row'>
 						<div class = 'col-md-1'>	           
 			            </div>
@@ -106,6 +114,7 @@
 				    		{{ form_widget(form.save) }}
 			    		</div>
 			    	</div>
+			    	
 					{{form_end(form)}}  
 			</fieldset>
 
