@@ -24,9 +24,7 @@
 		{% endif %}
 
 		{% if tabla is defined %}
-
-		<p>Estos son los libros pendientes de poner precio</p>
-		<p>Pulsar Aceptar para comenzar la serie</p>		
+		
 			<table class="table table-striped  table-condensed">
 			  <thead>
 			    <tr>
@@ -38,8 +36,18 @@
 			  <tbody>
 			  	{% for linea in tabla %}
 			    <tr>
-			      		<td>{{ linea.codigo }}</td>
-			      		<td>{{ linea.isbn }}</td>
+		    	{% if accion == 'lista' %}
+		      		<td><a href="{{ path('booklibro', {'cod': linea.codigo }) }}">{{ linea.codigo }}</a></td>
+	      		{% elseif accion == 'precio' %}
+					<td><a href="{{ path('booklibro', {'cod': linea.codigo, 'accion': 'precio'} ) }}">{{ linea.codigo }}</a></td>	      		
+	      		{% endif %}
+		      		<td>{{ linea.isbn }}</td>
+		      		<td>{{ linea.tapas }}</td>
+		      		<td>{{ linea.conservacion }}</td>
+		      		<td>{{ linea.descripcion }}</td>
+		      		<td>{{ linea.notas }}</td>
+		      		<td>{{ linea.estanteria }}</td>
+		      		<td>{{ linea.balda }}</td>
 			    </tr>
 			    {% endfor %}
 			  </tbody>

@@ -218,37 +218,54 @@ class BookController extends Controller
 
     /**
      * @Route(
-     *     "/book/libro/{cod}",
+     *     "/book/libro/{cod}/{accion}",
      *     name="booklibro",
+     *	   defaults = {"accion": "lista"},
      *     requirements={
      *         "cod": "\d+"
      *     }
      * )
      */
-    public function bookLibroAction(Request $request, $cod)  {
+    public function bookLibroAction(Request $request, $cod, $accion)  {
 
         $em = $this->getDoctrine()->getManager();
         $bman = $this->get('app.books');
 
-        $libro = $em->getRepository('LibuBundle:Libro')->findOneByCodigo($cod);  
+        $libro = $em->getRepository('LibuBundle:Libro')->findOneByCodigo($cod); 
 
-        // Subimos el libro con otro estatus para que no sea de nuevo leído tras ejecutar el formulario
-        $bman->persisteLibro($libro, "CSUB", true); 
+        $arrayrender = array(
+	            'titulo' => 'Libro',
+	            'mensaje' => '',
+	            'horizontal' => true,        		
+        	);
 
-        $isbnact = $libro->getIsbn();
+        if ( $accion == 'precio') {
 
-        $busqueda['abe_esp'] = array('definicion' => 'Libros en Abebooks España',
-                                    'ofertas' => $this->buscaIsbn($isbnact, "ESP"));
-        $busqueda['abe_int'] = array('definicion' => 'Libros en Abebooks General',
-                                    'ofertas' => $this->buscaIsbn($isbnact, "INT"));
+        	// Estas son las acciones que se desarrollan si es el listado para adjudicar precios
 
-        if ($busqueda['abe_esp']['ofertas'] !== false) {
-            $libro->setAutor($bman->validaAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']));
-            $libro->setTitulo($bman->validaTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']));
-            $libro->setEditorial($bman->validaEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']));
-            $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
-        } else {
-            $libro->setPrecio(2.00);
+	        // Subimos el libro con otro estatus para que no sea de nuevo leído tras ejecutar el formulario
+	        $bman->persisteLibro($libro, "CSUB", true); 
+
+	        $isbnact = $libro->getIsbn();
+
+	        $busqueda['abe_esp'] = array('definicion' => 'Libros en Abebooks España',
+	                                    'ofertas' => $this->buscaIsbn($isbnact, "ESP"));
+	        $busqueda['abe_int'] = array('definicion' => 'Libros en Abebooks General',
+	                                    'ofertas' => $this->buscaIsbn($isbnact, "INT"));
+
+	        if ($busqueda['abe_esp']['ofertas'] !== false) {
+	            $libro->setAutor($bman->validaAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']));
+	            $libro->setTitulo($bman->validaTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']));
+	            $libro->setEditorial($bman->validaEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']));
+	            $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
+	        } else {
+	            $libro->setPrecio(2.00);
+            }
+	       
+
+            $arrayrender['busquedas'] = $busqueda;
+            $arrayrender['cabecera'] = array('Librería','Editorial', 'Título', 'Autor', 'Precio');
+
         }
 
         $form = $this->createForm(LibroType::class, $libro);      
@@ -256,25 +273,26 @@ class BookController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-                if ($form->get('save')->isClicked()) {
-                    $libro = $form->getData();
-                    $bman->persisteLibro($libro, "SUBID", true);
+            if ($form->get('save')->isClicked()) {
+                $libro = $form->getData();
+                if ( $accion = 'precio' ) {
 
-                    $session = $request->getSession();
-                    $session->set('reenviado', true); 
+                	$bman->persisteLibro($libro, "SUBID", true);
 
-                    return $this->redirectToRoute('bookprecio');
-                }
+                	$session = $request->getSession();
+                	$session->set('reenviado', true); 
+
+                	return $this->redirectToRoute('bookprecio');
+            	} else {
+            		return $this->redirectToRoute('booklista');
+            	}                    
+            }
         }   
 
-        return $this->render('LibuBundle:libu:libro.html.twig', array(
-            'form' => $form->createView(), 
-            'titulo' => 'Libro',
-            'mensaje' => '',
-            'horizontal' => true, 
-            'busquedas' => $busqueda,       
-            'cabecera' => array('Librería','Editorial', 'Título', 'Autor', 'Precio'),                   
-        )); 
+        $arrayrender['form'] = $form->createView();
+        $arrayrender['accion'] = $accion; 
+
+        return $this->render('LibuBundle:libu:libro.html.twig', $arrayrender ); 
     }
 
 
@@ -285,7 +303,7 @@ class BookController extends Controller
      */
     public function bookPrecioAction(Request $request)  {
 
-//        $jump = 2; 
+//      $jump = 2; 
 
         $em = $this->getDoctrine()->getManager();
 
@@ -305,7 +323,10 @@ class BookController extends Controller
 
             $session->set('reenviado', false); 
 
-            return $this->redirectToRoute('booklibro', array('cod' => $librosp[0]->getCodigo() ));   
+            return $this->redirectToRoute('booklibro', array(
+            	'cod' => $librosp[0]->getCodigo(),
+            	'accion' => 'precio',
+            	));   
         }
 
 //       $n = 4;
@@ -329,13 +350,56 @@ class BookController extends Controller
 
         return $this->render('LibuBundle:book:precios.html.twig', array(
             'form' => $form->createView(), 
-            'titulo' => "Precios",   
+            'titulo' => "Precios",  
+            'texto_previo' => "<p>Estos son los libros pendientes de poner precio</p><p>Pulsar Aceptar para comenzar la serie</p>", 
             'tabla' => $librosp,    
-            'cabecera' => array('Código','Isbn'),    
-            )); 
-
+            'cabecera' => array('Código','Isbn', 'Tapas', 'Conservación', 'Descripción', 'Notas', 'Estantería', 'Balda'),    
+        	'accion' => 'precio',
+    	));
     }
 
+
+
+
+    /**
+     * @Route("/book/lista", name="booklista")
+     */
+    public function bookLista(Request $request)  {
+
+//        $jump = 2; 
+
+        $em = $this->getDoctrine()->getManager();
+
+        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGIL");       
+
+        if (empty($librosp)) {
+            return $this->render('LibuBundle:book:precios.html.twig', array(
+                'titulo' => "Precios",      
+                'texto_previo' => "No hay libros en la lista",    
+                'boton_final' => "Volver a venta"
+                )); 
+        }
+
+        $form = $this->createForm(BookPrecioType::class, array());      
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+                if ($form->get('aceptar')->isClicked()) 
+                {
+                    return $this->redirectToRoute('bookagil');  
+                }
+        }
+
+        return $this->render('LibuBundle:book:precios.html.twig', array(
+            'form' => $form->createView(), 
+            'titulo' => "Lista",   
+            'tabla' => $librosp,    
+            'cabecera' => array('Código','Isbn', 'Tapas', 'Conservación', 'Descripción', 'Notas', 'Estantería', 'Balda'),   
+        	'accion' => 'lista', 
+            )); 
+    }
 
 
     /**
@@ -429,7 +493,7 @@ class BookController extends Controller
 
     /**
      * @Route("/book/lista", name="booklista")
-     */
+
     public function bookListaAction(Request $request)  {
 
         $bman = $this->get('app.books');
@@ -472,7 +536,7 @@ class BookController extends Controller
         ));        
 
     }
-
+     */
 
 
     /**

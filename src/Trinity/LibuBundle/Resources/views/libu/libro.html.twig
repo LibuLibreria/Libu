@@ -112,44 +112,48 @@
 			<hr>
 			<p>&nbsp;</p>
 
-              {% for busqueda in busquedas %}   
+			{% if accion == 'precio' %}
 
-              <legend>{{ busqueda.definicion }}.</legend>
+	              {% for busqueda in busquedas %}   
 
-                {% if busqueda.ofertas is empty %}
-                  No se han encontrado libros a la venta en {{ busqueda.definicion }}<br>
-                {% else %}
+	              <legend>{{ busqueda.definicion }}.</legend>
 
-            	<p>URL: {{ busqueda.ofertas.url }}</p>
-                  <table class="table table-bordred table-striped  table-condensed">
+	                {% if busqueda.ofertas is empty %}
+	                  No se han encontrado libros a la venta en {{ busqueda.definicion }}<br>
+	                {% else %}
 
-                    <tbody>
-                      <thead>
-                        <tr>
-                          {% for cab in cabecera %}
-                              <th> {{ cab }}</th>
-                          {% endfor %}
-                        </tr>
-                      </thead>
+	            	<p>URL: {{ busqueda.ofertas.url }}</p>
+	                  <table class="table table-bordred table-striped  table-condensed">
 
-                    {% for libroenc in busqueda.ofertas.datos %}
-                      <tr>
-                        <td>{{ libroenc.libreria }}</td>
-                        <td>{{ libroenc.editorial }}</td>                        
-                        <td>{{ libroenc.titulo }}</td>
-                        <td>{{ libroenc.autor }}</td>
-                        <td>{{ libroenc.suma }}</td>       
-                      </tr>              
+	                    <tbody>
+	                      <thead>
+	                        <tr>
+	                          {% for cab in cabecera %}
+	                              <th> {{ cab }}</th>
+	                          {% endfor %}
+	                        </tr>
+	                      </thead>
 
-                    {% endfor %}
+	                    {% for libroenc in busqueda.ofertas.datos %}
+	                      <tr>
+	                        <td>{{ libroenc.libreria }}</td>
+	                        <td>{{ libroenc.editorial }}</td>                        
+	                        <td>{{ libroenc.titulo }}</td>
+	                        <td>{{ libroenc.autor }}</td>
+	                        <td>{{ libroenc.suma }}</td>       
+	                      </tr>              
 
-                    </tbody>      
+	                    {% endfor %}
 
-                  </table>
+	                    </tbody>      
 
-                {% endif %}
-                <hr>
-              {% endfor %}  
+	                  </table>
+
+	                {% endif %}
+	                <hr>
+	              {% endfor %}  
+
+          	{% endif %}
 		</div>
 
 {% endblock %}
