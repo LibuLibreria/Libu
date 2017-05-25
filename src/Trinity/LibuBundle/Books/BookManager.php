@@ -60,7 +60,24 @@ class BookManager implements ContainerAwareInterface  {
 
         $this->numaletra = array_combine(range(1,26), range('A', 'Z'));
         $this->letraanum = array_flip($this->numaletra); 
-
+        $this->valores_tapas = array(
+            1 => "Tapa blanda",
+            2 => "Tapa dura",
+        );
+        $this->valores_tapas_ing = array(
+            1 => "soft",
+            2 => "hard",
+        );
+        $this->valores_conservacion = array(
+            1 => 'Nuevo',                        
+            2 => 'Como nuevo',
+            3 => 'Excelente', 
+            4 => 'Muy bien', 
+            5 => 'Bien',
+            6 => 'Aceptable',
+            7 => 'Regular',
+            8 => 'Mal estado',            
+        );    
     }
 
 
@@ -480,7 +497,7 @@ class BookManager implements ContainerAwareInterface  {
 
 
 
-    private function AbebookAdd($book) {
+    public function AbebooksAdd($book) {
 
         // Crear un nuevo recurso cURL
         $ch = curl_init();
@@ -505,13 +522,13 @@ class BookManager implements ContainerAwareInterface  {
                     <subject></subject>
                     <price currency="EUR">'.$book->getPrecio().'</price>
                     <dustJacket></dustJacket>
-                    <binding type="'.$valores_tapas_ing($book->getTapas()).'">
-                            '.$valores_tapas($book->getTapas()).'</binding>
+                    <binding type="'.$this->valores_tapas_ing[$book->getTapas()->getCodigo()].'">
+                            '.$this->valores_tapas[$book->getTapas()->getCodigo()].'</binding>
                     <firstEdition>false</firstEdition>
                     <signed>false</signed>
                     <booksellerCatalogue></booksellerCatalogue>
                     <description></description>
-                    <bookCondition>'.$valores_conservacion($book->getConservacion()).'</bookCondition>
+                    <bookCondition>'.$this->valores_conservacion[$book->getConservacion()->getCodigo()].'</bookCondition>
                     <size></size>
                     <jacketCondition>Fine</jacketCondition>
                     <bookType></bookType>
@@ -549,11 +566,11 @@ class BookManager implements ContainerAwareInterface  {
                 $subido['mess'] = $mens_abebooks->AbebookList->Abebook->message;
                 $subido['code'] = $mens_abebooks->AbebookList->Abebook->code;
                 $subido['bookId'] = $mens_abebooks->AbebookList->Abebook->vendorBookID;
-//                       echo $ok_bookId." añadido a Abebooks.<br>";
+                echo "Libro ".$book->getCodigo()." añadido a Abebooks.<br>";
             }
 
 
-        // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
+         echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
         return $subido; 
     }
             

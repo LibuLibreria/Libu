@@ -278,6 +278,8 @@ class BookController extends Controller
 
                 if ( $accion == 'precio' ) {
 
+                    $bman->AbebooksAdd($libro); 
+
                 	$bman->persisteLibro($libro, "SUBID", true);
 
                 	$session = $request->getSession();
