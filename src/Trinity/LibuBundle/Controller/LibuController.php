@@ -338,7 +338,7 @@ class LibuController extends Controller
 
     /**
      * @Route("/libu/subir", name="subir")
-     */
+     *
     public function subirAction(Request $request)
     {
         $libro = new Libro();
@@ -361,12 +361,14 @@ class LibuController extends Controller
             ));    
     }
 
+    */
+
 
 
 
     /**
      * @Route("/libu/balda", name="balda")
-     */
+     *
     public function baldaAction(Request $request)
     {
         $ultid = $request->get('ultid');
@@ -392,13 +394,13 @@ class LibuController extends Controller
             'titulo' => 'Libro con identificador '.$ultid,
             ));    
     }
-
+*/
 
 
 
     /**
      * @Route("/libu/libro", name="libro")
-     */
+     *
     public function libroAction(Request $request)
     {
         $libro = new Libro();
@@ -420,9 +422,11 @@ class LibuController extends Controller
     }
 
 
+*/
+
     /**
      * @Route("/libu/producto", name="producto")
-     */
+     *
     public function productoAction(Request $request)
     {
         $producto = new Producto();
@@ -443,10 +447,12 @@ class LibuController extends Controller
             ));    
     }
 
+*/
+
 
     /**
      * @Route("/libu/tipo", name="tipo")
-     */
+     *
     public function tipoAction(Request $request)
     {
         $tipo = new Tipo();
@@ -466,7 +472,7 @@ class LibuController extends Controller
             'titulo' => 'Nuevo tipo de producto',
             ));    
     }
-
+*/
 
 
     /**
@@ -502,7 +508,7 @@ class LibuController extends Controller
 
     /**
      * @Route("/libu/menu", name="menu")
-     */
+     *
     public function menuAction(Request $request)
     {
         $venta = 207;
@@ -524,7 +530,7 @@ class LibuController extends Controller
             'form' => $form->createView(),
             ));     
     }
-
+*/
 
 
      /**

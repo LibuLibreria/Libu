@@ -1,0 +1,56 @@
+TO DO
+
+- Ordenar los twig
+- Ordenar bookmanager y sacar algunas clases
+- Añadir botón para 'no guardar' un libro en Abebooks
+- Añadir cambio porcentual en el precio, según el estado del libro
+- Buscar en otras páginas
+- Crear tabla para guardar datos estadísticos; cambiar tipos de nombre, título, descripción, notas
+- Crear tabla para guardar precios, con fecha, registro de cambios, etc. 
+
+
+
+LISTA DE PLANTILLAS: 
+
+BookController: 
+- /book/csv --> leearchivo
+- /book/agil --> agil
+- /book/baldaestant --> form
+- /book/libro --> libro
+- /book/precio --> precios (2 veces)
+- /book/lista --> precios (2 veces)   ***
+- /book/leejson --> form, leearchivo
+- /book/lista --> books
+- /book/subir --> books
+
+CajaController: 
+- /libu/caja --> caja
+- /libu/cajamensual --> cajamensual
+- /libu/caja/proveedor --> proveedor
+- /libu/gasto --> form
+
+LibuController: 
+- /libu/venta --> inicio
+- /libu/factuar --> facturar
+- /libu/subir --> form   ***
+- /libu/balda --> form  ***
+- /libu/libro --> form  ***
+- /libu/producto --> form ***
+- /libu/tipo --> form ***
+- /libu/ticket --> ticket
+- /libu/menu --> simple ***
+
+ContabilidadController
+- /crawler --> simple  ***
+
+EmailController
+- /libu/email --> email
+
+RegistrationController 
+- /register --> register
+
+SecurityController 
+- /login --> login
+
+
+
