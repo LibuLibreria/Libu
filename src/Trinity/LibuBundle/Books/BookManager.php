@@ -516,9 +516,9 @@ class BookManager implements ContainerAwareInterface  {
                 <Abebook>
                     <transactionType>add</transactionType>
                     <vendorBookID>L'.$book->getCodigo().'</vendorBookID>
-                    <author>'.$book->getAutor().'</author>
-                    <title>'.$book->getTitulo().'</title>
-                    <publisher>'.$book->getEditorial().'</publisher>
+                    <author>'.$this->changeCharset($book->getAutor()).'</author>
+                    <title>'.$this->changeCharset($book->getTitulo()).'</title>
+                    <publisher>'.$this->changeCharset($book->getEditorial()).'</publisher>
                     <subject></subject>
                     <price currency="EUR">'.$book->getPrecio().'</price>
                     <dustJacket></dustJacket>
@@ -532,7 +532,7 @@ class BookManager implements ContainerAwareInterface  {
                     <size></size>
                     <jacketCondition></jacketCondition>
                     <bookType></bookType>
-                    <isbn>'.$book->getIsbn().'</isbn>
+                    <isbn>'.$this->changeCharset($book->getIsbn()).'</isbn>
                     <publishPlace></publishPlace>
                     <publishYear></publishYear>
                     <edition></edition>
@@ -574,6 +574,12 @@ class BookManager implements ContainerAwareInterface  {
         return $subido; 
     }
             
+
+
+    private function changeCharset($string){
+        $newstring = iconv("UTF-8", "ISO-8859-1//TRANSLIT//IGNORE", $string);
+        return $newstring;
+    }
 
 
     public function saluda() {
