@@ -2,58 +2,41 @@
 
 {% block body %}
 
-    <div class = 'col-sm-12 form-inline'>
+    <div class = 'col-sm-12'>
     	{% block titulo %}
-	    	<h1>Título</h1>
     	{% endblock %}
-
 
     	{% block previo %}
     	{% endblock %}
 
+ 		<div class = 'col-sm-12 row'>
+	    	{% block tabla %}
+		    	<table class='table table-striped table-condensed'>
+		    		<thead>
+		    			<tr>
+							{% block cabecera %}
+							{% endblock %}
+						</tr>
+					</thead>
 
-    	{% block tabla %}
-	    	<table class='table table-striped table-condensed'>
-	    		<thead>
-	    			<tr>
-						{% block cabecera %}
-							<th>Cabecera</th>
-						{% endblock %}
-					</tr>
-				</thead>
+					<tbody>
+						{% block contenido %}
 
-				<tbody>
-					{% block contenido %}
-
-			    	{% endblock %}		    
-				</tbody>
-			</table>
-    	{% endblock %}
+				    	{% endblock %}		    
+					</tbody>
+				</table>
+	    	{% endblock %}
+	    </div>
 
 
     	{% block tabla2 %}
-	    	<table class='table table-striped table-condensed'>
-	    		<thead>
-	    			<tr>
-						{% block cabecera2 %}
-							<th>Cabecera</th>
-						{% endblock %}
-					</tr>
-				</thead>
-
-				<tbody>
-					{% block contenido2 %}
-
-			    	{% endblock %}		    
-				</tbody>
-			</table>
     	{% endblock %}
 
-
-
-		{% block formulario %}
- 
-    	{% endblock %}		    
+    	<div class = 'col-sm-4 row'>
+			{% block formulario %}
+	 
+	    	{% endblock %}		    
+	    </div>
 
     </div>
 {% endblock %}

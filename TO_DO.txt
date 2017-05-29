@@ -20,24 +20,24 @@ BookController:
 - /book/precio --> precios (2 veces)
 - /book/lista --> precios (2 veces)   ***
 - /book/leejson --> form, leearchivo
-- /book/lista --> books
-- /book/subir --> books
+- /book/lista --> books   ***
+- /book/subir --> books   ***
 
 CajaController: 
-- /libu/caja --> caja
-- /libu/cajamensual --> cajamensual
-- /libu/caja/proveedor --> proveedor
+- /libu/caja --> caja  --> tabla-layout
+- /libu/cajamensual --> cajamensual  --> tabla-layout
+- /libu/caja/proveedor --> proveedor  --> tabla-layout
 - /libu/gasto --> form
 
 LibuController: 
 - /libu/venta --> inicio
-- /libu/factuar --> facturar
+- /libu/facturar --> facturar
 - /libu/subir --> form   ***
 - /libu/balda --> form  ***
 - /libu/libro --> form  ***
 - /libu/producto --> form ***
 - /libu/tipo --> form ***
-- /libu/ticket --> ticket
+- /libu/ticket --> ticket --> layout-pdf
 - /libu/menu --> simple ***
 
 ContabilidadController
