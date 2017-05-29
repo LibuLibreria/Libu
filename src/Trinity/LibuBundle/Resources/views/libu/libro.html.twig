@@ -131,7 +131,7 @@
 	                  No se han encontrado libros a la venta en {{ busqueda.definicion }}<br>
 	                {% else %}
 
-	            	<p>URL: {{ busqueda.ofertas.url }}</p>
+	            	<p>URL: <a href="{{ busqueda.ofertas.url }}">{{ busqueda.ofertas.url }}</a></p>
 	                  <table class="table table-bordred table-striped  table-condensed">
 
 	                    <tbody>

@@ -257,10 +257,11 @@ class BookController extends Controller
 	            $libro->setAutor($bman->validaAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']));
 	            $libro->setTitulo($bman->validaTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']));
 	            $libro->setEditorial($bman->validaEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']));
-	            $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
+//	            $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
 	        } else {
-	            $libro->setPrecio(2.00);
+//	            $libro->setPrecio(2.00);
             }
+            $libro->setPrecio($this->ponerPrecio($busqueda));
 	       
 
             $arrayrender['busquedas'] = $busqueda;
@@ -300,6 +301,36 @@ class BookController extends Controller
         return $this->render('LibuBundle:libu:libro.html.twig', $arrayrender ); 
     }
 
+
+
+    private function ponerPrecio($busqueda){
+
+        $RESTA_POR_GASTOS = 3.5;
+        $DIF_ESP_INT = 4;
+        $PRECIO_MIN = 1.9;
+
+        // Si hay ofertas en Abebooks en librerías en España o el extranjero
+        if ( (false !== $busqueda['abe_esp']['ofertas']) || (false !== $busqueda['abe_int']['ofertas']) ) {
+
+            // En España 
+            $precio['esp'] = (false !== $busqueda['abe_esp']['ofertas']) ? ($busqueda['abe_esp']['ofertas']['datos'][0]['suma'] ) : 0;
+
+            // En el extranjero
+            $precio['int'] = (false !== $busqueda['abe_int']['ofertas']) ? ($busqueda['abe_int']['ofertas']['datos'][0]['suma'] ) : 0;
+
+            // El precio de venta es el mayor de los dos; dando ventaja al de España
+            $prventa = ( ($precio['esp'] != 0) && ( $precio['esp'] <= ( $precio['int'] )) ) ? 
+                    ( $precio['esp'] - $RESTA_POR_GASTOS ) : 
+                    ( $precio['int'] - $RESTA_POR_GASTOS + $DIF_ESP_INT );
+
+        // Si no hay ofertas 
+        } else {
+            $prventa = $PRECIO_MIN;
+        }
+        $prventa = ( $prventa < $PRECIO_MIN ) ? $PRECIO_MIN : $prventa; 
+
+        return $prventa; 
+    }
 
 
 
@@ -716,6 +747,9 @@ class BookController extends Controller
 
     public function buscaIsbn($isbn, $entorno) {
 //        $libreria_espana = true;
+
+        $LIMITE_LIBROS_ABEB = 20;
+
         $esp = ($entorno == "ESP") ? '&n=200000228' : '';
 
         // See http://php.net/manual/en/migration56.openssl.php
@@ -760,6 +794,8 @@ class BookController extends Controller
                 $datos['suma'] = (float)str_replace(',', '.', $datos['precio']) 
                                 + (float)str_replace(',', '.', $datos['envio']);
                 $datosarray[] = $datos; 
+
+                if (++$i == $LIMITE_LIBROS_ABEB ) break;
             } 
         return array('datos' => $datosarray, 'url' => $url_isbn); 
         }

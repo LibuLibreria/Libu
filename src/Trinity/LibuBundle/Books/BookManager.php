@@ -515,7 +515,7 @@ class BookManager implements ContainerAwareInterface  {
             <AbebookList>
                 <Abebook>
                     <transactionType>add</transactionType>
-                    <vendorBookID>LIB'.$book->getCodigo().'</vendorBookID>
+                    <vendorBookID>L'.$book->getCodigo().'</vendorBookID>
                     <author>'.$book->getAutor().'</author>
                     <title>'.$book->getTitulo().'</title>
                     <publisher>'.$book->getEditorial().'</publisher>
@@ -524,13 +524,13 @@ class BookManager implements ContainerAwareInterface  {
                     <dustJacket></dustJacket>
                     <binding type="'.$this->valores_tapas_ing[$book->getTapas()->getCodigo()].'">
                             '.$this->valores_tapas[$book->getTapas()->getCodigo()].'</binding>
-                    <firstEdition>false</firstEdition>
+                    <firstEdition></firstEdition>
                     <signed>false</signed>
                     <booksellerCatalogue></booksellerCatalogue>
                     <description></description>
                     <bookCondition>'.$this->valores_conservacion[$book->getConservacion()->getCodigo()].'</bookCondition>
                     <size></size>
-                    <jacketCondition>Fine</jacketCondition>
+                    <jacketCondition></jacketCondition>
                     <bookType></bookType>
                     <isbn>'.$book->getIsbn().'</isbn>
                     <publishPlace></publishPlace>
@@ -547,7 +547,7 @@ class BookManager implements ContainerAwareInterface  {
         // Establecer URL y otras opciones apropiadas
         // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
         curl_setopt($ch, CURLOPT_URL, "https://inventoryupdate.abebooks.com:10027");        
-        curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
+        curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml, charset='ISO-8859-1' ");
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
@@ -566,11 +566,11 @@ class BookManager implements ContainerAwareInterface  {
                 $subido['mess'] = $mens_abebooks->AbebookList->Abebook->message;
                 $subido['code'] = $mens_abebooks->AbebookList->Abebook->code;
                 $subido['bookId'] = $mens_abebooks->AbebookList->Abebook->vendorBookID;
-                echo "Libro ".$book->getCodigo()." añadido a Abebooks.<br>";
+//                echo "Libro ".$book->getCodigo()." añadido a Abebooks.<br>";
             }
 
 
-         echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
+//         echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
         return $subido; 
     }
             
