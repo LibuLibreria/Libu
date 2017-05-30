@@ -27,7 +27,7 @@ CajaController:
 - /libu/caja --> caja  --> tabla-layout
 - /libu/cajamensual --> cajamensual  --> tabla-layout
 - /libu/caja/proveedor --> proveedor  --> tabla-layout
-- /libu/gasto --> form
+- /libu/gasto --> form    ***
 
 LibuController: 
 - /libu/venta --> inicio

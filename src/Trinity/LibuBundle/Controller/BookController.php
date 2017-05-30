@@ -4,49 +4,21 @@ namespace Trinity\LibuBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-//use Trinity\LibuBundle\Form\TipoType;
-//use Trinity\LibuBundle\Form\LibroType;
-//use Trinity\LibuBundle\Form\LibroCortoType;
-//use Trinity\LibuBundle\Form\BaldaType;
-//use Trinity\LibuBundle\Form\ProductoType;
-//use Trinity\LibuBundle\Form\ResponsableType;
-//use Trinity\LibuBundle\Form\ClienteType;
-//use Trinity\LibuBundle\Form\TematicaType;
-//use Trinity\LibuBundle\Form\FacturarType;
-//use Trinity\LibuBundle\Form\MenuType;
-//use Trinity\LibuBundle\Entity\Venta;
-//use Trinity\LibuBundle\Entity\Cliente;
-//use Trinity\LibuBundle\Entity\Responsable;
-//use Trinity\LibuBundle\Entity\Tematica;
-//use Trinity\LibuBundle\Entity\Producto;
-//use Trinity\LibuBundle\Entity\ProductoVendido;
 use Trinity\LibuBundle\Entity\Libro;
-// use Trinity\LibuBundle\Entity\Tipo;
-//use Trinity\LibuBundle\Entity\Concepto;
-//use Trinity\LibuBundle\Entity\VentaRepository;
 use Trinity\LibuBundle\Form\LibroCortoType;
 use Trinity\LibuBundle\Form\BaldaEstantType;
 use Trinity\LibuBundle\Form\BookPrecioType;
 use Trinity\LibuBundle\Form\LibroType;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-// use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-// use Doctrine\Common\Collections\ArrayCollection;
-
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-// use Symfony\Component\Form\Extension\Core\Type\TextType;
-// use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-
 use Symfony\Component\HttpFoundation\Session\Session;
-
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 
@@ -487,42 +459,6 @@ class BookController extends Controller
         ));        
 
 
-    }
-
-
-
-
-    public function buscaPrecios($arraylibros) {
-
-        // echo "<pre>"; print_r($csv); echo "</pre>";
-
-        // Abrimos un gestionador de repositorio para toda la función
-        $em = $this->getDoctrine()->getManager();
-
-        $text = "<h1>Libros encontrados:</h1>"; 
-        $lista = array();
-        $i = 0;
-        foreach ($arraylibros as $book) {
-            $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
-            if ($isbn != "") {
-                $lista[$i][] = $i;
-                $choices[] = $i;
-                foreach ($book as $col) {
-                    $lista[$i] = $book;
-                }                
-            } else {      
-                if ($i != 0);   
-            }
-            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
-            $arrayprecios = $this->buscaIsbn($book[0]);
-            if ($arrayprecios) {
-                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
-            } else {
-                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
-            }
-        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
-            $i++; 
-        }
     }
 
 

@@ -203,7 +203,7 @@ class LibuController extends Controller
             }  
 		}
 
-		return $this->render('LibuBundle:libu:inicio.html.twig', array(
+		return $this->render('LibuBundle:libu:venta.html.twig', array(
 			'form' => $form->createView(),
             'prodguztiak' => $product_activo,
 			));    

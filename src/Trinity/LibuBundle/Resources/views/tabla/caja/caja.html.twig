@@ -1,15 +1,10 @@
-{% extends "LibuBundle::libu/tabla_layout.html.twig" %}
+{% extends "LibuBundle::tabla/tabla_layout.html.twig" %}
 
 
     	{% block titulo %}  	
 	    	<h1>Caja</h1>
 	    	<h3><br>Día: {{ fecha | localizeddate('full', 'none', app.request.locale )}}</h3>
     	{% endblock %}
-
-
-		{% block cabecera %}    				
-			<th>Hora</th><th>Ingreso</th><th>Libros</th><th>Productos</th><th>Cliente</th><th>Lista prods.</th>
-		{% endblock %}
 
 
 		{% block contenido %}

@@ -1,0 +1,19 @@
+ 		<div class = 'col-sm-12 row'>
+	    	{% block tabla %}
+		    	<table class='table table-striped table-condensed'>
+		    		<thead>
+		    			<tr>
+							{% for colum in cabecera %}
+								<th>{{ colum }}</th>
+							{% endfor %}
+						</tr>
+					</thead>
+
+					<tbody>
+						{% block contenido %}
+
+				    	{% endblock %}		    
+					</tbody>
+				</table>
+	    	{% endblock %}
+	    </div>
