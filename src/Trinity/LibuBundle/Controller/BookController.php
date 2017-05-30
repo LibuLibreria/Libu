@@ -124,7 +124,7 @@ class BookController extends Controller
 
         }
 
-        return $this->render('LibuBundle:libu:form.html.twig', array(
+        return $this->render('LibuBundle:form:form.html.twig', array(
             'form' => $form->createView(), 
             'titulo' => "Cambiar balda y Estantería",             
             )); 
@@ -386,7 +386,7 @@ class BookController extends Controller
 
                 $bman->persisteArrayLibros($libroobj, "AGILP", true);
                 
-                return $this->render('LibuBundle:libu:form.html.twig', array(
+                return $this->render('LibuBundle:form:form.html.twig', array(
                     'mensaje' => "Se han guardado correctamente los archivos",
                     'titulo' => "Leído archivo json",
                 ));        
