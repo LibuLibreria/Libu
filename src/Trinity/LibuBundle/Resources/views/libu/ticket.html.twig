@@ -1,5 +1,10 @@
 {# src/Trinity/LibuBundle/Resources/views/libu/ticket.html.twig #}
-{% extends 'LibuBundle:libu:layout-pdf.html.twig' %}
+{# extends 'LibuBundle:libu:layout-pdf.html.twig' #}
+
+	{% block stylesheets %}
+		<link rel="stylesheet" href="{{ absolute_url(asset('bundles/libu/css/ticket.css')) }}" />
+	{% endblock %}
+
 
 {% block content %}
 	<div class="contenedor">

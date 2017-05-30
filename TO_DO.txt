@@ -17,21 +17,21 @@ BookController:
 - /book/agil --> agil
 - /book/baldaestant --> form
 - /book/libro --> libro
-- /book/precio --> books/precios (2 veces)
-- /book/lista --> books/precios (2 veces)   ***
+- /book/precio --> precios (2 veces)
+- /book/lista --> precios (2 veces)   ***
 - /book/leejson --> form, leearchivo
 - /book/lista --> books   ***
-- /book/subir --> books    ***
+- /book/subir --> books   ***
 
 CajaController: 
-- /libu/caja --> caja
-- /libu/cajamensual --> cajamensual
-- /libu/caja/proveedor --> proveedor
-- /libu/gasto --> form
+- /libu/caja --> caja  --> tabla-layout
+- /libu/cajamensual --> cajamensual  --> tabla-layout
+- /libu/caja/proveedor --> proveedor  --> tabla-layout
+- /libu/gasto --> form    ***
 
 LibuController: 
 - /libu/venta --> inicio
-- /libu/factuRar --> facturar
+- /libu/facturar --> facturar
 - /libu/subir --> form   ***
 - /libu/balda --> form  ***
 - /libu/libro --> form  ***

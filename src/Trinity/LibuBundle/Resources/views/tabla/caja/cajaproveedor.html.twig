@@ -1,4 +1,4 @@
-{% extends "LibuBundle::libu/tabla_layout.html.twig" %}
+{% extends "LibuBundle::tabla/tabla_layout.html.twig" %}
 
 
     	{% block titulo %}
@@ -6,13 +6,7 @@
 	    	<h3>Mes: {{ fecha  }}</h3>
 	    	<h3>Proveedor: {{ proveedor.nombre  }}</h3>
     	{% endblock %}
-
-
-		{% block cabecera %}
-			<th>Factura</th><th>Día</th><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Ingreso</th>
-		{% endblock %}
-
-
+    	
 
 		{% block contenido %}
 		    {% for vent in ventasmes.ventas %}

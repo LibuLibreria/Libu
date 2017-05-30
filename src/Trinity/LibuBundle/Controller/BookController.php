@@ -4,49 +4,21 @@ namespace Trinity\LibuBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-//use Trinity\LibuBundle\Form\TipoType;
-//use Trinity\LibuBundle\Form\LibroType;
-//use Trinity\LibuBundle\Form\LibroCortoType;
-//use Trinity\LibuBundle\Form\BaldaType;
-//use Trinity\LibuBundle\Form\ProductoType;
-//use Trinity\LibuBundle\Form\ResponsableType;
-//use Trinity\LibuBundle\Form\ClienteType;
-//use Trinity\LibuBundle\Form\TematicaType;
-//use Trinity\LibuBundle\Form\FacturarType;
-//use Trinity\LibuBundle\Form\MenuType;
-//use Trinity\LibuBundle\Entity\Venta;
-//use Trinity\LibuBundle\Entity\Cliente;
-//use Trinity\LibuBundle\Entity\Responsable;
-//use Trinity\LibuBundle\Entity\Tematica;
-//use Trinity\LibuBundle\Entity\Producto;
-//use Trinity\LibuBundle\Entity\ProductoVendido;
 use Trinity\LibuBundle\Entity\Libro;
-// use Trinity\LibuBundle\Entity\Tipo;
-//use Trinity\LibuBundle\Entity\Concepto;
-//use Trinity\LibuBundle\Entity\VentaRepository;
 use Trinity\LibuBundle\Form\LibroCortoType;
 use Trinity\LibuBundle\Form\BaldaEstantType;
 use Trinity\LibuBundle\Form\BookPrecioType;
 use Trinity\LibuBundle\Form\LibroType;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-// use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-// use Doctrine\Common\Collections\ArrayCollection;
-
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-// use Symfony\Component\Form\Extension\Core\Type\TextType;
-// use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-
 use Symfony\Component\HttpFoundation\Session\Session;
-
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 
@@ -54,63 +26,6 @@ use Symfony\Component\CssSelector\CssSelectorConverter;
 
 class BookController extends Controller
 {
-
-    protected $array_file; 
-
-    /**
-     * @Route("/book/csv", name="bookcsv")
-     */
-    public function booksubirCsvAction(Request $request)  {
-        $form = $this->createFormBuilder()
-            ->add('archivocsv', FileType::class, array(
-                "label" => "Archivo csv:",
-            ))
-            ->add('enviar', SubmitType::class, array('label' => 'Enviar'))            
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        $bman = $this->get('app.books');
-
-        $mensaje = ""; 
-
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            if ($form->get('enviar')->isClicked()) {
-
-                $filecsv = $bman->guardaFileEnDirectorio($form['archivocsv']->getData(), 
-                            $this->getParameter('directorio_uploads')."/archivoscsv");
-
-
-                $session = $request->getSession();
-
-                $session->set('filename', $filecsv['name']);
-
-
-
-                return $this->redirectToRoute('booksubir');
-            }
-          
-
-                // TAREAS: 
-                // - Crear nuevo servicio Abebooks para interactuar con su web
-                // - Utilizar función subirAbebooks para subir los libros, en BookManager
-                // - Crear los Assets de Validación en la entity Libro
-                // - Crear un nuevo array de errores en ArrayLibros
-                // - Adaptar toda la lectura de datos al nuevo array de errores. 
-
-              
-            
-        } else {
-
-            return $this->render('LibuBundle:libu:leearchivo.html.twig', array(
-                'mensaje' => $mensaje,
-                'titulo' => "Libro",
-                'form' => $form->createView(),
-            ));
-        }
-    }
 
 
     /**
@@ -209,7 +124,7 @@ class BookController extends Controller
 
         }
 
-        return $this->render('LibuBundle:libu:form.html.twig', array(
+        return $this->render('LibuBundle:form:form.html.twig', array(
             'form' => $form->createView(), 
             'titulo' => "Cambiar balda y Estantería",             
             )); 
@@ -402,49 +317,6 @@ class BookController extends Controller
 
 
     /**
-     * @Route("/book/lista", name="booklista")
-     */
-    public function bookLista(Request $request)  {
-
-//        $jump = 2; 
-
-        $em = $this->getDoctrine()->getManager();
-
-        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGIL");       
-
-        if (empty($librosp)) {
-            return $this->render('LibuBundle:book:precios.html.twig', array(
-                'titulo' => "Lista",      
-                'texto_previo' => "No hay libros en la lista",    
-                'boton_final' => "Volver a formulario",
-                'path_boton_final' => "bookagil",
-                )); 
-        }
-
-        $form = $this->createForm(BookPrecioType::class, array());      
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-                if ($form->get('aceptar')->isClicked()) 
-                {
-                    return $this->redirectToRoute('bookagil');  
-                }
-        }
-
-        return $this->render('LibuBundle:book:precios.html.twig', array(
-            'titulo' => "Lista",   
-            'boton_final' => "Volver a formulario",
-            'path_boton_final' => "bookagil",
-            'tabla' => $librosp,    
-            'cabecera' => array('Código','Isbn', 'Tapas', 'Conservación', 'Descripción', 'Notas', 'Estantería', 'Balda'),   
-        	'accion' => 'lista', 
-            )); 
-    }
-
-
-    /**
      * @Route("/book/enviajson", name="bookenviajson")
      */
     public function bookEnviaJsonAction(Request $request)  {
@@ -514,7 +386,7 @@ class BookController extends Controller
 
                 $bman->persisteArrayLibros($libroobj, "AGILP", true);
                 
-                return $this->render('LibuBundle:libu:form.html.twig', array(
+                return $this->render('LibuBundle:form:form.html.twig', array(
                     'mensaje' => "Se han guardado correctamente los archivos",
                     'titulo' => "Leído archivo json",
                 ));        
@@ -530,217 +402,6 @@ class BookController extends Controller
         ));        
 
 
-    }
-
-
-
-
-
-    /**
-     * @Route("/book/lista", name="booklista")
-
-    public function bookListaAction(Request $request)  {
-
-        $bman = $this->get('app.books');
-
-        $text = "<h1>Libros encontrados:</h1>"; 
-        $lista = array();
-        $i = 0;
-        echo "Filename: ". $bman->getFilename(); 
-
-        return new response("yata");
-        foreach ($this->array_file as $book) {
-            $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
-            if ($isbn != "") {
-                $lista[$i][] = $i;
-                $choices[] = $i;
-                foreach ($book as $col) {
-                    $lista[$i] = $book;
-                }                
-            } else {      
-                if ($i != 0);   
-            }
-            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
-            $arrayprecios = $this->buscaIsbn($book[0]);
-            if ($arrayprecios) {
-                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
-            } else {
-                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
-            }
-        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
-            $i++; 
-        }
-
-        return $this->render('LibuBundle:libu:books.html.twig', array(
- //           'lista' => $lista,
-            'texto_previo' => $text,
-            'lista' => $html_text,
-            'choices' => $choices,
- //           'form' => $form->createView(),
-
-        ));        
-
-    }
-     */
-
-
-    /**
-     * @Route("/book/subir", name="booksubir")
-     */
-    public function booksubirAction(Request $request)  {
-        // Lee el archivo de excel en formato csv guardado en /home/libu/ y lo convierte en un array
-
-        $bman = $this->get('app.books');
-
-        $form = $this->createFormBuilder()
- /*           ->add('choice1', ChoiceType::class, array(
-                'choices' => $choices,
-                'label' => " ", 
-                'multiple' => true,
-                'expanded' => true, 
-                ))                          */
-            ->add('subir', SubmitType::class, array('label' => 'Subir estos libros'))
-            ->add('stop', SubmitType::class, array('label' => 'No subir'))            
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            if ($form->get('subir')->isClicked()) {
-
-                // $datos = $form->getData();
-                // echo "<pre>"; print_r($datos); echo "</pre>";
-
-                $librosasubir = $bman->findLibrosEstatus("PROV");
-
-                foreach($librosasubir as $book) {
-
-                    // echo "BOOK: ".$book."<br>";
-
-                    // echo "<pre>"; print_r($csv); echo "</pre>"; 
-
-
-
-
-                    $librosisbn = $this->buscaIsbn($book->getIsbn());
-
-                    $datosisbn = $librosisbn[0];
-
-                    $book->setTitulo($datosisbn['titulo']);
-                    $book->setAutor($datosisbn['autor']);
-                    $book->setEditorial($datosisbn['editorial']);
-
-
-                    $bman->persisteLibro($book, "SUB"); 
-
-//                 $subido = $this->AbebookAdd($book);
-
-                 dump($book); die();
-
-/*
-
-     
-                    $libro = new Libro(); 
-                    $libro->setCodigo($csv[$book][3]);
-                    $libro->setAutor($csv[$book][2]);
-                    $libro->setTitulo($csv[$book][1]);
-                    $libro->setIsbn($csv[$book][0]);                
-
-                    // Subimos todos los datos a la base de datos
-                    try {
-                            $em->persist($book);
-                            $em->flush();
-                        }
-                    catch(\Doctrine\ORM\ORMException $e) {
-                        $this->addFlash('error', 'Error al guardar los datos en BookController::BookSubirAction');
-                    }
-
-
-                                */
-                }
-
-                // Adjunta el archivo xml
-                // $cfile = file_get_contents('/home/borja/peticion.xml');
-                // $data = array('peticion' => $cfile);
-        /*
-                // Orden de conocer el pedido 132857690
-                $cfile = '
-                <?xml version="1.0" encoding="ISO-8859-1"?>
-                <orderUpdateRequest version="1.0">
-                    <action name="getOrder">
-                        <username>'.$csv[1][0].'</username>
-                        <password>'.$csv[1][1].'</password>
-                    </action>
-                    <purchaseOrder id="132857690" />
-                </orderUpdateRequest>
-                ';
-        */
-            }
-
-            if ($form->get('stop')->isClicked()) {
-
-            }
-
-            return new Response ("Volver a venta");
-        }
-
-        $session = $request->getSession();
-        $filename = $session->get('filename');
-
-        $dirfile = $this->getParameter('directorio_uploads')."/archivoscsv/".$filename;
-
-        $arrayfile = $bman->creaArrayDesdeCsv(file($dirfile));  
-
-        $arrayLibros = $bman->creaArraylibrosValidado($arrayfile);     
-
-                  
-        // Guarda los libros en la base de datos con estatus provisional
-        if ($arrayLibros['ceroerr']) $bman->persisteArrayLibros($arrayLibros['arraylibros'], "PROV");   
-
-        // Renderiza la tabla con los libros de arrayLibros
-        return $this->render('LibuBundle:libu:books.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Lista de libros subidos',
-            'cabecera' => array('Isbn', 'Código', 'Título', 'Autor', 'Precio'),
-            'lista' => $arrayLibros,
-            ));
-
-
-	}
-
-
-    public function buscaPrecios($arraylibros) {
-
-        // echo "<pre>"; print_r($csv); echo "</pre>";
-
-        // Abrimos un gestionador de repositorio para toda la función
-        $em = $this->getDoctrine()->getManager();
-
-        $text = "<h1>Libros encontrados:</h1>"; 
-        $lista = array();
-        $i = 0;
-        foreach ($arraylibros as $book) {
-            $isbn = filter_var($book[0], FILTER_SANITIZE_NUMBER_INT); 
-            if ($isbn != "") {
-                $lista[$i][] = $i;
-                $choices[] = $i;
-                foreach ($book as $col) {
-                    $lista[$i] = $book;
-                }                
-            } else {      
-                if ($i != 0);   
-            }
-            $html_text[$i] = implode(array_slice($book, 0, 4), '<br>')."<br>";
-            $arrayprecios = $this->buscaIsbn($book[0]);
-            if ($arrayprecios) {
-                $html_text[$i] .= implode(array_slice($arrayprecios, 0, 5), '<br>').'<br>';
-            } else {
-                $html_text[$i] .= "<b>No se han encontrado ejemplares en Iberlibro</b>";
-            }
-        // echo "<pre>"; print_r($arrayprecios); echo "</pre><br>";
-            $i++; 
-        }
     }
 
 
@@ -847,7 +508,6 @@ class BookController extends Controller
                 $idpedidobuyer = $pedido->buyerPurchaseOrder['id'];
 //                $texto .= "<br>idpedidobuyer: ". $idpedidobuyer; 
 
-dump($pedido); 
                 $orderitem = $pedido->purchaseOrderItemList->children();
 
                 $numlibrospedido = $orderitem->count(); 

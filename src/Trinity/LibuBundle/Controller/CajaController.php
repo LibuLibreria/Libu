@@ -109,10 +109,11 @@ class CajaController extends Controller
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
         }
 
-        return $this->render('LibuBundle:libu:caja.html.twig',array(
+        return $this->render('LibuBundle:tabla/caja:caja.html.twig',array(
             'form' => $form->createView(),
             'ventasdia' => $ventas,
             'fecha' => $fecha,
+            'cabecera' => array('Hora','Ingreso','Libros','Productos','Cliente','Lista prods'),
             ));    
     }
 
@@ -178,11 +179,12 @@ class CajaController extends Controller
 
        $fechatit = " ".$this->mesescast[$fecha->format('n')]." ".$fecha->format('Y');
 
-        return $this->render('LibuBundle:libu:cajamensual.html.twig',array(
+        return $this->render('LibuBundle:tabla/caja:cajamensual.html.twig',array(
             'form' => $form->createView(),
             'ventasdia' => $ventas,
             'fecha' => $fechatit,
-            'mesescast' => $this->mesescast,                
+            'mesescast' => $this->mesescast,
+            'cabecera' => array('Día','Ingreso','Libros','Productos'),          
             ));    
     }
 
@@ -252,62 +254,13 @@ class CajaController extends Controller
 
        $fechatit = " ".$this->mesescast[$fecha->format('n')]." ".$fecha->format('Y');
 
-        return $this->render('LibuBundle:libu:proveedor.html.twig',array(
+        return $this->render('LibuBundle:tabla/caja:cajaproveedor.html.twig',array(
             'form' => $form->createView(),
             'proveedor' => $proveedor,
             'ventasmes' => $ventas,
             'fecha' => $fechatit,
-            'mesescast' => $this->mesescast,                
-            ));    
-    }
-
-
-
-    /**
-     * @Route("/libu/gasto", name="gasto")
-     */
-    public function gastoAction(Request $request)
-    {
-/*        $ultid = $request->get('ultid');
-        $em = $this->getDoctrine()->getManager();        
-        $libro = $em->getRepository('LibuBundle:Venta')->findOneByIdLibro($ultid);
-*/
-
- //       $libro = new Libro();
-
-        $gasto = new Venta();
-        $form = $this->createForm(GastoType::class, $gasto);
-
-        // Actualiza el día y la hora en el formulario
-        $fecha = new \Datetime();        
-        $form->get('diahora')->setData($fecha);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('save')->isClicked()) {
-                $em = $this->getDoctrine()->getManager();
-
-                // Recogemos los datos del formulario
-                $gasto = $form->getData();
-                $nuevodate = $gasto->getDiahora()->setTime(date('H'), date('i'));
-                $gasto->setDiahora($nuevodate);  // Añadimos hora actual
-                $gasto->setTipomovim("gto");
-
-                try {
-                    $em->persist($gasto);
-                    $em->flush();
-                } catch (Exception $e) {
-                     $this->get('session')->setFlash('flash_key',"No se ha guardado: " . $e->getMessage());
-                }
-            }
-                  
-            return $this->redirectToRoute('venta');
-        }
-
-        return $this->render('LibuBundle:libu:form.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Gasto',
+            'mesescast' => $this->mesescast,
+            'cabecera' => array('Factura','Día','Producto','Cantidad','Precio','Ingreso'),         
             ));    
     }
 
