@@ -27,63 +27,6 @@ use Symfony\Component\CssSelector\CssSelectorConverter;
 class BookController extends Controller
 {
 
-    protected $array_file; 
-
-    /**
-     * @Route("/book/csv", name="bookcsv")
-     */
-    public function booksubirCsvAction(Request $request)  {
-        $form = $this->createFormBuilder()
-            ->add('archivocsv', FileType::class, array(
-                "label" => "Archivo csv:",
-            ))
-            ->add('enviar', SubmitType::class, array('label' => 'Enviar'))            
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        $bman = $this->get('app.books');
-
-        $mensaje = ""; 
-
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            if ($form->get('enviar')->isClicked()) {
-
-                $filecsv = $bman->guardaFileEnDirectorio($form['archivocsv']->getData(), 
-                            $this->getParameter('directorio_uploads')."/archivoscsv");
-
-
-                $session = $request->getSession();
-
-                $session->set('filename', $filecsv['name']);
-
-
-
-                return $this->redirectToRoute('booksubir');
-            }
-          
-
-                // TAREAS: 
-                // - Crear nuevo servicio Abebooks para interactuar con su web
-                // - Utilizar función subirAbebooks para subir los libros, en BookManager
-                // - Crear los Assets de Validación en la entity Libro
-                // - Crear un nuevo array de errores en ArrayLibros
-                // - Adaptar toda la lectura de datos al nuevo array de errores. 
-
-              
-            
-        } else {
-
-            return $this->render('LibuBundle:libu:leearchivo.html.twig', array(
-                'mensaje' => $mensaje,
-                'titulo' => "Libro",
-                'form' => $form->createView(),
-            ));
-        }
-    }
-
 
     /**
      * @Route("/book/agil", name="bookagil")
@@ -565,7 +508,6 @@ class BookController extends Controller
                 $idpedidobuyer = $pedido->buyerPurchaseOrder['id'];
 //                $texto .= "<br>idpedidobuyer: ". $idpedidobuyer; 
 
-dump($pedido); 
                 $orderitem = $pedido->purchaseOrderItemList->children();
 
                 $numlibrospedido = $orderitem->count(); 
