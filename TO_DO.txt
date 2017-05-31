@@ -9,6 +9,18 @@ TO DO
 - Crear tabla para guardar precios, con fecha, registro de cambios, etc. 
 
 
+CAMBIOS BASE DE DATOS 
+
+- Añadir 'cod_abebooks' para escribir el código que hemos puesto en abebooks. 
+Hasta el número 368 están en 'notas'. 
+
+- Ampliar el tamaño de título y autor
+
+- Poner descripción a tipo blob
+
+- 
+
+
 
 LISTA DE PLANTILLAS: 
 
