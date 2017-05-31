@@ -60,7 +60,24 @@ class BookManager implements ContainerAwareInterface  {
 
         $this->numaletra = array_combine(range(1,26), range('A', 'Z'));
         $this->letraanum = array_flip($this->numaletra); 
-
+        $this->valores_tapas = array(
+            1 => "Tapa blanda",
+            2 => "Tapa dura",
+        );
+        $this->valores_tapas_ing = array(
+            1 => "soft",
+            2 => "hard",
+        );
+        $this->valores_conservacion = array(
+            1 => 'Nuevo',                        
+            2 => 'Como nuevo',
+            3 => 'Excelente', 
+            4 => 'Muy bien', 
+            5 => 'Bien',
+            6 => 'Aceptable',
+            7 => 'Regular',
+            8 => 'Mal estado',            
+        );    
     }
 
 
@@ -256,11 +273,11 @@ class BookManager implements ContainerAwareInterface  {
             if ($key == "precio"){
             	$nuevo_book[$key] = $this->validaPrecios($col)['result'];
             } 
-
+/*
             if ($key == "tapas") $nuevo_book[$key] = $this->validaTapas($col);
 
             if ($key == "conservacion") $nuevo_book[$key] = $this->validaConservacion($col);
-
+*/
 
             if ($key == "codigo") {
                 if (!is_int((int) $col)) {
@@ -287,7 +304,7 @@ class BookManager implements ContainerAwareInterface  {
         }
     }
 
-
+/*
     public function validaTapas($col) {
         if (!is_int($col)) {
             $num = array_search($col, $this->valores_tapas);
@@ -306,7 +323,7 @@ class BookManager implements ContainerAwareInterface  {
         	return $col; 
         }
     }
-
+*/
     public function validaEditorial($col) {
     	$longEditorial = 30;
     	if (strlen($col) > $longEditorial) $col = substr($col, 0, $longEditorial); 
@@ -406,7 +423,7 @@ class BookManager implements ContainerAwareInterface  {
         }
 
         $libro->setEstatus($estatus);
-
+//dump($libro); die(); 
         try {
             $em->persist($libro);
             $em->flush();
@@ -480,7 +497,7 @@ class BookManager implements ContainerAwareInterface  {
 
 
 
-    private function AbebookAdd($book) {
+    public function AbebooksAdd($book) {
 
         // Crear un nuevo recurso cURL
         $ch = curl_init();
@@ -498,24 +515,24 @@ class BookManager implements ContainerAwareInterface  {
             <AbebookList>
                 <Abebook>
                     <transactionType>add</transactionType>
-                    <vendorBookID>LIB'.$book->getCodigo().'</vendorBookID>
-                    <author>'.$book->getAutor().'</author>
-                    <title>'.$book->getTitulo().'</title>
-                    <publisher>'.$book->getEditorial().'</publisher>
+                    <vendorBookID>L'.$book->getCodigo().'</vendorBookID>
+                    <author>'.$this->changeCharset($book->getAutor()).'</author>
+                    <title>'.$this->changeCharset($book->getTitulo()).'</title>
+                    <publisher>'.$this->changeCharset($book->getEditorial()).'</publisher>
                     <subject></subject>
                     <price currency="EUR">'.$book->getPrecio().'</price>
                     <dustJacket></dustJacket>
-                    <binding type="'.$valores_tapas_ing($book->getTapas()).'">
-                            '.$valores_tapas($book->getTapas()).'</binding>
-                    <firstEdition>false</firstEdition>
+                    <binding type="'.$this->valores_tapas_ing[$book->getTapas()->getCodigo()].'">
+                            '.$this->valores_tapas[$book->getTapas()->getCodigo()].'</binding>
+                    <firstEdition></firstEdition>
                     <signed>false</signed>
                     <booksellerCatalogue></booksellerCatalogue>
                     <description></description>
-                    <bookCondition>'.$valores_conservacion($book->getConservacion()).'</bookCondition>
+                    <bookCondition>'.$this->valores_conservacion[$book->getConservacion()->getCodigo()].'</bookCondition>
                     <size></size>
-                    <jacketCondition>Fine</jacketCondition>
+                    <jacketCondition></jacketCondition>
                     <bookType></bookType>
-                    <isbn>'.$book->getIsbn().'</isbn>
+                    <isbn>'.$this->changeCharset($book->getIsbn()).'</isbn>
                     <publishPlace></publishPlace>
                     <publishYear></publishYear>
                     <edition></edition>
@@ -530,7 +547,7 @@ class BookManager implements ContainerAwareInterface  {
         // Establecer URL y otras opciones apropiadas
         // curl_setopt($ch, CURLOPT_URL, "https://orderupdate.abebooks.com:10003");
         curl_setopt($ch, CURLOPT_URL, "https://inventoryupdate.abebooks.com:10027");        
-        curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml");
+        curl_setopt($ch, CURLOPT_HEADER, "Content-Type: application/xml, charset='ISO-8859-1' ");
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $cfile);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
@@ -549,14 +566,20 @@ class BookManager implements ContainerAwareInterface  {
                 $subido['mess'] = $mens_abebooks->AbebookList->Abebook->message;
                 $subido['code'] = $mens_abebooks->AbebookList->Abebook->code;
                 $subido['bookId'] = $mens_abebooks->AbebookList->Abebook->vendorBookID;
-//                       echo $ok_bookId." añadido a Abebooks.<br>";
+//                echo "Libro ".$book->getCodigo()." añadido a Abebooks.<br>";
             }
 
 
-        // echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
+//         echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
         return $subido; 
     }
             
+
+
+    private function changeCharset($string){
+        $newstring = iconv("UTF-8", "ISO-8859-1//TRANSLIT//IGNORE", $string);
+        return $newstring;
+    }
 
 
     public function saluda() {

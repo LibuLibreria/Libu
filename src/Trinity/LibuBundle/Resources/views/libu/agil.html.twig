@@ -4,6 +4,8 @@
 
 {% block body %}
 
+
+<!--
 <script type="text/javascript">
 
 var eventoControlado = false;
@@ -19,27 +21,54 @@ function mostrarInformacionCaracter(evObject) {
                 var msgest = libro_corto_conservacion.getAttribute( "value");
                 var elCaracter = String.fromCharCode(evObject.which);
 
+
                 if (evObject.which!=0 && evObject.which!=13) {
 
                         if (elCaracter == 'b') msgtapa = 'Tapa blanda';
 
                         if (elCaracter == 'd') msgtapa = 'Tapa dura'; 
 
-                        if (elCaracter == 'q') msgest = 'Nuevo';                        
+                        if (elCaracter == 'q') {
+                            msgest = 'Nuevo';  
+                            libro_corto_isbn.focus(); 
+                            }                      
 
-                        if (elCaracter == 'w') msgest = 'Como nuevo';
+                        if (elCaracter == 'w') {
+                            msgest = 'Como nuevo';
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'e') msgest = 'Excelente'; 
+                        if (elCaracter == 'e') {
+                            msgest = 'Excelente'; 
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'r') msgest = 'Muy Bien'; 
+                        if (elCaracter == 'r') {
+                            msgest = 'Muy Bien'; 
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 't') msgest = 'Bien';
+                        if (elCaracter == 't') {
+                            msgest = 'Bien';
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'y') msgest = 'Aceptable';
+                        if (elCaracter == 'y') {
+                            msgest = 'Aceptable';
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'u') msgest = 'Regular';
+                        if (elCaracter == 'u') {
+                            msgest = 'Regular';
+                            libro_corto_isbn.focus(); 
+                            }                             
 
-                        if (elCaracter == 'i') msgest = 'Pobre';                                                               
+                        if (elCaracter == 'i') {
+                            msgest = 'Pobre';  
+                            libro_corto_isbn.focus(); 
+                            }                             
+
+
 
                         libro_corto_tapas.setAttribute( "value", msgtapa ); 
                         libro_corto_conservacion.setAttribute( "value", msgest ); 
@@ -54,8 +83,20 @@ function mostrarInformacionCaracter(evObject) {
 }
 
 
+</script>
+-->
+
+
+<script type="text/javascript">
+
+    function autofocusIsbn() {
+        libro_corto_isbn.focus(); 
+    }
 
 </script>
+
+
+
 
 <div class="book-wrapper" >
 
@@ -72,29 +113,49 @@ function mostrarInformacionCaracter(evObject) {
 
             <div class="col-md-6">
 
-                {{ form_row(form.codigo) }} 
+                <div class="col-md-6">
 
-                {{ form_row(form.tapas) }}    
+                    {{ form_row(form.codigo) }} 
 
+                    <div  onclick="autofocusIsbn()">
+                        {{ form_row(form.tapas) }}   
+                    </div>
 
-                {{ form_row(form.conservacion) }}                         
+                </div>
+
+                <div class="col-md-6" onclick="autofocusIsbn()">
+
+                    {{ form_row(form.conservacion) }}  
+
+                </div>
 
                 {{ form_row(form.isbn) }}
+
+                {{ form_row(form.descripcion) }}                
 
                 {{ form_row(form.subiragil) }}  
 
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-6">
              
                 {{ form_row(form.estanteria) }}    
 
                 {{ form_row(form.balda) }}                
+
+                {{ form_row(form.notas) }}   
         
                 {{ form_end(form) }}
 
+            </div>
+
+            <div class="col-md-3">
                 <div class="botones_agil">
                 <a  href= "{{ path('bookbaldaestant')}}">Cambiar balda y estantería</a><br>   
+                </div>
+
+                <div class="botones_agil">
+                <a  href= "{{ path('booklista')}}">Lista de rellenados</a><br>   
                 </div>
 
                 <div class="botones_agil">

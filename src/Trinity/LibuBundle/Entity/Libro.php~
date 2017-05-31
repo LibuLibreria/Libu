@@ -148,6 +148,12 @@ class Libro
      */
     private $idVenta;
 
+    /**
+     * @var string
+     */
+    private $descripcion;
+
+
 
     public function __construct(array $valores = array()) {
         if (isset($valores['codigo'])) $this->setCodigo($valores['codigo']);
@@ -563,5 +569,29 @@ class Libro
     public function getAbebooks()
     {
         return $this->abebooks;
+    }
+
+    /**
+     * Set descripcion
+     *
+     * @param string $descripcion
+     *
+     * @return Libro
+     */
+    public function setDescripcion($descripcion)
+    {
+        $this->descripcion = $descripcion;
+
+        return $this;
+    }
+
+    /**
+     * Get descripcion
+     *
+     * @return string
+     */
+    public function getDescripcion()
+    {
+        return $this->descripcion;
     }
 }

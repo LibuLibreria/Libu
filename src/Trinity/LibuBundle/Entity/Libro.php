@@ -594,4 +594,33 @@ class Libro
     {
         return $this->descripcion;
     }
+    /**
+     * @var \Trinity\LibuBundle\Entity\Tipolibro
+     */
+    private $tipolibro;
+
+
+    /**
+     * Set tipolibro
+     *
+     * @param \Trinity\LibuBundle\Entity\Tipolibro $tipolibro
+     *
+     * @return Libro
+     */
+    public function setTipolibro(\Trinity\LibuBundle\Entity\Tipolibro $tipolibro = null)
+    {
+        $this->tipolibro = $tipolibro;
+
+        return $this;
+    }
+
+    /**
+     * Get tipolibro
+     *
+     * @return \Trinity\LibuBundle\Entity\Tipolibro
+     */
+    public function getTipolibro()
+    {
+        return $this->tipolibro;
+    }
 }

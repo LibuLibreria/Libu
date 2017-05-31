@@ -172,10 +172,29 @@ class LibuController extends Controller
             }  
 
             // Botón Gasto
-            if ($form->get('gasto')->isClicked()) {
-                echo "gasto";
-                return $this->redirectToRoute('gasto');   
-            }  
+            if ($form->get('gasto_boton')->isClicked()) {
+
+                // Recogemos los datos del formulario
+                $gasto = $form->getData();
+
+                $venta->setDiahora($gasto['diahora']->setTime(date('H'), date('i')));  // Añadimos hora actual
+                $venta->setResponsable($gasto['responsable']);
+                $venta->setConcepto($gasto['gasto_concepto']);
+                $venta->setDescripcion($gasto['gasto_descripcion']);                
+                $venta->setTipomovim('gto');
+                $venta->setGasto($gasto['gasto_cantidad']);
+
+                try {
+                    $em->persist($venta);
+                    $em->flush();
+                } catch (Exception $e) {
+                     $this->get('session')->setFlash('flash_key',"No se ha guardado: " . $e->getMessage());
+                }
+                return $this->redirectToRoute('venta');
+
+            }
+                  
+
 
             // Botón Admin
             if ($form->get('admin')->isClicked()) {
@@ -184,7 +203,7 @@ class LibuController extends Controller
             }  
 		}
 
-		return $this->render('LibuBundle:libu:inicio.html.twig', array(
+		return $this->render('LibuBundle:libu:venta.html.twig', array(
 			'form' => $form->createView(),
             'prodguztiak' => $product_activo,
 			));    
@@ -318,139 +337,6 @@ class LibuController extends Controller
 
 
     /**
-     * @Route("/libu/subir", name="subir")
-     */
-    public function subirAction(Request $request)
-    {
-        $libro = new Libro();
-        $form = $this->createForm(LibroCortoType::class, $libro);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($libro);
-            $em->flush();
-            // Recuperamos el Identificador de Libro
-           $ultid = $libro->getIdLibro();           
-            return $this->redirectToRoute('balda', array('ultid' => $ultid));
-        }
-
-        return $this->render('LibuBundle:libu:form.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Nuevo libro',
-            ));    
-    }
-
-
-
-
-    /**
-     * @Route("/libu/balda", name="balda")
-     */
-    public function baldaAction(Request $request)
-    {
-        $ultid = $request->get('ultid');
-        $em = $this->getDoctrine()->getManager();        
-        $libro = $em->getRepository('LibuBundle:Libro')->findOneByIdLibro($ultid);
-
- //       $libro = new Libro();
-        $form = $this->createForm(BaldaType::class, $libro);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($libro);
-            $em->flush();
-            // Recuperamos el Identificador de Libro
-           $ultid = $libro->getIdLibro();           
-            return $this->redirectToRoute('subir');
-        }
-
-        return $this->render('LibuBundle:libu:form.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Libro con identificador '.$ultid,
-            ));    
-    }
-
-
-
-
-    /**
-     * @Route("/libu/libro", name="libro")
-     */
-    public function libroAction(Request $request)
-    {
-        $libro = new Libro();
-        $form = $this->createForm(LibroType::class, $libro);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($libro);
-            $em->flush();
-            return $this->redirectToRoute('libro');
-        }
-
-        return $this->render('LibuBundle:libu:form.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Nuevo libro',
-            ));    
-    }
-
-
-    /**
-     * @Route("/libu/producto", name="producto")
-     */
-    public function productoAction(Request $request)
-    {
-        $producto = new Producto();
-        $form = $this->createForm(ProductoType::class, $producto);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($producto);
-            $em->flush();
-            return $this->redirectToRoute('venta');
-        }
-
-        return $this->render('LibuBundle:libu:form.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Nuevo producto',
-            ));    
-    }
-
-
-    /**
-     * @Route("/libu/tipo", name="tipo")
-     */
-    public function tipoAction(Request $request)
-    {
-        $tipo = new Tipo();
-        $form = $this->createForm(TipoType::class, $tipo);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($tipo);
-            $em->flush();
-            return $this->redirectToRoute('venta');
-        }
-
-        return $this->render('LibuBundle:libu:form.html.twig', array(
-            'form' => $form->createView(),
-            'titulo' => 'Nuevo tipo de producto',
-            ));    
-    }
-
-
-
-    /**
      * @Route("/libu/ticket", name="ticket")
      */
     public function ticketAction(Request $request)
@@ -479,33 +365,6 @@ class LibuController extends Controller
 /*
         return new Response ($html); */
     }
-
-
-    /**
-     * @Route("/libu/menu", name="menu")
-     */
-    public function menuAction(Request $request)
-    {
-        $venta = 207;
-        echo "Resultados de productos vendidos para Venta: ".$venta;
-        $em = $this->getDoctrine()->getManager();
-        $total = $em->getRepository('LibuBundle:Venta')->getProductosVendidos($venta);    
-        dump($total);
-
-        $form = $this->createForm(MenuType::class, array());
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('venta')->isClicked()) return $this->redirectToRoute('venta');
-            if ($form->get('producto')->isClicked()) return $this->redirectToRoute('producto');
-            if ($form->get('libro')->isClicked()) return $this->redirectToRoute('libro');
-        }
-
-        return $this->render('LibuBundle:libu:simple.html.twig',array(
-            'form' => $form->createView(),
-            ));     
-    }
-
 
 
      /**

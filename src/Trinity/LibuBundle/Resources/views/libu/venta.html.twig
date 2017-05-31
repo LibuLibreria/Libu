@@ -1,0 +1,234 @@
+{% extends "LibuBundle::libu/base.html.twig" %}
+{# libu/Resources/views/libu/venta.html.twig #}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
+{% block body %}
+    {{ form_start(form) }}
+    <div class = 'col-izda col-sm-3 form-inline'> 
+        <br>
+        <div class="clearfix">
+
+            {% set botonfield = [ 
+                {'nombre': 'libros3', 'label':'Libros a 3 euros', 'precio': '3'}, 
+                {'nombre': 'libros1', 'label':'Libros a 1 euro', 'precio': '1' } 
+                ] %}
+            <div class="divimporte">
+                Importe: <span id="importe">0</span> euros
+            </div>
+
+            {% for botonf in botonfield %}
+                <div class="form_libro">
+                    <div class='img_boton'>
+                        <img src='{{ asset('bundles/libu/images/images/' ~ botonf.nombre ~ '.png') }}'  />
+                    </div>   
+                    <div class="labelinput">      
+                        <div class="label_venta">
+                            <label class="control-label" for="venta_libros3">{{ botonf.label }}: </label>        
+                        </div>
+                        <div class="input_botones">
+                            <div>
+                                <button type='button' class="btn btn-libu btn-primary qtyminus" 
+                                        value='{{ botonf.precio }}' field= '{{ botonf.nombre }}' />
+                                    <span class="glyphicon glyphicon-minus"></span>
+                                </button>  
+                                <input type="text" id="venta_{{ botonf.nombre }}" name="venta[{{ botonf.nombre }}]" 
+                                        style="width: 80px; height: 54px; font-size: 24px" class="form-control" value=0 />
+                                <button type='button' value='{{ botonf.precio }}'  class="btn btn-libu btn-primary qtyplus" 
+                                        field='{{ botonf.nombre }}' />
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            {% endfor %}
+                        
+            <div>
+                <div class = 'col-sm-6 label_venta'>
+                    {{ form_label(form.tematica) }}:
+                </div>
+                {{ form_errors(form.tematica) }}
+                {{ form_widget(form.tematica) }}
+            </div>
+
+            <br>
+
+            <div>
+                <div class = 'col-sm-6 label_venta'>                        
+                    {{ form_label(form.cliente) }}:
+                </div>
+                {{ form_errors(form.cliente) }}
+                {{ form_widget(form.cliente) }}
+            </div>
+
+            <br>
+
+            <div class='diahora'>
+                <div class='col-sm-6 label_venta'>
+                    {{ form_label(form.diahora) }}
+                </div>
+                {{ form_errors(form.diahora) }}
+                {{ form_widget(form.diahora)  }}
+            </div>  
+          
+            <br>
+
+            <div >
+                {{ form_widget(form.save, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}}) }}
+                                        
+            </div>
+        </div>
+    </div>
+
+    <div class = 'col-dcha col-sm-9 form-inline'> 
+        <br>   
+    <!-- 
+        <div class='boton1'>
+            <button class="boton-grande btn btn-primary" type="button" data-toggle="collapse" data-target="#col-productos" aria-expanded="true" aria-controls="col-productos">
+              Otros productos
+            </button>
+
+            <button type="submit" id="venta_gasto" name="venta[gasto]" value="gasto" class="boton-grande btn btn-primary" >
+              Gasto
+            </button>
+
+            <button type="submit" id="venta_admin" name="venta[admin]" value="admin" class="boton-grande btn btn-primary" >
+              Admin
+            </button>
+        </div>
+        <div id = 'col-productos' class = 'col-sm-12 form-inline collapse'>
+       <h4 class=""><i class="icon-plus-sign-alt"></i>Otros productos</h4>    -->
+
+
+        {% set numcolum = 3 %}
+        {% set columprod = 10 %}  
+        {% set tope = prodguztiak|length %} 
+        {% set numtabs = (tope / (numcolum * columprod)) | round(0,'ceil') %}  
+
+        <div class="panel with-nav-tabs panel-primary">
+            <div class="panel-heading">
+                    <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab_opciones" data-toggle="tab">Opciones</a></li>
+                        {% for tab in 1 .. numtabs %}
+                            <li ><a href="#tab_prod{{ tab }}" data-toggle="tab">Productos {{ tab }}</a></li>
+                        {% endfor %}    
+                            <li><a href="#tab_gasto" data-toggle="tab">Gasto</a></li>
+<!--                           <li class="dropdown">
+                                <a href="#" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#tab4primary" data-toggle="tab">Primary 4</a></li>
+                                    <li><a href="#tab5primary" data-toggle="tab">Primary 5</a></li>
+                                </ul>
+                            </li>   -->
+                    </ul>
+            </div>
+
+
+
+            <div class="panel-body">
+                <div class="tab-content">
+                    {% for t in 1 .. numtabs %}
+                        <div class="tab-pane fade" id="tab_prod{{ t }}">                
+
+                            {{ form_label(form.product) }}
+                            {{ form_errors(form.product) }}
+                            <div class=''>                
+
+                                <div class="form_producto">
+    
+                                    {% for i in 0..(numcolum - 1) %}
+                                        <div class='col-sm-4 col_producto'>
+
+                                            {% set colum = i + (numcolum * (t))  %}
+                                            {% set initkey = (i * columprod) + ( (t-1) * (columprod) * (numcolum) ) %}                                       
+                                            {% for key in ( initkey .. (initkey + columprod -1 ))  %}   
+                                                {% if key < tope %}
+                                                <div class="productitem"> 
+                                                    <div class="input_botones">
+                                                        <div>
+                                                            <span id='datos_{{ key }}' data-precio='{{ prodguztiak[key].precio }}'></span>
+                                                            <button type='button' value='{{ key }}'  class="btn btn-libu qtyprplus" field='{{ prodguztiak[key].codigo }}' data-key='{{ key }}'/>
+                                                                <label class="control-label required" for="venta_product_{{ key }}">{{ prodguztiak[key].codigo }}</label>
+                                                                - <span id='precio_{{ key }}'>{{ prodguztiak[key].precio }}</span> €
+                                                            </button>                                                        
+                                                            <input  id="venta_product_{{ key }}" name="venta[product][{{ key }}]" required="required" style="width: 40px" class="form-control" value="0" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endfor %}
+
+
+                    <div class="tab-pane fade" id="tab_gasto">  
+
+
+                            <div class='form-group '>
+
+                                    <div class = ''>                        
+                                        {{ form_label(form.gasto_concepto) }}
+                                    </div>
+                                    <div class = ''>                  
+                                        {{ form_errors(form.gasto_concepto) }}
+                                        {{ form_widget(form.gasto_concepto) }}
+                                    </div>
+
+                            </div>
+                            <hr>
+                            <div class='form-group '>
+
+                                    <div class = ''>                        
+                                        {{ form_label(form.gasto_descripcion) }}
+                                    </div>
+                                    <div class = ''>                  
+                                        {{ form_errors(form.gasto_descripcion) }}
+                                        {{ form_widget(form.gasto_descripcion) }}
+                                        <span class="help-block">Max. 40 caracteres</span>
+                                    </div>
+
+                            </div>
+                            <hr>
+                            <div class='form-group '>
+
+                                    <div class = 'col-3'>                        
+                                        {{ form_label(form.gasto_cantidad) }}
+                                    </div>
+                                    <div class = 'col-9'>                  
+                                        {{ form_errors(form.gasto_cantidad) }}
+                                        {{ form_widget(form.gasto_cantidad) }}
+                                    </div>
+
+                            </div>
+                            <hr>
+
+              
+                        {{ form_widget(form.gasto_boton, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}}) }}
+
+
+                    </div>
+
+
+                    <div class="tab-pane fade in active" id="tab_opciones"> 
+                        <h2>Caja: </h2>   
+                        {{ form_widget(form.caja) }}     
+                        {{ form_widget(form.mensual) }}     
+                        {{ form_widget(form.proveedores) }}  
+                    </div>
+
+                    {{ form_row(form._token) }}
+                    {{ form_end(form, {'render_rest': false})}}
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

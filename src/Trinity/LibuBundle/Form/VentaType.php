@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+
 
 use Trinity\LibuBundle\Entity\Producto;
 
@@ -74,12 +76,24 @@ class VentaType extends AbstractType
             ->add('caja', SubmitType::class, array('label' => 'Caja de hoy'))  
             ->add('mensual', SubmitType::class, array('label' => 'Caja mensual.'))  
             ->add('proveedores', SubmitType::class, array('label' => 'Caja proveedores.'))  
-            ->add('gasto', SubmitType::class, array('label' => 'Gasto')) 
+            ->add('gasto_concepto', EntityType::class, array(
+                'class' => 'LibuBundle:Concepto',
+                'choice_label' => 'nombre',
+                'label' => 'Concepto: ',
+                'required' => false,           
+                ))
+            ->add('gasto_descripcion', TextType::class, array(
+                'label' => 'Descripción del gasto: ',
+                'required' => false,
+                ))
+            ->add('gasto_cantidad', MoneyType::class, array(
+                'label' => 'Cantidad',
+                'required' => false,
+                ))            
+            ->add('gasto_boton', SubmitType::class, array('label' => 'Gasto')) 
             ->add('admin', SubmitType::class, array('label' => 'Admin')) 
             ->getForm(); 
 
-        ;
-        ;
     }
     
     /**

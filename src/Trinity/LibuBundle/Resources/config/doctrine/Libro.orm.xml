@@ -3,6 +3,9 @@
   <entity name="Trinity\LibuBundle\Entity\Libro" table="libro"  repository-class="Trinity\LibuBundle\Repository\LibroRepository">
     <indexes>
       <index name="id_venta" columns="id_venta"/>
+      <index name="tipolibro" columns="tipolibro"/>
+      <index name="tapas" columns="tapas"/>
+      <index name="conservacion" columns="conservacion"/>                  
     </indexes>
     <id name="idLibro" type="integer" column="id_libro">
       <generator strategy="IDENTITY"/>
@@ -12,11 +15,7 @@
         <option name="fixed"/>
       </options>
     </field>
-    <field name="tipo" type="integer" column="tipo" nullable="true">
-      <options>
-        <option name="unsigned"/>
-      </options>
-    </field>
+
     <field name="titulo" type="string" column="titulo" length="40" nullable="true">
       <options>
         <option name="fixed"/>
@@ -43,27 +42,18 @@
       </options>
     </field>
     <field name="precio" type="float" column="precio" precision="6" scale="2" nullable="true"/>
-    <field name="tapas" type="integer" column="tapas" nullable="true">
-      <options>
-        <option name="unsigned"/>
-      </options>
-    </field>
-    <field name="conservacion" type="integer" column="conservacion" nullable="true">
-      <options>
-        <option name="unsigned"/>
-      </options>
-    </field>
-    <field name="notas" type="string" column="notas" length="40" nullable="true">
+
+    <field name="notas" type="string" column="notas" length="100" nullable="true">
       <options>
         <option name="fixed"/>
       </options>
     </field>
-    <field name="descripcion" type="string" column="descripcion" length="100" nullable="true">
+    <field name="descripcion" type="string" column="descripcion" length="500" nullable="true">
       <options>
         <option name="fixed"/>
       </options>
     </field>    
-    <field name="estanteria" type="integer" column="estanteria" nullable="true">
+    <field name="estanteria" type="string" column="estanteria" length="4" nullable="true">
       <options>
         <option name="unsigned"/>
       </options>
@@ -88,5 +78,20 @@
         <join-column name="id_venta" referenced-column-name="id"/>
       </join-columns>
     </many-to-one>
+    <many-to-one field="tipolibro" target-entity="Tipolibro" fetch="LAZY">
+      <join-columns>
+        <join-column name="tipolibro" referenced-column-name="id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="tapas" target-entity="Tapas" fetch="LAZY">
+      <join-columns>
+        <join-column name="tapas" referenced-column-name="id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="conservacion" target-entity="Conservacion" fetch="LAZY">
+      <join-columns>
+        <join-column name="conservacion" referenced-column-name="id"/>
+      </join-columns>
+    </many-to-one>    
   </entity>
 </doctrine-mapping>

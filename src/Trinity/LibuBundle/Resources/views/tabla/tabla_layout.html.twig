@@ -1,0 +1,21 @@
+{% extends "LibuBundle::libu/base.html.twig" %}
+
+{% block body %}
+
+    <div class = 'col-sm-12'>
+    	{% block titulo %}
+    	{% endblock %}
+
+    	{% block previo %}
+    	{% endblock %}
+
+    	{{ include('LibuBundle::tabla/_contenidotabla.html.twig')}}
+
+    	<div class = 'col-sm-4 row'>
+			{% block formulario %}
+	 
+	    	{% endblock %}		    
+	    </div>
+
+    </div>
+{% endblock %}
