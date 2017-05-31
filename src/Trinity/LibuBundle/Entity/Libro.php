@@ -623,4 +623,33 @@ class Libro
     {
         return $this->tipolibro;
     }
+    /**
+     * @var string
+     */
+    private $refabebooks;
+
+
+    /**
+     * Set refabebooks
+     *
+     * @param string $refabebooks
+     *
+     * @return Libro
+     */
+    public function setRefabebooks($refabebooks)
+    {
+        $this->refabebooks = $refabebooks;
+
+        return $this;
+    }
+
+    /**
+     * Get refabebooks
+     *
+     * @return string
+     */
+    public function getRefabebooks()
+    {
+        return $this->refabebooks;
+    }
 }
