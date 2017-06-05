@@ -315,6 +315,48 @@ class BookController extends Controller
 
 
 
+    /**
+     * @Route("/book/lista", name="booklista")
+     */
+    public function bookLista(Request $request)  {
+
+//        $jump = 2; 
+
+        $em = $this->getDoctrine()->getManager();
+
+        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGIL");       
+
+        if (empty($librosp)) {
+            return $this->render('LibuBundle:book:precios.html.twig', array(
+                'titulo' => "Lista",      
+                'texto_previo' => "No hay libros en la lista",    
+                'boton_final' => "Volver a formulario",
+                'path_boton_final' => "bookagil",
+                )); 
+        }
+
+        $form = $this->createForm(BookPrecioType::class, array());      
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+                if ($form->get('aceptar')->isClicked()) 
+                {
+                    return $this->redirectToRoute('bookagil');  
+                }
+        }
+
+        return $this->render('LibuBundle:book:precios.html.twig', array(
+            'titulo' => "Lista",   
+            'boton_final' => "Volver a formulario",
+            'path_boton_final' => "bookagil",
+            'tabla' => $librosp,    
+            'cabecera' => array('Código','Isbn', 'Tapas', 'Conservación', 'Descripción', 'Notas', 'Estantería', 'Balda'),   
+            'accion' => 'lista', 
+            )); 
+    }
+
 
     /**
      * @Route("/book/enviajson", name="bookenviajson")
