@@ -594,4 +594,62 @@ class Libro
     {
         return $this->descripcion;
     }
+    /**
+     * @var \Trinity\LibuBundle\Entity\Tipolibro
+     */
+    private $tipolibro;
+
+
+    /**
+     * Set tipolibro
+     *
+     * @param \Trinity\LibuBundle\Entity\Tipolibro $tipolibro
+     *
+     * @return Libro
+     */
+    public function setTipolibro(\Trinity\LibuBundle\Entity\Tipolibro $tipolibro = null)
+    {
+        $this->tipolibro = $tipolibro;
+
+        return $this;
+    }
+
+    /**
+     * Get tipolibro
+     *
+     * @return \Trinity\LibuBundle\Entity\Tipolibro
+     */
+    public function getTipolibro()
+    {
+        return $this->tipolibro;
+    }
+    /**
+     * @var string
+     */
+    private $refabebooks;
+
+
+    /**
+     * Set refabebooks
+     *
+     * @param string $refabebooks
+     *
+     * @return Libro
+     */
+    public function setRefabebooks($refabebooks)
+    {
+        $this->refabebooks = $refabebooks;
+
+        return $this;
+    }
+
+    /**
+     * Get refabebooks
+     *
+     * @return string
+     */
+    public function getRefabebooks()
+    {
+        return $this->refabebooks;
+    }
 }

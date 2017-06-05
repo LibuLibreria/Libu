@@ -16,7 +16,7 @@
       </options>
     </field>
 
-    <field name="titulo" type="string" column="titulo" length="40" nullable="true">
+    <field name="titulo" type="string" column="titulo" length="100" nullable="true">
       <options>
         <option name="fixed"/>
       </options>
@@ -26,7 +26,7 @@
         <option name="fixed"/>
       </options>
     </field>
-    <field name="autor" type="string" column="autor" length="40" nullable="true">
+    <field name="autor" type="string" column="autor" length="60" nullable="true">
       <options>
         <option name="fixed"/>
       </options>
@@ -43,7 +43,7 @@
     </field>
     <field name="precio" type="float" column="precio" precision="6" scale="2" nullable="true"/>
 
-    <field name="notas" type="string" column="notas" length="100" nullable="true">
+    <field name="notas" type="string" column="notas" length="200" nullable="true">
       <options>
         <option name="fixed"/>
       </options>
@@ -72,7 +72,12 @@
       <options>
         <option name="unsigned"/>
       </options>
-    </field>        
+    </field> 
+    <field name="refabebooks" type="string" column="refabebooks" length="15" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>           
     <many-to-one field="idVenta" target-entity="Venta" fetch="LAZY">
       <join-columns>
         <join-column name="id_venta" referenced-column-name="id"/>
