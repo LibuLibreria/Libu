@@ -196,12 +196,12 @@ class BookController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             $libro = $form->getData();
-// dump($form); die(); 
+
             if ( $accion == 'precio' ) {
 
                 if ($form->get('save')->isClicked()) {
 
- //                   $bman->AbebooksAdd($libro); 
+                    $bman->AbebooksAdd($libro); 
 
                 	$bman->persisteLibro($libro, "SUBID", true);
 
