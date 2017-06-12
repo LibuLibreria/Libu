@@ -201,7 +201,7 @@ class BookController extends Controller
 
                 if ($form->get('save')->isClicked()) {
 
-                    $nuevaref = 'L' + $codigo; 
+                    $nuevaref = 'L'.$libro->getCodigo(); 
                     $bman->AbebooksAdd($libro, $nuevaref); 
 
                     $libro->setRefabebooks($nuevaref); 
