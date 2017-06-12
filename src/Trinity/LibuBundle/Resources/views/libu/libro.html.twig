@@ -123,6 +123,10 @@
 
 			{% if accion == 'precio' %}
 
+				{% if boton_descartar is defined %}
+					{{ form_widget(form.descartar) }}
+				{% endif %}
+
 	              {% for busqueda in busquedas %}   
 
 	              <legend>{{ busqueda.definicion }}.</legend>

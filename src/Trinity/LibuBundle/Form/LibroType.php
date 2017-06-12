@@ -50,6 +50,7 @@ class LibroType extends AbstractType
  //           ->add('tipo')            
  //           ->add('idVenta')
             ->add('save', SubmitType::class, array('label' => 'Guardar'))  
+            ->add('descartar', SubmitType::class, array('label' => 'Descartar'))  
             ->getForm();             
         ;
     }

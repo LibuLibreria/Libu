@@ -173,14 +173,19 @@ class BookController extends Controller
 	            $libro->setTitulo($bman->validaTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']));
 	            $libro->setEditorial($bman->validaEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']));
 //	            $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
-	        } else {
-//	            $libro->setPrecio(2.00);
+	        } else if ($busqueda['abe_int']['ofertas'] !== false) {
+                $libro->setAutor($bman->validaAutor($busqueda['abe_int']['ofertas']['datos'][0]['autor']));
+                $libro->setTitulo($bman->validaTitulo($busqueda['abe_int']['ofertas']['datos'][0]['titulo']));
+                $libro->setEditorial($bman->validaEditorial($busqueda['abe_int']['ofertas']['datos'][0]['editorial']));
+            } else {
+
             }
             $libro->setPrecio($this->ponerPrecio($busqueda));
 	       
 
             $arrayrender['busquedas'] = $busqueda;
             $arrayrender['cabecera'] = array('Librería','Editorial', 'Título', 'Autor', 'Precio');
+            $arrayrender['boton_descartar'] = true; 
 
         }
 
@@ -189,10 +194,12 @@ class BookController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('save')->isClicked()) {
-                $libro = $form->getData();
 
-                if ( $accion == 'precio' ) {
+            $libro = $form->getData();
+
+            if ( $accion == 'precio' ) {
+
+                if ($form->get('save')->isClicked()) {
 
                     $bman->AbebooksAdd($libro); 
 
@@ -202,12 +209,21 @@ class BookController extends Controller
                 	$session->set('reenviado', true); 
 
                 	return $this->redirectToRoute('bookprecio');
-            	} else {
+                }
+                if ($form->get('descartar')->isClicked()) {
+                    $bman->persisteLibro($libro, "DSCRT", true);                
+                }                    
+        	} else {
+
+                if ($form->get('save')->isClicked()) {
+
                     $bman->persisteLibro($libro, "AGIL", true);
 
             		return $this->redirectToRoute('booklista');
-            	}                    
-            }
+
+                }
+        	}                    
+
         }   
 
         $arrayrender['form'] = $form->createView();
@@ -538,6 +554,9 @@ class BookController extends Controller
 
 //                if ($numpedidos > 1) $pedidos = $pedidos->purchaseOrder;
 
+            $em = $this->getDoctrine()->getManager();
+
+
             $pedidos = $pedidos->purchaseOrder;
 
             foreach ($pedidos as $pedido) {
@@ -566,6 +585,13 @@ class BookController extends Controller
                     $texto .= "<br>Identificador del libro (vendorkey): ". $vendorkey; 
                     $texto .= "<br>Autor: ". $libropedido->book->author;
                     $texto .= "<br>Título: ". $libropedido->book->title;
+
+                    $librovendido = $em->getRepository('LibuBundle:Libro')->findOneByRefabebooks($vendorkey);
+                    $texto .= "<br>Estanteria: ".$librovendido->getEstanteria();
+                    $texto .= "<br>Balda: ".$librovendido->getBalda(); 
+                    $texto .= "<br>Precio: ".$librovendido->getPrecio();
+
+
                 }
                 $texto .= "<br>-----------------------------";
             }
