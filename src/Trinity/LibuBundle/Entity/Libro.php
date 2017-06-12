@@ -32,9 +32,9 @@ class Libro
      * @var string
      *
      * @ORM\Column(name="titulo", type="string", length=100, nullable=true)
-     * @Assert\Titulo(
-     *     type = "null",
-     *     message = "Máximo 100 caracteres."
+     * @Assert\Length(
+     *     max = 100,
+     *     maxMessage = "Máximo {{ limit }} caracteres."
      * )       
      */
     private $titulo;
@@ -54,6 +54,10 @@ class Libro
      * @var string
      *
      * @ORM\Column(name="autor", type="string", length=60, nullable=true)
+     * @Assert\Length(
+     *     max = 60,
+     *     maxMessage = "Máximo {{ limit }} caracteres."
+     * )       
      */
     private $autor;
 
@@ -61,10 +65,10 @@ class Libro
      * @var string
      *
      * @ORM\Column(name="editorial", type="string", length=30, nullable=true)
-     * @Assert\Autor(
-     *     type = "null",
-     *     message = "Máximo 30 caracteres."
-     * )      
+     * @Assert\Length(
+     *     max = 30,
+     *     maxMessage = "Máximo {{ limit }} caracteres."
+     * )       
      */
     private $editorial;
 

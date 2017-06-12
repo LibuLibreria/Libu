@@ -196,12 +196,12 @@ class BookController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             $libro = $form->getData();
-
+// dump($form); die(); 
             if ( $accion == 'precio' ) {
 
                 if ($form->get('save')->isClicked()) {
 
-                    $bman->AbebooksAdd($libro); 
+ //                   $bman->AbebooksAdd($libro); 
 
                 	$bman->persisteLibro($libro, "SUBID", true);
 
@@ -211,8 +211,18 @@ class BookController extends Controller
                 	return $this->redirectToRoute('bookprecio');
                 }
                 if ($form->get('descartar')->isClicked()) {
-                    $bman->persisteLibro($libro, "DSCRT", true);                
-                }                    
+                    $bman->persisteLibro($libro, "DSCRT", true); 
+
+                    $session = $request->getSession();
+                    $session->set('reenviado', true); 
+
+                    return $this->redirectToRoute('bookprecio');                                   
+                }        
+                if ($form->get('parar')->isClicked()) {
+                    $bman->persisteLibro($libro, "AGILP", true); 
+
+                    return $this->redirectToRoute('bookprecio');                                   
+                }                             
         	} else {
 
                 if ($form->get('save')->isClicked()) {

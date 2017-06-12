@@ -107,25 +107,27 @@
 				    		{{ form_widget(form.notas) }}
 			    		</div>
 			    	</div>				    	      
-				    <div class= 'row'>
-						<div class = 'col-md-1'>	           
-			            </div>
-			            <div class = 'col-md-2'> 				    	
-				    		{{ form_widget(form.save) }}
-			    		</div>
+				    <div class= 'row'>			    	
+				    	{{ form_widget(form.save) }}
 			    	</div>
 			    	
-					{{form_end(form)}}  
-			</fieldset>
 
-			<hr>
-			<p>&nbsp;</p>
+
+
 
 			{% if accion == 'precio' %}
 
 				{% if boton_descartar is defined %}
-					{{ form_widget(form.descartar) }}
+				    <div class= 'row'>	
+						{{ form_widget(form.descartar) }}
+					</div>
+				    <div class= 'row'>	
+						{{ form_widget(form.parar) }}
+					</div>					
 				{% endif %}
+
+				<hr>
+				<p>&nbsp;</p>
 
 	              {% for busqueda in busquedas %}   
 
@@ -167,6 +169,11 @@
 	              {% endfor %}  
 
           	{% endif %}
+
+			{{form_end(form)}} 
+
+
+			</fieldset>          	
 		</div>
 
 {% endblock %}
