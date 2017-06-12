@@ -73,7 +73,7 @@
         <option name="unsigned"/>
       </options>
     </field> 
-    <field name="refabebooks" type="string" column="refabebooks" length="15" nullable="true">
+    <field name="refabebooks" type="string" column="refabebooks" length="30" nullable="true">
       <options>
         <option name="fixed"/>
       </options>
