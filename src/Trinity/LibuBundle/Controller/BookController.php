@@ -201,7 +201,10 @@ class BookController extends Controller
 
                 if ($form->get('save')->isClicked()) {
 
-                    $bman->AbebooksAdd($libro); 
+                    $nuevaref = 'L' + $codigo; 
+                    $bman->AbebooksAdd($libro, $nuevaref); 
+
+                    $libro->setRefabebooks($nuevaref); 
 
                 	$bman->persisteLibro($libro, "SUBID", true);
 

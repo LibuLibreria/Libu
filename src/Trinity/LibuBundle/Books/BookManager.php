@@ -497,7 +497,7 @@ class BookManager implements ContainerAwareInterface  {
 
 
 
-    public function AbebooksAdd($book) {
+    public function AbebooksAdd($book, $nuevaref) {
 
         // Crear un nuevo recurso cURL
         $ch = curl_init();
@@ -515,7 +515,7 @@ class BookManager implements ContainerAwareInterface  {
             <AbebookList>
                 <Abebook>
                     <transactionType>add</transactionType>
-                    <vendorBookID>L'.$book->getCodigo().'</vendorBookID>
+                    <vendorBookID>'.$nuevaref.'</vendorBookID>
                     <author>'.$this->changeCharset($book->getAutor()).'</author>
                     <title>'.$this->changeCharset($book->getTitulo()).'</title>
                     <publisher>'.$this->changeCharset($book->getEditorial()).'</publisher>
