@@ -1,0 +1,64 @@
+{% extends "LibuBundle::libu/base.html.twig" %}
+
+{#    {% form_theme form 'bootstrap_3_layout.html.twig' %}   #}
+
+{% block body %}
+
+    <h2>Pedidos: </h2>
+
+    {% if numpedidos > 0 %}
+
+        <br><strong>Numero de pedidos: {{ numpedidos }} </strong>
+        <br>-----------------------------
+
+        {% for numped, pedido in datospedido %}
+
+            <br><h3>Pedido {{ numped }}</h3>
+            <br>Id. del pedido: {{ pedido.idpedido }}
+            
+            {% if pedido.purchaseMethod != 'CC' %}
+                <br>ATENCIÓN: LIBRO NO COBRADO AUTOMÁTICAMENTE
+            {% endif %}
+
+            <br>Comprador/a: {{ pedido.comprador.name }}
+            <br>Email: {{ pedido.direccionmail }}
+            {% if pedido.comprador.country != 'Spain' %}
+                <br><br>ATENCIÓN: LIBRO COMPRADO DESDE EL EXTRANJERO
+            {% endif %}
+
+            <br>-----------------------------
+
+            <br><strong>En el pedido hay {{ pedido.numlibrospedido }} libro/s</strong>
+
+            {% for numlib, libro in pedido.libro %}
+
+                <br>Identificador del libro: {{ libro.vendorKey }}
+                <br>Autor: {{ libro.author }}
+                <br>Título: {{ libro.title }}
+                <br>ISBN: {{ libro.isbn }}
+                <br>Id: {{ libro.idpedidobook }}
+                <br><a href='https://www.abebooks.com/servlet/OrderUpdate?abepoid= {{ libro.orden }}'>{{ libro.orden }}</a>
+
+                {% if libro.codigo is defined %}
+                    <br>Precio: {{ libro.precio }}
+                    <br>Estantería: {{ libro.estanteria }}
+                    <br>Balda: {{ libro.balda }}
+                    <br>Código: {{ libro.codigo }}
+                {% else  %}
+                    <br><strong>No se ha encontrado un libro con la referencia {{ libro.vendorKey }}</strong>
+                {% endif %}
+
+            {% endfor %}
+            <br>-----------------------------
+
+        {% endfor %}
+
+    {% else %}
+
+        <br>No hay ningún pedido
+
+    {% endif %}
+
+
+
+{% endblock %}   

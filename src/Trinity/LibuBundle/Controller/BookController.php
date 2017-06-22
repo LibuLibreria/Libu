@@ -560,61 +560,62 @@ class BookController extends Controller
         $pedidos = $sxmlpedidos->purchaseOrderList; 
 
         $numpedidos = ( null !== $pedidos->children() ) ? $pedidos->children()->count() : 0;
-        $texto = "<br><strong>Numero de pedidos: ". $numpedidos."</strong>"; 
 
         if ($numpedidos > 0) {
-            $texto .= "<br>-----------------------------";
-
-//                if ($numpedidos > 1) $pedidos = $pedidos->purchaseOrder;
 
             $em = $this->getDoctrine()->getManager();
 
-
             $pedidos = $pedidos->purchaseOrder;
 
+            $ped = 1; 
+
             foreach ($pedidos as $pedido) {
+ 
+                $datospedido[$ped]['idpedido'] = $pedido['id'];
+                $datospedido[$ped]['purchaseMethod'] = $pedido->purchaseMethod; 
 
+                $buyer = $pedido->buyer->children(); 
+                $datospedido[$ped]['direccionmail'] = $buyer->email; 
+                $datospedido[$ped]['comprador'] = (array)$buyer->mailingAddress; 
 
-                $idpedido = $pedido['id'];
+                $datospedido[$ped]['idpedidobuyer'] = $pedido->buyerPurchaseOrder['id'];
 
-                $texto .= "<br>Id del pedido: ".$idpedido;
+                // Obtenemos los diferentes libros de un pedido
+                $librosenpedido = $pedido->purchaseOrderItemList->children();
 
-                $idpedidobuyer = $pedido->buyerPurchaseOrder['id'];
-//                $texto .= "<br>idpedidobuyer: ". $idpedidobuyer; 
+                $datospedido[$ped]['numlibrospedido'] = $librosenpedido->count(); 
 
-                $orderitem = $pedido->purchaseOrderItemList->children();
+                $lib = 1;
 
-                $numlibrospedido = $orderitem->count(); 
-                $texto .= "<br><strong>En el pedido hay ".$numlibrospedido." libro/s</strong>";
+                foreach ($librosenpedido as $libropedido) {
 
-                foreach ($orderitem as $libropedido) {
-                    $idpedidoitem = $libropedido['id'];
-//                    $texto .= "<br>idpedidoitem: ". $idpedidoitem; 
+                    $vendorkey = $libropedido->book->vendorKey;
+//                    $datospedido[$ped]['libro'][$lib]['vendorkey'] = $vendorkey; 
+                    $datospedido[$ped]['libro'][$lib] = (array)$libropedido->book; 
+                    $datospedido[$ped]['libro'][$lib]['orden'] = $libropedido->purchaseOrder['id']; 
+                    $datospedido[$ped]['libro'][$lib]['idpedidoitem'] = $libropedido['id'];
+                    $datospedido[$ped]['libro'][$lib]['idpedidobook'] = $libropedido->book['id'];
 
-                    $idpedidobook = $libropedido->book['id'];
-//                    $texto .= "<br>idpedidobook: ". $idpedidobook;
-
-                    $vendorkey = $libropedido->book->vendorKey; 
-                    $texto .= "<br>Identificador del libro (vendorkey): ". $vendorkey; 
-                    $texto .= "<br>Autor: ". $libropedido->book->author;
-                    $texto .= "<br>Título: ". $libropedido->book->title;
-
-                    $librovendido = $em->getRepository('LibuBundle:Libro')->findOneByRefabebooks($vendorkey);
-                    $texto .= "<br>Estanteria: ".$librovendido->getEstanteria();
-                    $texto .= "<br>Balda: ".$librovendido->getBalda(); 
-                    $texto .= "<br>Precio: ".$librovendido->getPrecio();
-
+                    $libronull = ($librovendido = $em->getRepository('LibuBundle:Libro')->findOneByRefabebooks($vendorkey));
+                    if ($libronull) {
+                        $datospedido[$ped]['libro'][$lib]['codigo'] = $librovendido->getCodigo();
+                        $datospedido[$ped]['libro'][$lib]['estanteria'] = $librovendido->getEstanteria();
+                        $datospedido[$ped]['libro'][$lib]['balda'] = $librovendido->getBalda(); 
+                        $datospedido[$ped]['libro'][$lib]['precio'] = $librovendido->getPrecio();
+                    } 
+                    $lib++;
 
                 }
-                $texto .= "<br>-----------------------------";
+                $ped++;
             }
 
            
-        } else {
-            $texto = "No hay ningún pedido"; 
         }   
 
-        return new Response ("<h2>Pedidos</h2><br>".$texto);
+        return $this->render('LibuBundle:book:pedidos.html.twig', array(
+            'numpedidos' => $numpedidos,
+            'datospedido' => $datospedido,
+        ));        
     }
 
 
