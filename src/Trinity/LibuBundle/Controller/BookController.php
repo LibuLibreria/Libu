@@ -604,12 +604,9 @@ class BookController extends Controller
                         $datospedido[$ped]['libro'][$lib]['precio'] = $librovendido->getPrecio();
                     } 
                     $lib++;
-
                 }
                 $ped++;
             }
-
-           
         }   
 
         return $this->render('LibuBundle:book:pedidos.html.twig', array(
@@ -618,6 +615,27 @@ class BookController extends Controller
         ));        
     }
 
+
+
+    /**
+     *
+     * @Route("/{id}/{order}/delete-abebooks", name="delete_abebooks")
+     *
+     */
+    public function deleteAbebooks($id, $order) {
+    
+        $em = $this->getDoctrine()->getManager();
+        $bman = $this->get('app.books');
+
+        $libronull = ($libro = $em->getRepository('LibuBundle:Libro')->findOneByRefabebooks($id));
+
+
+        $bman->persisteLibro($libro, "VEND", true);
+
+        echo "Borrando el libro ".$libro->getCodigo(); 
+
+        return $this->redirect('https://www.abebooks.com/servlet/OrderUpdate?abepoid='.$order);
+    }
 
 
 }
