@@ -559,6 +559,8 @@ class BookController extends Controller
 
         $pedidos = $sxmlpedidos->purchaseOrderList; 
 
+        $datospedido = array();
+
         $numpedidos = ( null !== $pedidos->children() ) ? $pedidos->children()->count() : 0;
 
         if ($numpedidos > 0) {
