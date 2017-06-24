@@ -40,6 +40,10 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
+use Trinity\LibuBundle\Isbn\ISBNdb\ISBNDBService;
+use Trinity\LibuBundle\Isbn\ISBNdb\ISBNDBServiceAuthor;
+use Trinity\LibuBundle\Isbn\ISBNdb\ISBNDBServiceBook;
+
 class LibuController extends Controller
 {
 
@@ -372,7 +376,21 @@ class LibuController extends Controller
      */
     public function buscarAction(Request $request)
     {
-        $isbn=9788475098357;
+        $isbn=9781856485043;
+        $serv = new ISBNDBService();
+        $result = $serv->search('http://isbndb.com/api/books.xml', 'isbn', $isbn);
+
+        $datoslibro = $result->response->getElementsByTagName('BookData');
+        if ($datoslibro->length > 0) {
+            foreach ($datoslibro as $item) {
+                $res = new ISBNDBServiceBook($item);
+            } 
+        } else {
+                $res = false;     
+        }
+dump($res); 
+
+        /*
         $querystring = "http://isbndb.com/api/v2/json/5YW8PFOV/book/".$isbn."";
  //     $isbndb = ""; 
         $busqueda = file_get_contents($querystring);
@@ -387,7 +405,10 @@ class LibuController extends Controller
             $resultado["data"][0]["title_latin"]
      //         "<pre>".$busqueda."</pre>"
                 );
-        }
+
+                
+        }   */
+        return new Response ("Todo ok"); 
     }
 
 

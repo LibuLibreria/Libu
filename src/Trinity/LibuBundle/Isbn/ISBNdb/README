@@ -1,0 +1,38 @@
+README for ISBNDBService v1.0 07-06-2009 (7 june 2009)
+
+ISBNDBService is a PHP wrapper for isbndb.com's webservice API. It will represent
+the returned data as PHP objects that can be manipulated and read.
+
+Features:
+* Implements paging mechanism used by the webservice
+* Can represent all data currently returned by the webservice
+* Can handle all request types currently used by the webservice
+* Makes pages and resultset function as iterators
+
+Warnings:
+This library relies on an implementation of an autoload mechanism. No files are automatically included or required to allow
+for a flexible implementation of this library in your project
+
+Tips:
+If you want to display data from a result or a collection in a generic way, say XML or JSON use the decorator pattern.
+For example if you want to display a collection as an xml string to use in an AJAX request:
+<code>
+class ISBNDBServiceCollectionDecoratorXML
+{
+	protected $collection = null;
+	
+	public function __construct(ISBNDBServiceCollection $collection)
+	{
+		$this->collection = $collection;
+	}
+	
+	public function __toString()
+	{
+		/**
+		 * This is the place where you loop over your collection and
+		 * create the xml string that you need to display.
+		 */
+	}
+	
+}
+</code>
