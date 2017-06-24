@@ -1,9 +1,9 @@
 <?php
-namespace Trinity\LibuBundle\Isbn\ISBNdb;
+namespace Trinity\LibuBundle\Crawler\ISBNdb;
 
-use Trinity\LibuBundle\Isbn\ISBNdb\ISBNDBPaginator;
-use Trinity\LibuBundle\Isbn\ISBNdb\ISBNDBServiceAuthor; 
-use Trinity\LibuBundle\Isbn\ISBNdb\ISBNDBServiceBook;
+use Trinity\LibuBundle\Crawler\ISBNdb\ISBNDBPaginator;
+use Trinity\LibuBundle\Crawler\ISBNdb\ISBNDBServiceAuthor; 
+use Trinity\LibuBundle\Crawler\ISBNdb\ISBNDBServiceBook;
 
 /**
  * This class creates an interface to the webservice found at http://www.isbndb.com/

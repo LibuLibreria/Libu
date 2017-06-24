@@ -1,6 +1,6 @@
 <?php
 
-namespace Trinity\LibuBundle\Isbn\ISBNdb;
+namespace Trinity\LibuBundle\Crawler\ISBNdb;
 
 /**
  * This is the base class for a ISBNDB webservice result. 

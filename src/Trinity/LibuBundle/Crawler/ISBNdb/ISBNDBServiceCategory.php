@@ -1,6 +1,6 @@
 <?php
 
-namespace LibuBundle\Resources\isbndb;
+namespace Trinity\LibuBundle\Crawler\ISBNdb;
 
 
 class ISBNDBServiceCategory extends ISBNDBServiceResult 

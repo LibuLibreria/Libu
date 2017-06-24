@@ -1,4 +1,7 @@
 <?php
+
+namespace Trinity\LibuBundle\Crawler\ISBNdb;
+
 class ISBNDBServiceSubject extends ISBNDBServiceResult 
 {
 

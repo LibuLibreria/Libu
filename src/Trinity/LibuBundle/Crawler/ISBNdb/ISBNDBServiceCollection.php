@@ -1,4 +1,7 @@
 <?php
+
+namespace Trinity\LibuBundle\Crawler\ISBNdb;
+
 /**
  * This class represents a collection of found results from the ISBNDB webservice
  * It works as an iterator to loop through all results

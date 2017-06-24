@@ -1,6 +1,6 @@
 <?php
 
-namespace Trinity\LibuBundle\Isbn\ISBNdb;
+namespace Trinity\LibuBundle\Crawler\ISBNdb;
 use \Iterator;
 use \Countable;
 use \DOMDocument;
