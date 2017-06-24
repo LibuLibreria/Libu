@@ -7,7 +7,7 @@
 <style type="text/css">
 
 .card {
-    font-size: 1em;
+    font-size: 1.2em;
     overflow: hidden;
     margin-top: 10px;    
     padding: 20px;
@@ -46,7 +46,7 @@
     padding: .75em 1em;
     color: rgba(0, 0, 0, .4);
     border-top: 1px solid rgba(0, 0, 0, .05) !important;
-    background: #fff;
+    background: #c5f5f0;
 }
 
 .card-atencion {
@@ -102,7 +102,7 @@
 
                         <div class="card-footer">
                             <br><a href="{{ path('delete_abebooks', {'id': libro.vendorKey, 'order': libro.orden }) }}" target="_blank"  class="btn btn-info" role="button" >Subir</a>   
-                            {# <br><a href='https://www.abebooks.com/servlet/OrderUpdate?abepoid= {{ libro.orden }}' target="_blank"  class="btn btn-info" role="button">Vender en Abebooks</a> #}
+                            {# <br><a href='https://www.abebooks.com/servlet/OrderUpdate?abepoid= {{ libro.orden }}' target="_blank"  class="btn btn-info btn-lg" role="button">Vender en Abebooks</a> #}
                         </div>
 
                     {% else  %}
