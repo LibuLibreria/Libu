@@ -156,36 +156,9 @@ class BookController extends Controller
 
         if ( $accion == 'precio') {
 
-        	// Estas son las acciones que se desarrollan si es el listado para adjudicar precios
-
-	        // Subimos el libro con otro estatus para que no sea de nuevo leído tras ejecutar el formulario
-	        $bman->persisteLibro($libro, "CSUB", true); 
-
-	        $isbnact = $libro->getIsbn();
-
-	        $busqueda['abe_esp'] = array('definicion' => 'Libros en Abebooks España',
-	                                    'ofertas' => $this->buscaIsbn($isbnact, "ESP"));
-	        $busqueda['abe_int'] = array('definicion' => 'Libros en Abebooks General',
-	                                    'ofertas' => $this->buscaIsbn($isbnact, "INT"));
-
-	        if ($busqueda['abe_esp']['ofertas'] !== false) {
-	            $libro->setAutor($bman->validaAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']));
-	            $libro->setTitulo($bman->validaTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']));
-	            $libro->setEditorial($bman->validaEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']));
-//	            $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
-	        } else if ($busqueda['abe_int']['ofertas'] !== false) {
-                $libro->setAutor($bman->validaAutor($busqueda['abe_int']['ofertas']['datos'][0]['autor']));
-                $libro->setTitulo($bman->validaTitulo($busqueda['abe_int']['ofertas']['datos'][0]['titulo']));
-                $libro->setEditorial($bman->validaEditorial($busqueda['abe_int']['ofertas']['datos'][0]['editorial']));
-            } else {
-
-            }
-            $libro->setPrecio($this->ponerPrecio($busqueda));
-	       
-
-            $arrayrender['busquedas'] = $busqueda;
-            $arrayrender['cabecera'] = array('Librería','Editorial', 'Título', 'Autor', 'Precio');
-            $arrayrender['boton_descartar'] = true; 
+            $analisis = $this->analizaWebs($libro);
+            $arrayrender = array_merge($arrayrender, $analisis['arrayrender']);
+            $libro = $analisis['libro'];
 
         }
 
@@ -245,6 +218,51 @@ class BookController extends Controller
         return $this->render('LibuBundle:libu:libro.html.twig', $arrayrender ); 
     }
 
+
+    public function analizaWebs($libro) {
+            // Estas son las acciones que se desarrollan si es el listado para adjudicar precios
+
+            // Subimos el libro con otro estatus para que no sea de nuevo leído tras ejecutar el formulario
+
+            $bman = $this->get('app.books');
+
+            $bman->persisteLibro($libro, "CSUB", true); 
+
+            $isbnact = $libro->getIsbn();
+
+            $craw = array(
+                'abe_esp' => array('definicion' => 'Libros en Abebooks España',
+                                    'id' => 'ESP'),
+                'abe_int' => array('definicion' => 'Libros en Abebooks General',
+                                    'id' => 'INT')
+                );
+
+            $busqueda['abe_esp'] = array('definicion' => 'Libros en Abebooks España',
+                                        'ofertas' => $this->buscaIsbn($isbnact, "ESP"));
+            $busqueda['abe_int'] = array('definicion' => 'Libros en Abebooks General',
+                                        'ofertas' => $this->buscaIsbn($isbnact, "INT"));
+
+            if ($busqueda['abe_esp']['ofertas'] !== false) {
+                $libro->setAutor($bman->validaAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']));
+                $libro->setTitulo($bman->validaTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']));
+                $libro->setEditorial($bman->validaEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']));
+//              $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
+            } else if ($busqueda['abe_int']['ofertas'] !== false) {
+                $libro->setAutor($bman->validaAutor($busqueda['abe_int']['ofertas']['datos'][0]['autor']));
+                $libro->setTitulo($bman->validaTitulo($busqueda['abe_int']['ofertas']['datos'][0]['titulo']));
+                $libro->setEditorial($bman->validaEditorial($busqueda['abe_int']['ofertas']['datos'][0]['editorial']));
+            } else {
+
+            }
+            $libro->setPrecio($this->ponerPrecio($busqueda));
+           
+
+            $arrayrender['busquedas'] = $busqueda;
+            $arrayrender['cabecera'] = array('Librería','Editorial', 'Título', 'Autor', 'Precio');
+            $arrayrender['boton_descartar'] = true; 
+
+            return array('libro' => $libro, 'arrayrender' => $arrayrender);
+        }
 
 
     private function ponerPrecio($busqueda){
@@ -492,7 +510,9 @@ class BookController extends Controller
             ]
         ]);
         $url_isbn = 'https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn;
-        $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext);
+        if (! $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext)) {
+            echo "Error. Probablemente no hay conexión a internet. Conecta y prueba de nuevo";
+        }
 
         $crawler = new Crawler($abebooks_isbn);
 
