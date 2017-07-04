@@ -174,36 +174,63 @@ class BookController extends Controller
 
                 if ($form->get('save')->isClicked()) {
 
-                    $nuevaref = 'L'.$libro->getCodigo(); 
+                    $nuevaref = $this->nuevaRefAbebooks($libro); 
+
                     $bman->AbebooksAdd($libro, $nuevaref); 
 
                     $libro->setRefabebooks($nuevaref); 
 
                 	$bman->persisteLibro($libro, "SUBID");
 
-                	return $this->siguienteAgilp(); 
+                	return $this->siguientePrecio(); 
                 }
 
                 if ($form->get('descartar')->isClicked()) {
                     
-                    $bman->persisteLibro($libro, "DSCRT");  
-                    return $this->siguienteAgilp(); 
+                    $bman->persisteLibro($libro, "DSCRT");
+
+                    return $this->siguientePrecio(); 
                                   
                 }  
 
                 if ($form->get('parar')->isClicked()) {
+
                     $bman->persisteLibro($libro, "AGILP"); 
 
-                    return $this->siguienteAgilp();                            
+                    return $this->redirectToRoute('bookprecio');                       
                 }      
 
-        	} else {
+        	} else if ( $accion == 'agil' ) {
 
                 if ($form->get('save')->isClicked()) {
 
-//                    $form->get('estatus')->setData('AGILP'); 
+                    $bman->persisteLibro($libro, "AGIL");
 
-                    $bman->persisteLibro($libro, $form->get('estatus'), true);
+                    return $this->redirectToRoute('booklista', array(
+                        'accion' => 'agil',
+                    ));
+                }
+/*
+                if ($form->get('descartar')->isClicked()) {
+                    
+                    $bman->persisteLibro($libro, "DSCRT");
+
+                    return $this->siguientePrecio(); 
+                                  
+                }  
+
+                if ($form->get('parar')->isClicked()) {
+
+                    $bman->persisteLibro($libro, "AGILP"); 
+
+                    return $this->redirectToRoute('bookprecio');                       
+                }      
+*/
+            } else {
+
+                if ($form->get('save')->isClicked()) {
+
+                    $bman->persisteLibro($libro);
 
             		return $this->redirectToRoute('booklista');
 
@@ -219,26 +246,13 @@ class BookController extends Controller
     }
 
 
+    private function nuevaRefAbebooks($libro) {
 
-    private function siguienteAgilp() {
+        $prefacio = 'L';
 
-        $librosagilp = $this->librosPorEstatus("AGILP");
-
-        if (empty($librosagilp)) {
-            return $this->render('LibuBundle:book:precios.html.twig', array(
-                'titulo' => "Precios",      
-                'texto_previo' => "No hay libros sin poner precio",    
-                'boton_final' => "Volver a venta", 
-                'path_boton_final' => "venta",
-                )); 
-        } else {  
-
-            return $this->redirectToRoute('booklibro', array(
-                'cod' => $librosagilp[0]->getCodigo(),
-                'accion' => 'precio',
-                ));
-        }
+        return  $prefacio.$libro->getCodigo();
     }
+
 
 
 
@@ -331,6 +345,33 @@ class BookController extends Controller
 
 
 
+    private function vacioSinPrecio() {
+        return $this->render('LibuBundle:book:precios.html.twig', array(
+            'titulo' => "Precios",      
+            'texto_previo' => "No hay libros sin poner precio",    
+            'boton_final' => "Volver a venta", 
+            'path_boton_final' => "venta",
+            ));         
+    }
+
+
+
+    private function siguientePrecio() {
+
+        $librosagilp = $this->librosPorEstatus("AGILP");
+
+        if (empty($librosagilp)) {
+            return $this->vacioSinPrecio(); 
+
+        } else {  
+
+            return $this->redirectToRoute('booklibro', array(
+                'cod' => $librosagilp[0]->getCodigo(),
+                'accion' => 'precio',
+                ));
+        }
+    }
+
 
 
     /**
@@ -342,34 +383,11 @@ class BookController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGILP");       
+        $librosp = $this->librosPorEstatus("AGILP");     
 
         if (empty($librosp)) {
-            return $this->render('LibuBundle:book:precios.html.twig', array(
-                'titulo' => "Precios",      
-                'texto_previo' => "No hay libros sin poner precio",    
-                'boton_final' => "Volver a venta", 
-                'path_boton_final' => "venta",
-                )); 
+            $this->vacioSinPrecio(); 
         }
-
-        $session = $request->getSession();
-
-        if (($session->get('reenviado')) == true ) {
-
-            $session->set('reenviado', false); 
-
-            return $this->redirectToRoute('booklibro', array(
-            	'cod' => $librosp[0]->getCodigo(),
-            	'accion' => 'precio',
-            	));   
-        }
-
-//       $n = 4;
-
-//       $fin = (($n + $jump) > sizeof($librosp)) ? sizeof($librosp) : $n + $jump; 
-
-//       $datos = array(); 
 
         $form = $this->createForm(BookPrecioType::class, array());      
 
@@ -378,7 +396,7 @@ class BookController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
                 if ($form->get('aceptar')->isClicked()) 
                 {
-                    $sig_libro = $librosp[0]->getCodigo(); 
+//                    $sig_libro = $librosp[0]->getCodigo(); 
 
                     return $this->redirectToRoute('booklibro', array(
                         'cod' => $librosp[0]->getCodigo(),
@@ -400,15 +418,16 @@ class BookController extends Controller
 
 
     /**
-     * @Route("/book/lista", name="booklista")
+     * @Route("/book/lista/{accion}",
+     *     name="booklista",
+     *     defaults = {"accion": "agil"},
+     * )
      */
     public function bookLista(Request $request)  {
 
-//        $jump = 2; 
-
         $em = $this->getDoctrine()->getManager();
 
-        $librosp = $em->getRepository('LibuBundle:Libro')->buscaLibros("AGIL");       
+        $librosp = $this->librosPorEstatus("AGIL");   
 
         if (empty($librosp)) {
             return $this->render('LibuBundle:book:precios.html.twig', array(

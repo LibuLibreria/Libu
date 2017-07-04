@@ -37,7 +37,7 @@
 			  	{% for linea in tabla %}
 			    <tr>
 		    	{% if accion == 'lista' %}
-		      		<td><a href="{{ path('booklibro', {'cod': linea.codigo }) }}">{{ linea.codigo }}</a></td>
+		      		<td><a href="{{ path('booklibro', {'cod': linea.codigo, 'accion': 'agil'} ) }}">{{ linea.codigo }}</a></td>
 	      		{% elseif accion == 'precio' %}
 					<td><a href="{{ path('booklibro', {'cod': linea.codigo, 'accion': 'precio'} ) }}">{{ linea.codigo }}</a></td>	      		
 	      		{% endif %}

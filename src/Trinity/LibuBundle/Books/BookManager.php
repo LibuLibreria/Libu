@@ -410,16 +410,18 @@ class BookManager implements ContainerAwareInterface  {
 
     }
 
-    public function persisteLibro($libro, $estatus, $reescribir = false) {
+    public function persisteLibro($libro, $estatus = 'NULL', $reescribir = false) {
 
         $em = $this->em;
         $repetido = $em->getRepository('LibuBundle:Libro')->findByCodigo($libro->getCodigo())  ;
         if (!empty($repetido)) {
             $libro = $repetido[0]; 
         }
-
-        $libro->setEstatus($estatus);
-//if ($estatus == "DSCRT") {dump($libro); die(); }
+ 
+        if ($estatus != 'NULL') {
+            $libro->setEstatus($estatus);
+        }
+// dump($libro); die();
         try {
             $em->persist($libro);
             $em->flush();
