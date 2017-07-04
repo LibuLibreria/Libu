@@ -179,31 +179,31 @@ class BookController extends Controller
 
                     $libro->setRefabebooks($nuevaref); 
 
-                	$bman->persisteLibro($libro, "SUBID", true);
+                	$bman->persisteLibro($libro, "SUBID");
 
-                	$session = $request->getSession();
-                	$session->set('reenviado', true); 
-
-                	return $this->redirectToRoute('bookprecio');
+                	return $this->siguienteAgilp(); 
                 }
+
                 if ($form->get('descartar')->isClicked()) {
-                    $bman->persisteLibro($libro, "DSCRT", true); 
+                    
+                    $bman->persisteLibro($libro, "DSCRT");  
+                    return $this->siguienteAgilp(); 
+                                  
+                }  
 
-                    $session = $request->getSession();
-                    $session->set('reenviado', true); 
-
-                    return $this->redirectToRoute('bookprecio');                                   
-                }        
                 if ($form->get('parar')->isClicked()) {
-                    $bman->persisteLibro($libro, "AGILP", true); 
+                    $bman->persisteLibro($libro, "AGILP"); 
 
-                    return $this->redirectToRoute('bookprecio');                                   
-                }                             
+                    return $this->siguienteAgilp();                            
+                }      
+
         	} else {
 
                 if ($form->get('save')->isClicked()) {
 
-                    $bman->persisteLibro($libro, "AGIL", true);
+//                    $form->get('estatus')->setData('AGILP'); 
+
+                    $bman->persisteLibro($libro, $form->get('estatus'), true);
 
             		return $this->redirectToRoute('booklista');
 
@@ -217,6 +217,29 @@ class BookController extends Controller
 
         return $this->render('LibuBundle:libu:libro.html.twig', $arrayrender ); 
     }
+
+
+
+    private function siguienteAgilp() {
+
+        $librosagilp = $this->librosPorEstatus("AGILP");
+
+        if (empty($librosagilp)) {
+            return $this->render('LibuBundle:book:precios.html.twig', array(
+                'titulo' => "Precios",      
+                'texto_previo' => "No hay libros sin poner precio",    
+                'boton_final' => "Volver a venta", 
+                'path_boton_final' => "venta",
+                )); 
+        } else {  
+
+            return $this->redirectToRoute('booklibro', array(
+                'cod' => $librosagilp[0]->getCodigo(),
+                'accion' => 'precio',
+                ));
+        }
+    }
+
 
 
     public function analizaWebs($libro) {
@@ -293,6 +316,20 @@ class BookController extends Controller
 
         return $prventa; 
     }
+
+
+
+
+
+    public function librosPorEstatus($estatus)  {
+
+        $em = $this->getDoctrine()->getManager();
+
+        return $em->getRepository('LibuBundle:Libro')->buscaLibros($estatus);  
+
+    }
+
+
 
 
 
