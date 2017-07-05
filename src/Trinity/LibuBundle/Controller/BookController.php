@@ -353,7 +353,7 @@ class BookController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        return $em->getRepository('LibuBundle:Libro')->findAll(array(), array($orden => 'ASC')); 
+        return $em->getRepository('LibuBundle:Libro')->findBy(array(), array($orden => 'asc')); 
     }
 
 
