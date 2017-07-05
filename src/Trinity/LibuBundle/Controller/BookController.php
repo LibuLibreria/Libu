@@ -174,7 +174,7 @@ class BookController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             $libro = $form->getData();
-
+ 
             if ( $accion == 'precio' ) {
 
                 if ($form->get('save')->isClicked()) {
@@ -234,10 +234,12 @@ class BookController extends Controller
             } else {
 
                 if ($form->get('save')->isClicked()) {
-
+ 
                     $bman->persisteLibro($libro);
 
-            		return $this->redirectToRoute('booklista');
+            		return $this->redirectToRoute('booklista', array(
+                        'accion' => 'todos',
+                    ));
 
                 }
         	}                    
@@ -358,13 +360,14 @@ class BookController extends Controller
 
 
 
-    private function vacioSinPrecio() {
-        return $this->render('LibuBundle:book:precios.html.twig', array(
+    private function vacioSinPrecio() { 
+       return $this->render('LibuBundle:book:precios.html.twig', array(
             'titulo' => "Precios",      
             'texto_previo' => "No hay libros sin poner precio",    
             'boton_final' => "Volver a venta", 
             'path_boton_final' => "venta",
-            ));         
+            ));     
+    
     }
 
 
@@ -399,7 +402,7 @@ class BookController extends Controller
         $librosp = $this->librosPorEstatus("AGILP");     
 
         if (empty($librosp)) {
-            $this->vacioSinPrecio(); 
+            return $this->vacioSinPrecio(); 
         }
 
         $form = $this->createForm(BookPrecioType::class, array());      
@@ -420,7 +423,7 @@ class BookController extends Controller
 
         return $this->render('LibuBundle:book:precios.html.twig', array(
             'form' => $form->createView(), 
-            'titulo' => "Precios",  
+            'titulo' => "Precios",
             'texto_previo' => "<p>Estos son los libros pendientes de poner precio</p><p>Pulsar Aceptar para comenzar la serie</p>", 
             'tabla' => $librosp,    
             'cabecera' => array('Código', 'Estatus',  'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),    
@@ -475,7 +478,7 @@ class BookController extends Controller
             'path_boton_final' => "bookagil",
             'tabla' => $librosp,    
             'cabecera' => array('Código', 'Estatus', 'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),   
-            'accion' => 'lista', 
+            'accion' => $accion, 
             )); 
     }
 

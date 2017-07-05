@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class LibroType extends AbstractType
 {
@@ -45,7 +45,17 @@ class LibroType extends AbstractType
             ))   
             ->add('estanteria', TextType::class, array('label' => 'Estante', 'required' => false,))
             ->add('balda', TextType::class, array('label' => 'Balda', 'required' => false,))  
-            ->add('estatus', TextType::class, array('label' => 'Estatus'))  
+            ->add('estatus', ChoiceType::class, array(
+                'choices'  => array(
+                    'AGILP - Pendiente precio' => 'AGILP',
+                    'AGIL - Provisional Agil' => 'AGIL',
+                    'SUBID - Subido' => 'SUBID',
+                    'VEND - Vendido' => 'VEND',
+                    'DSCRT - Descartada' => 'DSCRT',
+                    'CSUB - Auxiliar (posible error)' => 'CSUB',
+                ),
+                'label' => 'Estatus',
+            )) 
             ->add('descripcion', TextType::class, array('label' => 'Descripción', 'required' => false ))
  //           ->add('tipo')            
  //           ->add('idVenta')
