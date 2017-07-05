@@ -423,7 +423,7 @@ class BookController extends Controller
             'titulo' => "Precios",  
             'texto_previo' => "<p>Estos son los libros pendientes de poner precio</p><p>Pulsar Aceptar para comenzar la serie</p>", 
             'tabla' => $librosp,    
-            'cabecera' => array('Código', 'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),    
+            'cabecera' => array('Código', 'Estatus',  'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),    
         	'accion' => 'precio',
     	));
     }
@@ -474,7 +474,7 @@ class BookController extends Controller
             'boton_final' => "Volver a formulario",
             'path_boton_final' => "bookagil",
             'tabla' => $librosp,    
-            'cabecera' => array('Código', 'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),   
+            'cabecera' => array('Código', 'Estatus', 'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),   
             'accion' => 'lista', 
             )); 
     }

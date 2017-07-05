@@ -41,6 +41,7 @@
 	      		{% elseif accion == 'precio' %}
 					<td><a href="{{ path('booklibro', {'cod': linea.codigo, 'accion': 'precio'} ) }}">{{ linea.codigo }}</a></td>	      		
 	      		{% endif %}
+	      			<td>{{ linea.estatus }}</td>
 	      			<td>{{ linea.refabebooks }}</td>
 		      		<td>{{ linea.isbn }}</td>
 		      		<td>{{ linea.tapas }}</td>
