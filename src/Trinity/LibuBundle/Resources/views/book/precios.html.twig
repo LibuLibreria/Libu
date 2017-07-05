@@ -1,4 +1,4 @@
-{% extends "LibuBundle::libu/base.html.twig" %}
+{% extends "LibuBundle::libu/navbar.html.twig" %}
 {# libu/Resources/views/libu/venta.html.twig #}
 
 
@@ -41,11 +41,10 @@
 	      		{% elseif accion == 'precio' %}
 					<td><a href="{{ path('booklibro', {'cod': linea.codigo, 'accion': 'precio'} ) }}">{{ linea.codigo }}</a></td>	      		
 	      		{% endif %}
+	      			<td>{{ linea.refabebooks }}</td>
 		      		<td>{{ linea.isbn }}</td>
 		      		<td>{{ linea.tapas }}</td>
 		      		<td>{{ linea.conservacion }}</td>
-		      		<td>{{ linea.descripcion }}</td>
-		      		<td>{{ linea.notas }}</td>
 		      		<td>{{ linea.estanteria }}</td>
 		      		<td>{{ linea.balda }}</td>
 			    </tr>

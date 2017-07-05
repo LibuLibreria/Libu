@@ -135,7 +135,7 @@ class BookController extends Controller
      * @Route(
      *     "/book/libro/{cod}/{accion}",
      *     name="booklibro",
-     *	   defaults = {"accion": "lista"},
+     *	   defaults = {"accion": "lista", "cod":"1"},
      *     requirements={
      *         "cod": "\d+"
      *     }
@@ -153,6 +153,11 @@ class BookController extends Controller
 	            'mensaje' => '',
 	            'horizontal' => true,        		
         	);
+
+        if ($cod == 1) {
+            echo "<br>Este es el formulario provisional. <br>Hay que poner el código del libro buscado en la barra del navegador, por ejemplo: .../book/libro/716<br>Solamente se puede utilizar el botón Guardar; el resto pueden dar error.<p>&nbsp;</p>";
+        }
+
 
         if ( $accion == 'precio') {
 
@@ -344,6 +349,14 @@ class BookController extends Controller
     }
 
 
+    private function todosLibros($orden = 'refabebooks') {
+
+        $em = $this->getDoctrine()->getManager();
+
+        return $em->getRepository('LibuBundle:Libro')->findAll(array()); 
+    }
+
+
 
     private function vacioSinPrecio() {
         return $this->render('LibuBundle:book:precios.html.twig', array(
@@ -410,7 +423,7 @@ class BookController extends Controller
             'titulo' => "Precios",  
             'texto_previo' => "<p>Estos son los libros pendientes de poner precio</p><p>Pulsar Aceptar para comenzar la serie</p>", 
             'tabla' => $librosp,    
-            'cabecera' => array('Código','Isbn', 'Tapas', 'Conservación', 'Descripción', 'Notas', 'Estantería', 'Balda'),    
+            'cabecera' => array('Código', 'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),    
         	'accion' => 'precio',
     	));
     }
@@ -423,11 +436,17 @@ class BookController extends Controller
      *     defaults = {"accion": "agil"},
      * )
      */
-    public function bookLista(Request $request)  {
+    public function bookLista(Request $request, $accion)  {
 
         $em = $this->getDoctrine()->getManager();
 
-        $librosp = $this->librosPorEstatus("AGIL");   
+        if ($accion == 'agil') {
+            $librosp = $this->librosPorEstatus("AGIL");   
+        }
+
+        else if ($accion == 'todos') {
+            $librosp = $this->todosLibros();     
+        }        
 
         if (empty($librosp)) {
             return $this->render('LibuBundle:book:precios.html.twig', array(
@@ -455,7 +474,7 @@ class BookController extends Controller
             'boton_final' => "Volver a formulario",
             'path_boton_final' => "bookagil",
             'tabla' => $librosp,    
-            'cabecera' => array('Código','Isbn', 'Tapas', 'Conservación', 'Descripción', 'Notas', 'Estantería', 'Balda'),   
+            'cabecera' => array('Código', 'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),   
             'accion' => 'lista', 
             )); 
     }
