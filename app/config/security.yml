@@ -23,9 +23,9 @@ security:
 
     access_control: 
 #        - { path: ^/login/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/libu/, roles: ROLE_USER }
-        - { path: ^/book/, roles: ROLE_USER }
-        - { path: ^/admin, roles: ROLE_USER }
-        - { path: ^/register, roles: ROLE_USER }
-        - { path: ^/_profiler, roles: ROLE_USER }  
-        - { path: ^/_error, roles: ROLE_USER }
+        - { path: ^/libu/, roles: [ ROLE_USER, ROLE_BOOK, ROLE_ADMIN ] }
+        - { path: ^/book/, roles: [ ROLE_USER, ROLE_BOOK, ROLE_ADMIN ] }
+        - { path: ^/admin, roles: [ ROLE_USER, ROLE_BOOK, ROLE_ADMIN ] }
+        - { path: ^/register, roles: [ ROLE_USER, ROLE_BOOK, ROLE_ADMIN ] }
+        - { path: ^/_profiler, roles: [ ROLE_USER, ROLE_BOOK, ROLE_ADMIN ] }  
+        - { path: ^/_error, roles: [ ROLE_USER, ROLE_BOOK, ROLE_ADMIN ] }
