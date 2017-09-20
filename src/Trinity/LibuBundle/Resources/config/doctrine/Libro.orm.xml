@@ -10,7 +10,7 @@
     <id name="idLibro" type="integer" column="id_libro">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="codigo" type="string" column="codigo" length="10" nullable="true">
+    <field name="codigo" type="integer" column="codigo" nullable="true">
       <options>
         <option name="fixed"/>
       </options>
@@ -31,7 +31,7 @@
         <option name="fixed"/>
       </options>
     </field>
-    <field name="editorial" type="string" column="editorial" length="30" nullable="true">
+    <field name="editorial" type="string" column="editorial" length="40" nullable="true">
       <options>
         <option name="fixed"/>
       </options>
