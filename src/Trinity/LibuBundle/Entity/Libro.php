@@ -86,11 +86,15 @@ class Libro
      */
     private $precio;
 
+
     /**
-     * @var integer
+     * @var \Trinity\LibuBundle\Entity\Tapas
      *
-     * @ORM\Column(name="tapas", type="integer", nullable=true)
-     */
+     * @ORM\ManyToOne(targetEntity="Trinity\LibuBundle\Entity\Tapas")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="tapas", referencedColumnName="id")
+     * })
+     */    
     private $tapas;
 
     /**

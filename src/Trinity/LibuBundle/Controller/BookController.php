@@ -545,12 +545,16 @@ class BookController extends Controller
                 $datos = $form->getData(); 
               
                 $filejson = file($datos['archivojson']);
-//                dump($filejson); die(); 
+                dump($filejson); 
 
                 foreach ($filejson as $librobajado) {
-                    $libroobj[] = $serializer->deserialize($librobajado, Libro::class, 'json');  
-                }
+                    $probando = $serializer->deserialize($librobajado, Libro::class, 'json'); 
 
+                    dump ($probando); 
+                    $libroobj[] = $probando; 
+                }
+                die(); 
+                
                 $bman->persisteArrayLibros($libroobj, "AGILP", true);
                 
                 return $this->render('LibuBundle:form:form.html.twig', array(
