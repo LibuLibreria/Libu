@@ -192,4 +192,37 @@ class VentaRepository extends EntityRepository
         );
     }
 
+
+
+    /*
+    * Obtiene los gastos mensuales
+    */
+    public function gastosMes($fecha, $fechasig) {
+    // Esta función es una copia de ventasMes, adaptada sólo al gasto. 
+    // Sería mejor crear una función única, con alguna variable. 
+        $parameters = array( 
+            'fecha' => $fecha->format('Y-m-d'),
+            'fechasig' => $fechasig->format('Y-m-d'),
+        );
+
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT SUBSTRING(v.diahora,1,10) as dia, v.descripcion, v.gasto
+            FROM LibuBundle:Venta v
+            WHERE v.diahora >= :fecha AND v.diahora < :fechasig
+            AND v.tipomovim = 'gto'"
+        )->setParameters($parameters);
+
+        $ventas = $query->getResult(); 
+
+        $formatoFecha = function(&$vent)   {
+            $vent['fechalink'] = date("Ymd",strtotime($vent['dia']));
+        };
+        array_walk($ventas, $formatoFecha );
+
+        return array(
+            'ventas' => $ventas,
+        );
+    }
+
+
 }

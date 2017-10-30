@@ -75,6 +75,7 @@ class VentaType extends AbstractType
             ->add('save', SubmitType::class, array('label' => 'Venta'))         
             ->add('caja', SubmitType::class, array('label' => 'Caja de hoy'))  
             ->add('mensual', SubmitType::class, array('label' => 'Caja mensual.'))  
+            ->add('gastomensual', SubmitType::class, array('label' => 'Gasto mensual.'))  
             ->add('proveedores', SubmitType::class, array('label' => 'Caja proveedores.'))  
             ->add('gasto_concepto', EntityType::class, array(
                 'class' => 'LibuBundle:Concepto',

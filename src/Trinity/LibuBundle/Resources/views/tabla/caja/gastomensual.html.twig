@@ -1,0 +1,40 @@
+{% extends "LibuBundle::tabla/tabla_layout.html.twig" %}
+
+    	{% block titulo %}	
+	    	<h1>Gasto mensual</h1>
+	    	<h3><br>Mes: {{ fecha  }}</h3>
+    	{% endblock %}
+
+
+		{% block contenido %}
+		    {% for vent in ventasdia.ventas %}
+		    	<tr>
+		        	<td>{{ vent['dia'] | localizeddate('full', 'none', app.request.locale ) }}</td>		
+		        	<td>{{ vent['descripcion'] }}</td>  
+		        	<td>{{ vent['gasto']  |round(1,'common') }} euros </td>   			        	
+	        	</tr>
+		    {% endfor %}
+
+    	{% endblock %}
+
+
+		{% block formulario %}
+		    {{ form_start(form) }}
+	        <div>
+	            {{ form_errors(form.mesesventas) }}
+	            {{ form_widget(form.mesesventas) }}
+	            {{ form_label(form.fecha) }}
+	            {{ form_widget(form.fecha) }}
+
+	            
+	        </div>
+	        <p>&nbsp;</p>
+
+	        <div>
+	            {{ form_widget(form.menu, {'attr': {'class':'btn btn-danger .btn-block  btn-lg'}} ) }}
+	        </div>
+	       
+		    {{ form_row(form._token) }}
+		    {{ form_end(form)}}        
+
+		{% endblock %}

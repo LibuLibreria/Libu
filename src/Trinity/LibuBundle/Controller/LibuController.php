@@ -168,6 +168,10 @@ class LibuController extends Controller
                 return $this->redirectToRoute('cajamensual');   
             }  
 
+            // Botón Formulario Gasto Mensual
+            if ($form->get('gastomensual')->isClicked()) {
+                return $this->redirectToRoute('gastomensual');   
+            } 
             // Botón Formulario Caja Proveedores
             if ($form->get('proveedores')->isClicked()) {
                 return $this->redirectToRoute('proveedor_index');   

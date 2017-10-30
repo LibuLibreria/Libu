@@ -265,5 +265,77 @@ class CajaController extends Controller
     }
 
 
+
+
+    /**
+     * @Route("/libu/gastomensual", defaults={"mes": 1}, name="gastomensual")
+     * @Route("/libu/gastomensual/{mes}", requirements={"mes": "[1-9]\d*"}, name="gastomensual_fecha")     
+     */
+    public function gastomensualAction(Request $request, $mes)
+    // Esta función es una copia de cajamensualAction, adaptada sólo al gasto. 
+    // Sería mejor crear una función única, con alguna variable. 
+    {
+        $fecha = ($mes != 1) ? \DateTime::createFromFormat('Ym', $mes) : new \DateTime(); 
+        $fecha->modify('first day of this month');
+        $fechasig = clone $fecha;   // nueva instancia para que no afecten las modify a $fecha
+        $fechasig->modify('last day of this month')->modify('+1 day');
+
+        // 
+        $em = $this->getDoctrine()->getManager();
+
+        // Buscamos las ventas del día marcado por $fecha con la función ventasFechas()
+        $ventas = $em->getRepository('LibuBundle:Venta')->gastosMes($fecha, $fechasig);
+
+
+        $hoy =  new \DateTime();
+        $mesesanteriores = $hoy->modify('+1 month');
+
+        for ($i=0; $i<12; $i++) {
+ //         $hilabete = strtotime($hoy);        // marca Unix de tiempo
+            $anoactual = $hoy->modify('-1 month')->format('Y');
+            $textochoice = $this->mesescast[$hoy->format('n')]."-".$anoactual;
+            $meseslista[$textochoice] = date($hoy->format('Ym'));     // array para los choices 
+        }
+
+        $form = $this->createFormBuilder(array())
+           ->add('mesesventas', ChoiceType::class, array(
+                'choices'  => $meseslista,
+               'expanded' => false,
+               'multiple' => false,
+               'data' => date($fecha->format('Ym'))
+            ))       
+            ->add('fecha', SubmitType::class, array('label' => 'Buscar en esa fecha'))            
+            ->add('menu', SubmitType::class, array('label' => 'Volver a Venta'))
+//            ->add('archivo', SubmitType::class, array('label' => 'Emitir archivo IAD'))            
+
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('fecha')->isClicked()) {
+                $data = $form->getData();
+
+                return $this->redirectToRoute('gastomensual_fecha', array('mes' => $data['mesesventas']));
+            }              
+            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+/*            if ($form->get('archivo')->isClicked()) {
+                $data = $form->getData();                
+                return $this->redirectToRoute('conta_fecha', array('mes' => $data['mesesventas']));
+            }   */
+        }
+
+       $fechatit = " ".$this->mesescast[$fecha->format('n')]." ".$fecha->format('Y');
+
+        return $this->render('LibuBundle:tabla/caja:gastomensual.html.twig',array(
+            'form' => $form->createView(),
+            'ventasdia' => $ventas,
+            'fecha' => $fechatit,
+            'mesescast' => $this->mesescast,
+            'cabecera' => array("Día", "Descripción", "Gasto"),          
+            ));    
+    }
+
+
 }
 

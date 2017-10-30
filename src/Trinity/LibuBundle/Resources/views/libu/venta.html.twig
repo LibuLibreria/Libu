@@ -220,6 +220,7 @@
                         <h2>Caja: </h2>   
                         {{ form_widget(form.caja) }}     
                         {{ form_widget(form.mensual) }}     
+                        {{ form_widget(form.gastomensual) }}                         
                         {{ form_widget(form.proveedores) }} 
                         {% if is_granted('ROLE_ADMIN') %}
                             <a href= {{ path('easyadmin')}} class="btn btn-info" role="button">Admin</a>
