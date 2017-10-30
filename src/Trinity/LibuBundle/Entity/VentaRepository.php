@@ -221,6 +221,7 @@ class VentaRepository extends EntityRepository
 
         return array(
             'ventas' => $ventas,
+            'totalgasto' => $this->SumaColumna($ventas, 'gasto'),             
         );
     }
 

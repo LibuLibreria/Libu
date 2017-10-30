@@ -14,7 +14,8 @@
 		        	<td>{{ vent['gasto']  |round(1,'common') }} euros </td>   			        	
 	        	</tr>
 		    {% endfor %}
-
+		    <tr><td><b> Total:</b></td><td></td><td><b>{{ ventasdia.totalgasto  |round(1,'common') }} euros</b></td>
+			</tr>
     	{% endblock %}
 
 
