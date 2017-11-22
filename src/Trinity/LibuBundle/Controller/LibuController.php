@@ -42,8 +42,14 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 use Trinity\LibuBundle\Crawler\ISBNdb\ISBNDBManager;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
+
+
 class LibuController extends Controller
 {
+
+
 
     /**
      * @Route("/libu/venta", name="venta")
