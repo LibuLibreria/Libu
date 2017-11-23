@@ -36,7 +36,8 @@
         "doctrine/doctrine-migrations-bundle": "^1.2",
         "symfony/dom-crawler": "^3.2",
         "symfony/css-selector": "^3.2",
-        "symfony/process": "^3.3"
+        "symfony/process": "^3.3",
+        "symfony/filesystem": "^3.3"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
