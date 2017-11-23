@@ -41,9 +41,16 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 use Trinity\LibuBundle\Crawler\ISBNdb\ISBNDBManager;
+use Trinity\LibuBundle\Controller\PrinterController;
+
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
+
 
 class LibuController extends Controller
 {
+
+
 
     /**
      * @Route("/libu/venta", name="venta")
@@ -257,16 +264,22 @@ class LibuController extends Controller
 
         $prodvendidos = $em->getRepository('LibuBundle:ProductoVendido')->findByIdVenta($ventaactual); 
         
+        $arrayproductos = array(); 
+
         if (count($prodvendidos) > 0 ) {
             $textoPagos .= "<b>PRODUCTOS</b>"; 
             // Bucle para cada producto vendido.
+            $numproductos = 0;
+
             foreach ($prodvendidos as $pvend) {
                 $cantidad = $pvend->getCantidad();
                 $pagopvend = $cantidad * $pvend->getIdProd()->getPrecio();
                 $plural = ($cantidad > 1) ? "s" : ""; 
-                $textoPagos .= "<br>".$cantidad." producto".$plural.": ".$pvend->getIdProd()->getCodigo().
+                $prod_vendido = $pvend->getIdProd()->getCodigo(); 
+                $textoPagos .= "<br>".$cantidad." producto".$plural.": ".$prod_vendido.
                     " = ".($pagopvend)." euros";
                 $pagoproductos += $pagopvend; 
+                $arrayproductos[] = array('prod' => $prod_vendido, 'cantidad' => $cantidad, 'pago' => $pagopvend); 
             }
             $textoPagos .= "<br>Ha escogido productos por valor de <b>".$pagoproductos." euros.</b>";
         }
@@ -274,6 +287,7 @@ class LibuController extends Controller
         return array(
             'pagoproductos' => $pagoproductos, 
             'texto' => $textoPagos,
+            'arrayproductos' => $arrayproductos,
         ); 
     }
 
@@ -318,6 +332,24 @@ class LibuController extends Controller
         // Manejo de la respuesta
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('ticket')->isClicked()) {
+                $ventaactual->setFactura($numfactura);
+                $ventaactual->setTipomovim("ven");
+                try{
+                    $em->persist($ventaactual);
+                    $em->flush();
+                } catch(\Doctrine\ORM\ORMException $e){
+                    $this->addFlash('error', 'Error al guardar los datos');
+                }
+
+                $printer = new PrinterController();
+                $fact = strval(date("Y"))."/".strval($numfactura); 
+                $printer->imprimirAction($fact, $ventaactual, $calcproductos['arrayproductos']); 
+
+                return $this->redirectToRoute('venta');
+            }
+
+
             if ($form->get('finalizar')->isClicked()) {
                 $ventaactual->setFactura($numfactura);
                 $ventaactual->setTipomovim("ven");
@@ -327,8 +359,12 @@ class LibuController extends Controller
                 } catch(\Doctrine\ORM\ORMException $e){
                     $this->addFlash('error', 'Error al guardar los datos');
                 }
+
                 return $this->redirectToRoute('venta');
             }
+
+
+
 //            if ($form->get('factura')->isClicked()) return $this->redirectToRoute('factura');
            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
         }
