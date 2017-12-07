@@ -5,6 +5,12 @@
 {% block body %}
     <div class="clearfix">
 
+
+		{% if host == "localhost" %}
+			<h3 style="background: red;">¡OJO! Estás en el Trinity local. 
+			Lo que hagas aquí no se guardará en el Trinity Oficial.</h3>
+		{% endif %}
+
 		{% if titulo is defined %}
 			<h2>{{ titulo | raw}}</h2>
 		{% endif %}

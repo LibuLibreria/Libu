@@ -60,6 +60,13 @@
 <div class="col-sm-9 col-md-6 col-lg-6 mt-4">
     <h2>Pedidos</h2>
 
+
+    {% if host == "localhost" %}
+        <h3 style="background: red;">¡OJO! Estás en el Trinity local. 
+        Lo que hagas aquí no se guardará en el Trinity Oficial.</h3>
+    {% endif %}
+
+
     {% if numpedidos > 0 %}
 
         Numero de pedidos: {{ numpedidos }} <br>

@@ -428,6 +428,7 @@ class BookController extends Controller
             'tabla' => $librosp,    
             'cabecera' => array('Código', 'Estatus',  'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),    
         	'accion' => 'precio',
+            'host' => $_SERVER['HTTP_HOST'],
     	));
     }
 
@@ -457,6 +458,8 @@ class BookController extends Controller
                 'texto_previo' => "No hay libros en la lista",    
                 'boton_final' => "Volver a formulario",
                 'path_boton_final' => "bookagil",
+                'host' => $_SERVER['HTTP_HOST'],
+            
                 )); 
         }
 
@@ -479,6 +482,7 @@ class BookController extends Controller
             'tabla' => $librosp,    
             'cabecera' => array('Código', 'Estatus', 'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),   
             'accion' => $accion, 
+            'host' => $_SERVER['HTTP_HOST'],
             )); 
     }
 
@@ -720,6 +724,7 @@ class BookController extends Controller
         return $this->render('LibuBundle:book:pedidos.html.twig', array(
             'numpedidos' => $numpedidos,
             'datospedido' => $datospedido,
+            'host' => $_SERVER['HTTP_HOST'],            
         ));        
     }
 
