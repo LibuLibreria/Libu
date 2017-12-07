@@ -548,19 +548,23 @@ class BookController extends Controller
                 dump($filejson); 
 
                 foreach ($filejson as $librobajado) {
-                    $probando = $serializer->deserialize($librobajado, Libro::class, 'json'); 
+                    $libroasubir = $serializer->deserialize($librobajado, Libro::class, 'json'); 
 
-                    dump ($probando); 
-                    $libroobj[] = $probando; 
+                    // Corrige un error en la forma de serializar 
+                    $libroasubir->setTapas($libroasubir->getTapas()['id']);
+                    $libroasubir->setConservacion($libroasubir->getConservacion()['id']);
+
+                    $libroobj[] = $libroasubir; 
+
                 }
-                die(); 
                 
                 $bman->persisteArrayLibros($libroobj, "AGILP", true);
                 
-                return $this->render('LibuBundle:form:form.html.twig', array(
-                    'mensaje' => "Se han guardado correctamente los archivos",
+                return $this->render('LibuBundle:book:mensaje.html.twig', array(
+                    'mensaje' => "Se han guardado correctamente los archivos. ",
                     'titulo' => "Leído archivo json",
-                ));        
+                ));   
+                die;      
 
             }
 
