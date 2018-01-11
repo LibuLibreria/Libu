@@ -10,7 +10,7 @@
     <id name="id" type="integer" column="id">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="factura" type="integer" column="factura" nullable="true">
+    <field name="factura" type="string" column="factura" length="20" nullable="true">
       <options>
         <option name="unsigned"/>
       </options>
