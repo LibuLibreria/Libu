@@ -303,7 +303,10 @@ class LibuController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         // Pone el siguiente identificador de factura
-        $numfactura = 1 + $em->getRepository('LibuBundle:Venta')->findNumUltimaFactura();
+        $ultfactura = $em->getRepository('LibuBundle:Venta')->findNumUltimaFactura(); 
+        $numfactura = 1 + $ultfactura; 
+        $textfactura = "L".str_pad(strval($numfactura), 7, "0", STR_PAD_LEFT)."-".date("Y");
+
 
         // Recupera el identificador de la venta realizada. 
         $session = $request->getSession();
@@ -321,7 +324,7 @@ class LibuController extends Controller
         $calctotal = $ventaactual->getIngreso();
 
         // Escribe el texto
-        $textoPagos = "<h2>Número de ticket: ".$numfactura."</h2>";
+        $textoPagos = "<h2>Número de ticket: ".$textfactura."</h2>";
         $textoPagos .= $calclibros['texto'];         
         $textoPagos .= $calcproductos['texto'];
         $textoPagos .= "<h1>TOTAL: ".$calctotal." euros</h1>";
@@ -333,8 +336,11 @@ class LibuController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('ticket')->isClicked()) {
-                $ventaactual->setFactura($numfactura);
+                $ventaactual->setFactura($textfactura);
                 $ventaactual->setTipomovim("ven");
+
+                // Cambia el número de la última factura
+                $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
                 try{
                     $em->persist($ventaactual);
                     $em->flush();
@@ -343,7 +349,7 @@ class LibuController extends Controller
                 }
 
                 $printer = new PrinterController();
-                $fact = strval(date("Y"))."/".strval($numfactura); 
+                $fact = strval(date("Y"))."/".strval($textfactura); 
                 $printer->imprimirAction($fact, $ventaactual, $calcproductos['arrayproductos']); 
 
                 return $this->redirectToRoute('venta');
@@ -351,8 +357,11 @@ class LibuController extends Controller
 
 
             if ($form->get('finalizar')->isClicked()) {
-                $ventaactual->setFactura($numfactura);
+                $ventaactual->setFactura($textfactura);
                 $ventaactual->setTipomovim("ven");
+
+                // Cambia el número de la última factura
+                $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
                 try{
                     $em->persist($ventaactual);
                     $em->flush();
