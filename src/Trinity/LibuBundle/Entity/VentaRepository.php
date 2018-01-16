@@ -53,17 +53,36 @@ class VentaRepository extends EntityRepository
 
         $parameters = array();
         $query = $this->getEntityManager()->createQuery(
-            'SELECT v.factura
-            FROM LibuBundle:Venta v 
-            WHERE v.factura IS NOT NULL
-            ORDER BY v.factura DESC'
+            "SELECT c.valor
+            FROM LibuBundle:Configuracion c 
+            WHERE c.nombre = 'ultimafactura'"
         )->setParameters($parameters);
-        $result = $query->setMaxResults(1)->getOneOrNullResult();
-        return $result['factura'];
+//        $result = $query->setMaxResults(1)->getOneOrNullResult();
+        $result = $query->getResult();  
+        return $result[0]['valor'];
     }
         
 
 
+
+    /*
+    * Cambia el número de la última factura emitida
+    */
+    public function cambiaNumUltimaFactura($num) {
+
+        $parameters = array(
+            'numero' => $num,
+        );
+        $query = $this->getEntityManager()->createQuery(
+            "UPDATE LibuBundle:Configuracion c 
+            SET c.valor = :numero
+            WHERE c.nombre = 'ultimafactura'"
+        )->setParameters($parameters);
+//        $result = $query->setMaxResults(1)->getOneOrNullResult();
+        $result = $query->getResult();  
+        return $result[0]['valor'];
+    }
+        
 
         
     public function findVentasConFactura() {
