@@ -158,7 +158,8 @@ class ContabilidadController extends Controller
 		foreach ($asientos as $asiento) {
 			$valores_venta['v_fecha_asiento'] = $asiento['fecha'];
 			$valores_venta['v_total_fact'] = "".$this->formatoCantidades($asiento['ingreso']); 
-			$valores_venta['v_num_factura'] = "L".str_pad($asiento['factura'], 7, "0", STR_PAD_LEFT);
+//			$valores_venta['v_num_factura'] = "L".str_pad($asiento['factura'], 7, "0", STR_PAD_LEFT);
+			$valores_venta['v_num_factura'] = $asiento['factura'];
 
 			$cadena = $this->lineaFichero($estructura_venta, $valores_venta); 
 //			fwrite($myfile, $cadena); 
