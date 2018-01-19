@@ -97,6 +97,22 @@ class VentaRepository extends EntityRepository
     }
 
 
+     /*
+    *  Encuentra la última venta realizada
+    */       
+    public function findUltimaVenta() {
+        $parameters = array();
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT v
+            FROM LibuBundle:Venta v 
+            WHERE v.factura IS NOT NULL
+            AND v.tipomovim = 'ven'
+            ORDER BY v.id DESC"
+        )->setParameters($parameters);
+        $query->setMaxResults(1);
+        return $query->getResult(); 
+    }
+
     /*
     * Obtiene las ventas que hay entre dos determinadas fechas
     */

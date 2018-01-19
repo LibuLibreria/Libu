@@ -60,7 +60,7 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        $url = $this->router->generate('venta');
+        $url = $this->router->generate('init');
 
         return new RedirectResponse($url);
     }
@@ -81,7 +81,7 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
 
     protected function getDefaultSuccessRedirectUrl()
     {
-        return $this->router->generate('venta');
+        return $this->router->generate('init');
     }
 
     public function supportsRememberMe()
