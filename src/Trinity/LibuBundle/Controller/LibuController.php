@@ -52,6 +52,18 @@ class LibuController extends Controller
 
 
 
+
+    /**
+     * @Route("/", name="init")
+     */
+    public function initAction(Request $request)
+    {
+
+
+        return $this->redirectToRoute('venta');
+
+    }
+
     /**
      * @Route("/libu/venta", name="venta")
      */
