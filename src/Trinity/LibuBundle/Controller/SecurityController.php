@@ -30,6 +30,7 @@ class SecurityController extends Controller
     public function loginCheckAction()
     {
 
+
     }
 
     /**
@@ -37,6 +38,8 @@ class SecurityController extends Controller
      */
     public function logoutAction()
     {
+        return $this->redirectToRoute('login');
+
 
     }
 }
