@@ -52,6 +52,56 @@ class LibuController extends Controller
 
 
 
+
+    /**
+     * @Route("/", name="init")
+     */
+    public function initAction(Request $request) {
+
+    // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+
+        // Si el año de la última factura es diferente al actual, 
+        // lanza un mensaje y resetea el contador de facturas
+        if ($this->revisaNuevoAnno($em)) { 
+            return $this->render('LibuBundle:form:mensaje.html.twig', array(
+            'titulo' => "Cambio de año",
+            'mensaje' => 'La base de datos nos dice que hoy es la primera conexión del año. Si esto es incorrecto, avisa por favor urgentemente al administrador. Al pulsar Continuar, la numeración de las facturas comenzará desde cero.',
+            'boton_mensaje' => "Continuar",
+            'redireccion' => "resetfactura",
+            ));    
+        }
+
+        return $this->redirectToRoute('venta');
+
+    }
+
+
+    private function revisaNuevoAnno($em) {
+
+        // Busca el año de la última factura.
+        $ultventa = $em->getRepository('LibuBundle:Venta')->findUltimaVenta();
+        $annoultimafactura = substr($ultventa[0]->getFactura(), 9, 4);
+ 
+        // Si es diferente al año actual, devuelve false
+        return ($annoultimafactura != date('Y')) ;
+    }
+
+
+    /**
+     * @Route("/libu/resetfactura", name="resetfactura")
+     */
+    public function resetFacturaAction(Request $request)
+    {
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+
+        $okreset = $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura(0);
+
+        return $this->redirectToRoute('venta');
+
+    }
+
     /**
      * @Route("/libu/venta", name="venta")
      */
