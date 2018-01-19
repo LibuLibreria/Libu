@@ -139,7 +139,7 @@ class ContabilidadController extends Controller
 			if ($venta['ingresolibros'] != 0) {
 				$asientos[] = array(
 					'ingreso' => $venta['ingresolibros'],
-					'factura' => $venta['factura'],
+					'factura' => substr($venta['factura'], 0, 8),
 					'fecha' => $venta['hora']->format('d/m/Y')
 				);
 			}
