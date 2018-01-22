@@ -34,7 +34,7 @@ class RegistrationController extends Controller
             $em->persist($user);
             $em->flush();
 
-            return $this->redirectToRoute('venta');
+            return $this->redirectToRoute('init');
         }
 
         return $this->render('LibuBundle:libu:register.html.twig', [
