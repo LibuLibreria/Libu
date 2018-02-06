@@ -75,7 +75,7 @@ class LibroCortoType extends AbstractType
                 'label' => 'Título',
                 'required' => false,
                 'attr' => array(
-                    'rows' => '3',
+                    'rows' => '5',
                 )
             ))
             ->add('autor', TextareaType::class, array(

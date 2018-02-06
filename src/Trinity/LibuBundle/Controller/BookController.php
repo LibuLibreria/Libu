@@ -99,15 +99,13 @@ class BookController extends Controller
 
                 if ($form->get('buscarlibro')->isClicked()) {
                     $librosub = $form->getData();
-/*
-                    $texttapas = $librosub->getTapas(); 
-                    $librosub->setTapas($bman->validaTapas($texttapas));
-                    $textconservacion = $librosub->getConservacion();
-                    $librosub->setConservacion($bman->validaConservacion($textconservacion));
-*/
-                    $librointernet = $this->buscaIsbn($librosub->getIsbn(), "ESP");                  
-                    $librosub->setTitulo($librointernet['datos'][0]['titulo']); 
-                    $librosub->setAutor($librointernet['datos'][0]['autor']); 
+                    $librointernet = $this->buscaIsbn($librosub->getIsbn(), "ESP");  
+                    if ($librointernet['datos'] == false) {
+                        $librosub->setTitulo("(Libro no encontrado en Abebooks)"); 
+                    } else {               
+                        $librosub->setTitulo($librointernet['datos'][0]['titulo']); 
+                        $librosub->setAutor($librointernet['datos'][0]['autor']); 
+                    }
                     $biensubido = $bman->persisteLibro($librosub, "AGILB");
                     if ($biensubido) {
                         $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
