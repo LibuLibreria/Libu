@@ -58,6 +58,12 @@ class LibroCortoType extends AbstractType
                     'autofocus' => 'autofocus',                    
                 )                
             ))  
+            ->add('buscarlibro', SubmitType::class, array(
+                'label' => 'Buscar',
+                'attr' => array(
+                    'class' => 'btn-lg btn-info',                    
+                )                
+            ))              
             ->add('descripcion', TextareaType::class, array(
                 'label' => 'Descripción del libro',
                 'required' => false,
@@ -65,6 +71,20 @@ class LibroCortoType extends AbstractType
                     'rows' => '3',
                 )
             ))
+            ->add('titulo', TextareaType::class, array(
+                'label' => 'Título',
+                'required' => false,
+                'attr' => array(
+                    'rows' => '3',
+                )
+            ))
+            ->add('autor', TextareaType::class, array(
+                'label' => 'Autor/a',
+                'required' => false,
+                'attr' => array(
+                    'rows' => '3',
+                )
+            ))                        
             ->add('notas', TextType::class, array(
                 'label' => 'Notas (Uso interno)',
                 'required' => false,
