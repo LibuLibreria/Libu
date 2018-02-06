@@ -39,8 +39,19 @@ class BookController extends Controller
         $bman = $this->get('app.books');
 
         // $ultlibro y $siglibro son el código del último libro guardado y el siguiente código
-        $ultlibro = $em->getRepository('LibuBundle:Libro')->mayorCodigo();
-        $siglibro = ($ultlibro[0]['codigo'] + 1); 
+        $ultlibro = $em->getRepository('LibuBundle:Libro')->arrayLibrosOrdenados();
+
+        $cont_titulo = ""; $cont_autor = ""; $cont_isbn = "";
+
+        if ($ultlibro[0]['estatus'] == 'AGILB') {
+            $siglibro = ($ultlibro[0]['codigo']);   
+            $cont_autor = $ultlibro[0]['autor'];
+            $cont_titulo = $ultlibro[0]['titulo'];
+            $cont_isbn = $ultlibro[0]['isbn'];
+        } else {
+            $siglibro = ($ultlibro[0]['codigo'] + 1);           
+        }
+ 
 
         $ultbalda = $bman->leeConfig('balda');
         $ultestanteria = $bman->leeConfig('estanteria');
@@ -58,6 +69,9 @@ class BookController extends Controller
         $form->get('codigo')->setData($siglibro);
         $form->get('tapas')->setData($tapabl);
         $form->get('conservacion')->setData($conservexc);
+        $form->get('titulo')->setData($cont_titulo);
+        $form->get('autor')->setData($cont_autor);
+        $form->get('isbn')->setData($cont_isbn);
 
         $texto = "";
 
@@ -80,10 +94,29 @@ class BookController extends Controller
                     } else {
                         $texto = "El libro no se ha subido correctamente"; 
                     }
+                    return $this->redirect($request->getUri());
                 }    
 
+                if ($form->get('buscarlibro')->isClicked()) {
+                    $librosub = $form->getData();
+/*
+                    $texttapas = $librosub->getTapas(); 
+                    $librosub->setTapas($bman->validaTapas($texttapas));
+                    $textconservacion = $librosub->getConservacion();
+                    $librosub->setConservacion($bman->validaConservacion($textconservacion));
+*/
+                    $librointernet = $this->buscaIsbn($librosub->getIsbn(), "ESP");                  
+                    $librosub->setTitulo($librointernet['datos'][0]['titulo']); 
+                    $librosub->setAutor($librointernet['datos'][0]['autor']); 
+                    $biensubido = $bman->persisteLibro($librosub, "AGILB");
+                    if ($biensubido) {
+                        $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
+                    } else {
+                        $texto = "El libro no se ha subido correctamente"; 
+                    }
+                    return $this->redirectToRoute('bookagil');
+                }   
 
-            return $this->redirect($request->getUri());
         } 
 
         return $this->render('LibuBundle:libu:agil.html.twig', array(

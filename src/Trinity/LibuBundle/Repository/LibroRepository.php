@@ -56,12 +56,12 @@ class LibroRepository extends EntityRepository
     /*
     *  Obtiene el código del último libro subido
     */
-    public function mayorCodigo()
+    public function arrayLibrosOrdenados()
     {
         $parameters = array();
 
         $query = $this->getEntityManager()->createQuery(
-            "SELECT l.codigo
+            "SELECT l.codigo, l.estatus, l.autor, l.titulo, l.isbn
             FROM LibuBundle:Libro l
             ORDER BY l.codigo DESC"
         )->setParameters($parameters);
