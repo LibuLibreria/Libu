@@ -131,9 +131,16 @@ function mostrarInformacionCaracter(evObject) {
 
                 {{ form_row(form.isbn) }}
 
-                {{ form_row(form.descripcion) }}                
+                {{ form_row(form.descripcion) }}     
 
-                {{ form_row(form.subiragil) }}  
+                {{ form_row(form.titulo) }}
+
+                {{ form_row(form.autor) }}                                           
+
+                <div>
+                    <div class="col-md-3">{{ form_row(form.subiragil) }}</div>
+                    <div class="col-md-3"> {{ form_row(form.buscarlibro) }}</div>
+                </div>
 
             </div>
 
