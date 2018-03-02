@@ -15,7 +15,7 @@ class LibroRepository extends EntityRepository
 	/*
 	*  Obtiene libros con determinado status
 	*/
-    public function buscaLibros($estatus)
+    public function buscaLibros($estatus, $elemento = 'codigo DESC')
     {
         $parameters = array( 
             'estatus' => $estatus, 
