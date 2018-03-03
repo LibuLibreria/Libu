@@ -643,32 +643,33 @@ class BookController extends Controller
         } else {
 //            $header = $crawler->filter('#pageHeader > h1');
 //            echo "<h2>".$header->text()."</h2>";
+            $resultados = $crawler->filter('#topbar-search-result-count')->text();
+            for($i=1; $i <= $resultados; $i++) {
+                $filtro = '#book-'.$i;
+                $array_crawler = $crawler->filter($filtro);
+     //            echo "<br>Text: ".$crawler->filter('p')->last()->text();
+     //            echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
 
-            $precios = $crawler->filter('.result-data');
- //            echo "<br>Text: ".$crawler->filter('p')->last()->text();
- //            echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
+    //            foreach ($precios as $domElement) {
 
-            $i = 0;
-            foreach ($precios as $domElement) {
+    //                $array_crawler = new Crawler();
+    //                $array_crawler->add($domElement);
 
-                $array_crawler = new Crawler();
-                $array_crawler->add($domElement);
+                    $pr = explode(' ',$this->textocraw($array_crawler->filter('.item-price .price') ) );
+                    $datos['precio'] = end($pr); 
+                    
+                    $env = explode(' ', $this->textocraw($array_crawler->filter('.shipping .price')) ); 
+                    $datos['envio'] = end($env);                
+                    $datos['libreria'] = $this->textocraw($array_crawler->filter('.bookseller-info > p > a') );        
+                    $datos['titulo'] = $this->textocraw($array_crawler->filter('.result-detail > h2 > a') ); 
+                    $datos['autor'] = $this->textocraw($array_crawler->filter('.result-detail > p > strong') ); 
+                    $datos['editorial'] = $this->textocraw($array_crawler->filter('#publisher > span') );                                                 
+                    $datos['pais'] = explode(',',$this->textocraw($array_crawler->filter('.bookseller-info > p > span') ));         
+                    $datos['suma'] = (float)str_replace(',', '.', $datos['precio']) 
+                                    + (float)str_replace(',', '.', $datos['envio']);
+                    $datosarray[] = $datos; 
 
-                $pr = explode(' ',$this->textocraw($array_crawler->filter('.item-price .price') ) );
-                $datos['precio'] = end($pr); 
-                
-                $env = explode(' ', $this->textocraw($array_crawler->filter('.shipping .price')) ); 
-                $datos['envio'] = end($env);                
-                $datos['libreria'] = $this->textocraw($array_crawler->filter('.bookseller-info > p > a') );        
-                $datos['titulo'] = $this->textocraw($array_crawler->filter('.result-detail > h2 > a') ); 
-                $datos['autor'] = $this->textocraw($array_crawler->filter('.result-detail > p > strong') ); 
-                $datos['editorial'] = $this->textocraw($array_crawler->filter('#publisher > span') );                                                 
-                $datos['pais'] = explode(',',$this->textocraw($array_crawler->filter('.bookseller-info > p > span') ));         
-                $datos['suma'] = (float)str_replace(',', '.', $datos['precio']) 
-                                + (float)str_replace(',', '.', $datos['envio']);
-                $datosarray[] = $datos; 
-
-                if (++$i == $LIMITE_LIBROS_ABEB ) break;
+     //               if (++$i == $LIMITE_LIBROS_ABEB ) break;
             } 
         return array('datos' => $datosarray, 'url' => $url_isbn); 
         }
