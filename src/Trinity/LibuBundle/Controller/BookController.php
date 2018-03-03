@@ -88,7 +88,7 @@ class BookController extends Controller
                     $textconservacion = $librosub->getConservacion();
                     $librosub->setConservacion($bman->validaConservacion($textconservacion));
 */
-                    $biensubido = $bman->persisteLibro($librosub, "AGILP");
+                    $biensubido = $bman->persisteLibro($librosub, "AGIL");
                     if ($biensubido) {
                         $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
                     } else {
@@ -373,20 +373,20 @@ class BookController extends Controller
 
 
 
-    public function librosPorEstatus($estatus, $elemento = 'codigo DESC')  {
+    public function librosPorEstatus($estatus)  {
 
         $em = $this->getDoctrine()->getManager();
 
-        return $em->getRepository('LibuBundle:Libro')->buscaLibros($estatus, $elemento);  
+        return $em->getRepository('LibuBundle:Libro')->buscaLibros($estatus);  
 
     }
 
 
-    private function todosLibros($elemento = 'refabebooks', $orden = 'asc') {
+    private function todosLibros($orden = 'refabebooks') {
 
         $em = $this->getDoctrine()->getManager();
 
-        return $em->getRepository('LibuBundle:Libro')->findBy(array(), array($elemento => $orden)); 
+        return $em->getRepository('LibuBundle:Libro')->findBy(array(), array($orden => 'asc')); 
     }
 
 
@@ -405,7 +405,7 @@ class BookController extends Controller
 
     private function siguientePrecio() {
 
-        $librosagilp = $this->librosPorEstatus('AGILP');
+        $librosagilp = $this->librosPorEstatus("AGILP");
 
         if (empty($librosagilp)) {
             return $this->vacioSinPrecio(); 
@@ -430,7 +430,7 @@ class BookController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $librosp = $this->librosPorEstatus('AGILP');     
+        $librosp = $this->librosPorEstatus("AGILP");     
 
         if (empty($librosp)) {
             return $this->vacioSinPrecio(); 
@@ -476,11 +476,11 @@ class BookController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         if ($accion == 'agil') {
-            $librosp = $this->librosPorEstatus('AGIL');   
+            $librosp = $this->librosPorEstatus("AGIL");   
         }
 
         else if ($accion == 'todos') {
-            $librosp = $this->todosLibros('codigo', 'desc');     
+            $librosp = $this->todosLibros();     
         }        
 
         if (empty($librosp)) {
