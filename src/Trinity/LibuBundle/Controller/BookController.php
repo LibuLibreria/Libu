@@ -88,7 +88,7 @@ class BookController extends Controller
                     $textconservacion = $librosub->getConservacion();
                     $librosub->setConservacion($bman->validaConservacion($textconservacion));
 */
-                    $biensubido = $bman->persisteLibro($librosub, "AGIL");
+                    $biensubido = $bman->persisteLibro($librosub, "AGILP");
                     if ($biensubido) {
                         $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
                     } else {
@@ -382,11 +382,11 @@ class BookController extends Controller
     }
 
 
-    private function todosLibros($orden = 'refabebooks') {
+    private function todosLibros($elemento = 'codigo', $orden = 'desc') {
 
         $em = $this->getDoctrine()->getManager();
 
-        return $em->getRepository('LibuBundle:Libro')->findBy(array(), array($orden => 'asc')); 
+        return $em->getRepository('LibuBundle:Libro')->findBy(array(), array($elemento => $orden)); 
     }
 
 
