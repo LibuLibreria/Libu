@@ -37,7 +37,9 @@
         "symfony/dom-crawler": "^3.2",
         "symfony/css-selector": "^3.2",
         "symfony/process": "^3.3",
-        "symfony/filesystem": "^3.3"
+        "symfony/filesystem": "^3.3",
+        "fabpot/goutte": "^3.2",
+        "easycorp/easyadmin-bundle": "^1.17"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

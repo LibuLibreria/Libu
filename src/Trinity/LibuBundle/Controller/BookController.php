@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\CssSelector\CssSelectorConverter;
-
+use Goutte\Client;
 
 
 class BookController extends Controller
@@ -622,7 +622,7 @@ class BookController extends Controller
         $LIMITE_LIBROS_ABEB = 20;
 
         $esp = ($entorno == "ESP") ? '&n=200000228' : '';
-
+/*
         // See http://php.net/manual/en/migration56.openssl.php
         $streamContext = stream_context_create([
             'ssl' => [
@@ -630,12 +630,62 @@ class BookController extends Controller
                 'verify_peer_name' => false
             ]
         ]);
-        $url_isbn = 'https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn;
-        if (! $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext)) {
+*/
+        $url_isbn = 'https://www.iberlibro.com/servlet/ShipRates?vid=63493145&cntry=ESP';
+
+/*        if (! $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext)) {
             echo "Error. Probablemente no hay conexión a internet. Conecta y prueba de nuevo";
         }
+*/
+        $client = new Client();
+        $crawler = $client->request('GET', $url_isbn);
 
+        // you can get button by its label
+        $form = $crawler->selectButton('button-apply')->form();
+//        $form['#check-apply']->tick();   
+
+        $crawler = $client->submit($form);  
+
+
+//        $cookie = $client->getCookieJar()->get('selectedShippingRate','/servlet','www.abebooks.com');
+        $cookies = $client->getCookieJar()->all();
+
+//                dump($cookie); die();
+        $url_isbn = 'https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn;
+/*       if (! $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext)) {
+            echo "Error. Probablemente no hay conexión a internet. Conecta y prueba de nuevo";
+        }
+*/
+
+
+/* STEP 1. let’s create a cookie file 
+$ckfile = tempnam ("/tmp", "CURLCOOKIE");
+*/
+/* STEP 2. visit the homepage to set the cookie properly 
+$ch = curl_init ("http://somedomain.com/");
+curl_setopt ($ch, CURLOPT_COOKIEJAR, $ckfile); 
+curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+$output = curl_exec ($ch);
+*/
+/* STEP 3. visit cookiepage.php 
+$ch = curl_init ("http://somedomain.com/cookiepage.php");
+curl_setopt ($ch, CURLOPT_COOKIEFILE, $ckfile); 
+curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+$output = curl_exec ($ch);
+*/
+
+
+/*
         $crawler = new Crawler($abebooks_isbn);
+*/
+
+//        $client = new Client();
+        $crawler = $client->request('GET', $url_isbn);
+        foreach ($cookies as $cookie) {
+            $client->getCookieJar()->set($cookie);
+        }
+//        dump($client->getCookieJar()->all()); die();
+
 
         if (! $crawler->filter('#pageHeader > h1')->count()) {
             $datos = false;
@@ -667,6 +717,12 @@ class BookController extends Controller
                     $datos['pais'] = explode(',',$this->textocraw($array_crawler->filter('.bookseller-info > p > span') ));         
                     $datos['suma'] = (float)str_replace(',', '.', $datos['precio']) 
                                     + (float)str_replace(',', '.', $datos['envio']);
+
+
+/*
+                    $form = $crawler->selectButton('validate')->form();
+                    $crawler = $client->submit($form);  
+  */                                         
                     $datosarray[] = $datos; 
 
      //               if (++$i == $LIMITE_LIBROS_ABEB ) break;
