@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Goutte\Client;
-
+use Symfony\Component\BrowserKit\Cookie;
 
 class BookController extends Controller
 {
@@ -638,53 +638,43 @@ class BookController extends Controller
         }
 */
         $client = new Client();
-        $crawler = $client->request('GET', $url_isbn);
+
+
+
+        $crawler1 = $client->request('GET', $url_isbn);
+// dump($client->getCookieJar()->all()); die();
+        $cookieJar = $client->getCookieJar();
+
 
         // you can get button by its label
-        $form = $crawler->selectButton('button-apply')->form();
-//        $form['#check-apply']->tick();   
+        $form = $crawler1->selectButton('button-apply')->form();
+ //       $form['Aplicar']->tick();   
 
-        $crawler = $client->submit($form);  
+        $crawler1 = $client->submit($form);  
+
+//        $cookie = $cookieJar->get('selectedShippingRate','/servlet','www.abebooks.com');
+//        $cookies = $client->getCookieJar()->all();
 
 
-//        $cookie = $client->getCookieJar()->get('selectedShippingRate','/servlet','www.abebooks.com');
-        $cookies = $client->getCookieJar()->all();
-
+        $newcookie = new Cookie('AbeShipTo', 'ESP', strtotime('+1 day'), '/', 'www.iberlibro.com', false, false);
+        $cookieJar->set($newcookie);
+//        $client = new Client();
+/*        foreach ($cookies as $cookie) {
+            $client->getCookieJar()->set($cookie);
+        }
+*/    
+ //   dump($client->getCookieJar()->all()); die();
 //                dump($cookie); die();
         $url_isbn = 'https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn;
 /*       if (! $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext)) {
             echo "Error. Probablemente no hay conexión a internet. Conecta y prueba de nuevo";
         }
 */
-
-
-/* STEP 1. let’s create a cookie file 
-$ckfile = tempnam ("/tmp", "CURLCOOKIE");
-*/
-/* STEP 2. visit the homepage to set the cookie properly 
-$ch = curl_init ("http://somedomain.com/");
-curl_setopt ($ch, CURLOPT_COOKIEJAR, $ckfile); 
-curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-$output = curl_exec ($ch);
-*/
-/* STEP 3. visit cookiepage.php 
-$ch = curl_init ("http://somedomain.com/cookiepage.php");
-curl_setopt ($ch, CURLOPT_COOKIEFILE, $ckfile); 
-curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-$output = curl_exec ($ch);
-*/
-
+        $crawler = $client->request('GET', $url_isbn);
 
 /*
         $crawler = new Crawler($abebooks_isbn);
 */
-
-//        $client = new Client();
-        $crawler = $client->request('GET', $url_isbn);
-        foreach ($cookies as $cookie) {
-            $client->getCookieJar()->set($cookie);
-        }
-//        dump($client->getCookieJar()->all()); die();
 
 
         if (! $crawler->filter('#pageHeader > h1')->count()) {
