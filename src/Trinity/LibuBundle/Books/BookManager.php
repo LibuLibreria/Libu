@@ -558,7 +558,6 @@ class BookManager implements ContainerAwareInterface  {
         curl_close($ch);
 
         $mens_abebooks = new \SimpleXMLElement($resultado);
-
         $subido['code'] = $mens_abebooks->code; 
             if ($subido['code'] == "600") {
                 $subido['mess'] = $mens_abebooks->AbebookList->Abebook->message;
@@ -569,6 +568,7 @@ class BookManager implements ContainerAwareInterface  {
 
 
 //         echo "Resultado: <br>"; echo "<pre>"; print_r($resultado); echo "</pre>";
+ 
         return $subido; 
     }
             
