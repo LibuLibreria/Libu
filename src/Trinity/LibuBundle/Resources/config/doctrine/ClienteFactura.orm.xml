@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Trinity\LibuBundle\Entity\ClienteFactura" table="clientefactura"  repository-class="Trinity\LibuBundle\Repository\ClienteFacturaRepository">
+    <indexes>
+      <index name="cliente" columns="cliente"/>
+      <index name="venta" columns="venta"/>
+    </indexes>    
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <many-to-one field="cliente" target-entity="Cliente" fetch="LAZY">
+      <join-columns>
+        <join-column name="cliente" referenced-column-name="id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="venta" target-entity="Venta" fetch="LAZY">
+      <join-columns>
+        <join-column name="venta" referenced-column-name="id"/>
+      </join-columns>
+    </many-to-one>  
+    <field name="numfactura" type="string" column="numfactura" length="30" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>   
+    <field name="diahora" type="datetime" column="diaHora" nullable="true"/>
+
+  </entity>
+</doctrine-mapping>

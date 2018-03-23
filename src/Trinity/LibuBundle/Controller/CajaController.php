@@ -78,6 +78,8 @@ class CajaController extends Controller
         // Desplegable con las fechas anteriores
         $diasanteriores = $em->getRepository('LibuBundle:Venta')->fechasIngresos();
 
+        $diaslista = array(); 
+
         // Creamos el array para preparar las choices
         foreach ($diasanteriores as $dia) {
             $time_dia = strtotime($dia['dias']);        // marca Unix de tiempo

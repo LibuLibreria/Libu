@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-  <entity name="Trinity\LibuBundle\Entity\Cliente" table="cliente"  repository-class="Trinity\LibuBundle\Repository\LibroRepository">
-    <id name="idCli" type="integer" column="id_cli">
+  <entity name="Trinity\LibuBundle\Entity\Cliente" table="cliente"  repository-class="Trinity\LibuBundle\Repository\ClienteRepository">
+    <id name="id" type="integer" column="id">
       <generator strategy="IDENTITY"/>
     </id>
-    <field name="nombre" type="string" column="nombre" length="25" nullable="true">
+    <field name="nombre" type="string" column="nombre" length="255" nullable="true">
       <options>
         <option name="fixed"/>
       </options>
     </field>
+    <field name="nifCif" type="string" column="nif_cif" length="40" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="direccion" type="string" column="direccion" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>  
+    <field name="otros" type="string" column="otros" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>     
   </entity>
 </doctrine-mapping>
