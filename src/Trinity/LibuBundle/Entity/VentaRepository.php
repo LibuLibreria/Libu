@@ -125,10 +125,10 @@ class VentaRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery(
             "SELECT v.id as id, v.diahora as hora, v.ingreso as ingreso, v.ingresolibros as ingresolibros,
-                v.libros3, v.libros1, v.factura as factura, c.nombre as cliente, (v.ingreso - v.ingresolibros) as ingresoprods
-            FROM LibuBundle:Venta v, LibuBundle:Cliente c
+                v.libros3, v.libros1, v.factura as factura, c.nombre as tipocliente, (v.ingreso - v.ingresolibros) as ingresoprods
+            FROM LibuBundle:Venta v, LibuBundle:TipoCliente c
             WHERE v.diahora >= :fecha AND v.diahora < :fechasig
-            AND c.idCli = v.cliente
+            AND c.idCli = v.tipocliente
             AND v.tipomovim = 'ven'
             AND v.factura IS NOT NULL
             ORDER BY v.diahora"

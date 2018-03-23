@@ -49,8 +49,8 @@ class VentaType extends AbstractType
                 'attr' => array('style' => 'width: 80px'),
                 'required' => false,               
                 )) 
-            ->add('cliente', EntityType::class, array(
-                'class' => 'LibuBundle:Cliente',
+            ->add('tipocliente', EntityType::class, array(
+                'class' => 'LibuBundle:TipoCliente',
                 'choice_label' => 'nombre',
                 )) 
             ->add('tematica', EntityType::class, array(

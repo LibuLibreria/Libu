@@ -27,7 +27,8 @@ class FacturarType extends AbstractType
 
             ->add('ticket', SubmitType::class, array('label' => 'Ticket'))         
 
-//            ->add('factura', SubmitType::class, array('label' => 'Hacer factura'))
+            ->add('factura', SubmitType::class, array('label' => 'Hacer factura'))
+            
             ->add('menu', SubmitType::class, array('label' => 'Menú (sin venta)'))  
 
             ->getForm(); 

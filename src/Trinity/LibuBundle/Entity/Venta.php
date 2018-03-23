@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Venta
  *
- * @ORM\Table(name="venta", indexes={@ORM\Index(name="responsable", columns={"responsable"}), @ORM\Index(name="tematica", columns={"tematica"}), @ORM\Index(name="cliente", columns={"cliente"})})
+ * @ORM\Table(name="venta", indexes={@ORM\Index(name="responsable", columns={"responsable"}), @ORM\Index(name="tematica", columns={"tematica"}), @ORM\Index(name="tipocliente", columns={"tipocliente"})})
  * @ORM\Entity(repositoryClass="Trinity\LibuBundle\Entity\VentaRepository")
  */
 class Venta
@@ -91,14 +91,14 @@ class Venta
     private $id;
 
     /**
-     * @var \Trinity\LibuBundle\Entity\Cliente
+     * @var \Trinity\LibuBundle\Entity\TipoCliente
      *
-     * @ORM\ManyToOne(targetEntity="Trinity\LibuBundle\Entity\Cliente")
+     * @ORM\ManyToOne(targetEntity="Trinity\LibuBundle\Entity\TipoCliente")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="cliente", referencedColumnName="id_cli")
+     *   @ORM\JoinColumn(name="tipocliente", referencedColumnName="id_cli")
      * })
      */
-    private $cliente;
+    private $tipocliente;
 
     /**
      * @var \Trinity\LibuBundle\Entity\Tematica
@@ -257,27 +257,27 @@ class Venta
     }
 
     /**
-     * Set cliente
+     * Set tipocliente
      *
-     * @param \Trinity\LibuBundle\Entity\Cliente $cliente
+     * @param \Trinity\LibuBundle\Entity\TipoCliente $tipocliente
      *
      * @return Venta
      */
-    public function setCliente(\Trinity\LibuBundle\Entity\Cliente $cliente = null)
+    public function setTipoCliente(\Trinity\LibuBundle\Entity\TipoCliente $tipocliente = null)
     {
-        $this->cliente = $cliente;
+        $this->tipocliente = $tipocliente;
 
         return $this;
     }
 
     /**
-     * Get cliente
+     * Get tipocliente
      *
-     * @return \Trinity\LibuBundle\Entity\Cliente
+     * @return \Trinity\LibuBundle\Entity\TipoCliente
      */
-    public function getCliente()
+    public function getTipoCliente()
     {
-        return $this->cliente;
+        return $this->tipocliente;
     }
 
     /**
@@ -453,5 +453,34 @@ class Venta
     public function getTipomovim()
     {
         return $this->tipomovim;
+    }
+    /**
+     * @var \Trinity\LibuBundle\Entity\TipoCliente
+     */
+    private $cliente;
+
+
+    /**
+     * Set cliente
+     *
+     * @param \Trinity\LibuBundle\Entity\TipoCliente $cliente
+     *
+     * @return Venta
+     */
+    public function setCliente(\Trinity\LibuBundle\Entity\TipoCliente $cliente = null)
+    {
+        $this->cliente = $cliente;
+
+        return $this;
+    }
+
+    /**
+     * Get cliente
+     *
+     * @return \Trinity\LibuBundle\Entity\TipoCliente
+     */
+    public function getCliente()
+    {
+        return $this->cliente;
     }
 }

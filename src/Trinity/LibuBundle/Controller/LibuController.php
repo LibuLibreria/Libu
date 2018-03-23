@@ -11,12 +11,12 @@ use Trinity\LibuBundle\Form\LibroCortoType;
 use Trinity\LibuBundle\Form\BaldaType;
 use Trinity\LibuBundle\Form\ProductoType;
 use Trinity\LibuBundle\Form\ResponsableType;
-use Trinity\LibuBundle\Form\ClienteType;
+// use Trinity\LibuBundle\Form\TipoClienteType;
 use Trinity\LibuBundle\Form\TematicaType;
 use Trinity\LibuBundle\Form\FacturarType;
 use Trinity\LibuBundle\Form\MenuType;
 use Trinity\LibuBundle\Entity\Venta;
-use Trinity\LibuBundle\Entity\Cliente;
+// use Trinity\LibuBundle\Entity\TipoCliente;
 use Trinity\LibuBundle\Entity\Responsable;
 use Trinity\LibuBundle\Entity\Tematica;
 use Trinity\LibuBundle\Entity\Producto;
@@ -150,7 +150,7 @@ class LibuController extends Controller
                 $venta->setDiahora($data['diahora']->setTime(date('H'), date('i')));  // Añadimos hora actual
                 $venta->setLibros3($data['libros3']);
                 $venta->setLibros1($data['libros1']);
-                $venta->setCliente($data['cliente']);
+                $venta->setTipoCliente($data['tipocliente']);
                 $venta->setTematica($data['tematica']);
                 $venta->setResponsable($data['responsable']);
                 $venta->setTipomovim('ven');
@@ -424,14 +424,26 @@ class LibuController extends Controller
 
 
 
-//            if ($form->get('factura')->isClicked()) return $this->redirectToRoute('factura');
-           if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+            if ($form->get('factura')->isClicked()) return $this->redirectToRoute('hazfactura');
+
+            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
         }
 
         return $this->render('LibuBundle:libu:facturar.html.twig',array(
             'form' => $form->createView(),
             'textopagos' => $textoPagos,
             ));    
+    }
+
+
+
+
+    /**
+     * @Route("/libu/hazfactura", name="hazfactura")
+     */
+    public function hazFacturaAction(Request $request)
+    {
+        return new Response("Haciendo factura");
     }
 
 

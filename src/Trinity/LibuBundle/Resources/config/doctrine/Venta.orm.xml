@@ -4,7 +4,7 @@
     <indexes>
       <index name="responsable" columns="responsable"/>
       <index name="tematica" columns="tematica"/>
-      <index name="cliente" columns="cliente"/>
+      <index name="tipocliente" columns="tipocliente"/>
       <index name="concepto" columns="concepto"/>
     </indexes>
     <id name="id" type="integer" column="id">
@@ -39,9 +39,9 @@
         <option name="unsigned"/>
       </options>
     </field>
-    <many-to-one field="cliente" target-entity="Cliente" fetch="LAZY">
+    <many-to-one field="tipocliente" target-entity="TipoCliente" fetch="LAZY">
       <join-columns>
-        <join-column name="cliente" referenced-column-name="id_cli"/>
+        <join-column name="tipocliente" referenced-column-name="id_cli"/>
       </join-columns>
     </many-to-one>
     <many-to-one field="tematica" target-entity="Tematica" fetch="LAZY">
