@@ -22,11 +22,11 @@ class Cliente
     /**
      * @var integer
      *
-     * @ORM\Column(name="id_cli", type="integer")
+     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $idCli;
+    private $id;
 
 
 
@@ -55,12 +55,102 @@ class Cliente
     }
 
     /**
-     * Get idCli
+     * @var string
+     */
+    private $nifCif;
+
+    /**
+     * @var string
+     */
+    private $direccion;
+
+    /**
+     * @var string
+     */
+    private $otros;
+
+
+
+
+    /**
+     * Set nifCif
+     *
+     * @param string $nifCif
+     *
+     * @return Cliente
+     */
+    public function setNifCif($nifCif)
+    {
+        $this->nifCif = $nifCif;
+
+        return $this;
+    }
+
+    /**
+     * Get nifCif
+     *
+     * @return string
+     */
+    public function getNifCif()
+    {
+        return $this->nifCif;
+    }
+
+    /**
+     * Set direccion
+     *
+     * @param string $direccion
+     *
+     * @return Cliente
+     */
+    public function setDireccion($direccion)
+    {
+        $this->direccion = $direccion;
+
+        return $this;
+    }
+
+    /**
+     * Get direccion
+     *
+     * @return string
+     */
+    public function getDireccion()
+    {
+        return $this->direccion;
+    }
+
+    /**
+     * Set otros
+     *
+     * @param string $otros
+     *
+     * @return Cliente
+     */
+    public function setOtros($otros)
+    {
+        $this->otros = $otros;
+
+        return $this;
+    }
+
+    /**
+     * Get otros
+     *
+     * @return string
+     */
+    public function getOtros()
+    {
+        return $this->otros;
+    }
+
+    /**
+     * Get id
      *
      * @return integer
      */
-    public function getIdCli()
+    public function getId()
     {
-        return $this->idCli;
+        return $this->id;
     }
 }

@@ -94,4 +94,3 @@ class TipoCliente
         return $this->idCli;
     }
 }
-
