@@ -13,9 +13,9 @@ class VentaRepository extends EntityRepository
     public function fechasIngresos($limit = 10)
     {
         $sql = 
-            "SELECT diaHora as dias
+            "SELECT DATE(diaHora) as dias
             FROM venta 
-            WHERE factura > 0 
+            WHERE factura IS NOT NULL
             AND tipo_movim = 'ven'
             GROUP BY dias
             ORDER BY dias DESC

@@ -11,12 +11,12 @@ use Trinity\LibuBundle\Form\LibroCortoType;
 use Trinity\LibuBundle\Form\BaldaType;
 use Trinity\LibuBundle\Form\ProductoType;
 use Trinity\LibuBundle\Form\ResponsableType;
-// use Trinity\LibuBundle\Form\TipoClienteType;
+use Trinity\LibuBundle\Form\ClienteType;
 use Trinity\LibuBundle\Form\TematicaType;
 use Trinity\LibuBundle\Form\FacturarType;
 use Trinity\LibuBundle\Form\MenuType;
 use Trinity\LibuBundle\Entity\Venta;
-// use Trinity\LibuBundle\Entity\TipoCliente;
+use Trinity\LibuBundle\Entity\Cliente;
 use Trinity\LibuBundle\Entity\Responsable;
 use Trinity\LibuBundle\Entity\Tematica;
 use Trinity\LibuBundle\Entity\Producto;
@@ -443,8 +443,27 @@ class LibuController extends Controller
      */
     public function hazFacturaAction(Request $request)
     {
-        return new Response("Haciendo factura");
-    }
+        $cliente = new Cliente(); 
+        $form = $this->createForm(ClienteType::class, $cliente);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) { 
+            $em = $this->getDoctrine()->getManager();
+            try {
+                $em->persist($cliente);
+                $em->flush();
+            }
+            catch(\Doctrine\ORM\ORMException $e){
+                $this->addFlash('error', 'Error al guardar los datos de un cliente');
+            }             
+        }       
+
+
+        return $this->render('LibuBundle:form:form.html.twig', array(
+            'form' => $form->createView(),
+            'titulo' => "Cliente", 
+            ));     }
 
 
 

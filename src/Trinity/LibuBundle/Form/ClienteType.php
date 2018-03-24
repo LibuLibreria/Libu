@@ -5,8 +5,10 @@ namespace Trinity\LibuBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class TipoClienteType extends AbstractType
+
+class ClienteType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -16,6 +18,15 @@ class TipoClienteType extends AbstractType
     {
         $builder
             ->add('nombre')
+            ->add('nif_cif')            
+            ->add('direccion')            
+            ->add('otros')   
+            ->add('subecliente', SubmitType::class, array(
+                'label' => 'Subir',
+                'attr' => array(
+                    'class' => 'btn-lg btn-info',                    
+                )                
+            ))
         ;
     }
     
@@ -25,7 +36,7 @@ class TipoClienteType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Trinity\LibuBundle\Entity\TipoCliente'
+            'data_class' => 'Trinity\LibuBundle\Entity\Cliente'
         ));
     }
 }
