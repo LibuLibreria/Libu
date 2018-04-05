@@ -39,13 +39,7 @@ class LibroCortoType extends AbstractType
                  'multiple' => false,
                  'expanded' => true,
                  'label' => 'Tapas',                 
-            ))                 
-            ->add('estanteria', TextType::class, array(
-                 'label' => 'Estantería',
-            ))                          
-            ->add('balda', TextType::class, array(
-                 'label' => 'Balda',
-            ))      
+            ))                      
             ->add('isbn', TextType::class, array(
                 'attr' => array(
                     'autofocus' => 'autofocus',

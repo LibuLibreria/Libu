@@ -64,8 +64,8 @@ class BookController extends Controller
 
         $form = $this->createForm(LibroCortoType::class, $libro);
 
-        $form->get('balda')->setData($ultbalda);
-        $form->get('estanteria')->setData($ultestanteria);
+//        $form->get('balda')->setData($ultbalda);
+//        $form->get('estanteria')->setData($ultestanteria);
         $form->get('codigo')->setData($siglibro);
         $form->get('tapas')->setData($tapabl);
         $form->get('conservacion')->setData($conservexc);
@@ -82,6 +82,9 @@ class BookController extends Controller
 
                 if ($form->get('subiragil')->isClicked()) {
                     $librosub = $form->getData();
+                    $librosub->setEstanteria($ultestanteria);
+                    $librosub->setBalda($ultbalda); 
+
 /*
                     $texttapas = $librosub->getTapas(); 
                     $librosub->setTapas($bman->validaTapas($texttapas));
@@ -99,6 +102,9 @@ class BookController extends Controller
 
                 if ($form->get('buscarlibro')->isClicked()) {
                     $librosub = $form->getData();
+                    $librosub->setEstanteria($ultestanteria);
+                    $librosub->setBalda($ultbalda); 
+                                        
                     $librointernet = $this->buscaIsbn($librosub->getIsbn(), "ESP");  
                     if ($librointernet['datos'] == false) {
                         $librosub->setTitulo("(Libro no encontrado en Abebooks)"); 
