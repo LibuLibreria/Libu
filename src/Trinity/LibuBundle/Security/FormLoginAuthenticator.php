@@ -60,8 +60,15 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        $url = $this->router->generate('init');
 
+        /** @var User $user */
+        $role = $token->getRoles();
+
+        if ($role[0]->getRole() == "ROLE_BOOK") {
+            $url = $this->router->generate('bookagil');
+        } else {
+            $url = $this->router->generate('init');
+        }
         return new RedirectResponse($url);
     }
 

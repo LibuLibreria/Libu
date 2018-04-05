@@ -120,6 +120,8 @@ class BookController extends Controller
         return $this->render('LibuBundle:libu:agil.html.twig', array(
             'form' => $form->createView(),
             'texto' => $texto, 
+            'balda' => $ultbalda,
+            'estanteria' => $ultestanteria,
             ));           
     }
 

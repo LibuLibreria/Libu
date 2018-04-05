@@ -145,13 +145,13 @@ function mostrarInformacionCaracter(evObject) {
             </div>
 
             <div class="col-md-6">
-             
-                {{ form_row(form.estanteria) }}    
 
-                {{ form_row(form.balda) }}                
+                {{ form_row(form.notas) }} 
 
-                {{ form_row(form.notas) }}   
-        
+                <h3>Estantería: {{ estanteria }} </h3>
+
+                <h3>Balda: {{ balda }} </h3>
+       
                 {{ form_end(form) }}
 
             </div>
@@ -160,7 +160,7 @@ function mostrarInformacionCaracter(evObject) {
                 <div class="botones_agil">
                 <a  href= "{{ path('bookbaldaestant')}}">Cambiar balda y estantería</a><br>   
                 </div>
-
+<!--
                 <div class="botones_agil">
                 <a  href= "{{ path('booklista')}}">Lista de rellenados</a><br>   
                 </div>
@@ -168,7 +168,7 @@ function mostrarInformacionCaracter(evObject) {
                 <div class="botones_agil">
                 <a href= "{{ path('bookenviajson')}}">Enviar documento</a><br>
                 </div>
-                
+-->            
             </div>
 
     </div>
