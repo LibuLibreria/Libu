@@ -33,46 +33,43 @@ class BookController extends Controller
      */
     public function bookAgilAction(Request $request)  {
 
-        // Abrimos un gestionador de repositorio para toda la función
+        // Abrimos un gestionador de repositorio para toda la función y BookManager
         $em = $this->getDoctrine()->getManager();
-
         $bman = $this->get('app.books');
 
-        // $ultlibro y $siglibro son el código del último libro guardado y el siguiente código
+        // $ultlibro es el último libro guardado
         $ultlibro = $em->getRepository('LibuBundle:Libro')->ultimoLibro();
 
-        $cont_titulo = ""; $cont_autor = ""; $cont_isbn = "";
-
-        if ($ultlibro['estatus'] == 'AGILB') {
-            $siglibro = ($ultlibro['codigo']);   
-            $cont_autor = $ultlibro['autor'];
-            $cont_titulo = $ultlibro['titulo'];
-            $cont_isbn = $ultlibro['isbn'];
+        // Si hemos hecho una búsqueda, estatus estará como AGILB y recuperamos el mismo libro
+        if ($ultlibro->getEstatus() == 'AGILB') {
+            $libro = $ultlibro; 
+            $siglibro = ($ultlibro->getCodigo());   // el mismo código
         } else {
-            $siglibro = ($ultlibro['codigo'] + 1);           
+            $libro = new Libro(); 
+            $siglibro = ($ultlibro->getCodigo() + 1);   // pasamos al siguiente código        
         }
- 
 
+        // Recuperamos los valores de balda y estantería en Configuración
         $ultbalda = $bman->leeConfig('balda');
         $ultestanteria = $bman->leeConfig('estanteria');
 
         // Escoge los valores por defecto para Tapas y Conservacion
-        $tapabl = $em->getRepository('LibuBundle:Tapas')->findOneByCodigo('1');
-        $conservexc = $em->getRepository('LibuBundle:Conservacion')->findOneByCodigo('3');
 
-        $libro = new Libro(); 
-
+        // Creamos formulario
         $form = $this->createForm(LibroCortoType::class, $libro);
 
-//        $form->get('balda')->setData($ultbalda);
-//        $form->get('estanteria')->setData($ultestanteria);
+        // Damos valor al código
         $form->get('codigo')->setData($siglibro);
-        $form->get('tapas')->setData($tapabl);
-        $form->get('conservacion')->setData($conservexc);
-        $form->get('titulo')->setData($cont_titulo);
-        $form->get('autor')->setData($cont_autor);
-        $form->get('isbn')->setData($cont_isbn);
 
+        if ($ultlibro->getEstatus() != 'AGILB') {
+            // Escoge los valores por defecto para Tapas y Conservacion
+            $form->get('tapas')->setData(
+                $em->getRepository('LibuBundle:Tapas')->findOneByCodigo('1')
+            );
+            $form->get('conservacion')->setData(
+                $em->getRepository('LibuBundle:Conservacion')->findOneByCodigo('3')
+            );
+        }
         $texto = "";
 
         $form->handleRequest($request);
@@ -90,10 +87,13 @@ class BookController extends Controller
                     $librosub->setTapas($bman->validaTapas($texttapas));
                     $textconservacion = $librosub->getConservacion();
                     $librosub->setConservacion($bman->validaConservacion($textconservacion));
-*/
-                    $biensubido = $bman->persisteLibro($librosub, "AGILP");
+*/      
+                    // Nos aseguramos que los datos se pueden introducir (longitud)
+                    $libroval = $bman->validaLibro($librosub);
+
+                    $biensubido = $bman->persisteLibro($libroval, "AGILP");
                     if ($biensubido) {
-                        $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
+                        $texto = "Se ha subido el libro con ISBN: ".$libroval->getIsbn(); 
                     } else {
                         $texto = "El libro no se ha subido correctamente"; 
                     }
@@ -104,6 +104,7 @@ class BookController extends Controller
                     $librosub = $form->getData();
                     $librosub->setEstanteria($ultestanteria);
                     $librosub->setBalda($ultbalda); 
+
                                         
                     $librointernet = $this->buscaIsbn($librosub->getIsbn(), "ESP");  
                     if ($librointernet['datos'] == false) {
@@ -112,9 +113,12 @@ class BookController extends Controller
                         $librosub->setTitulo($librointernet['datos'][0]['titulo']); 
                         $librosub->setAutor($librointernet['datos'][0]['autor']); 
                     }
-                    $biensubido = $bman->persisteLibro($librosub, "AGILB");
+
+                    $libroval = $bman->validaLibro($librosub);
+
+                    $biensubido = $bman->persisteLibro($libroval, "AGILB");
                     if ($biensubido) {
-                        $texto = "Se ha subido el libro con ISBN: ".$librosub->getIsbn(); 
+                        $texto = "Se ha subido el libro con ISBN: ".$libroval->getIsbn(); 
                     } else {
                         $texto = "El libro no se ha subido correctamente"; 
                     }

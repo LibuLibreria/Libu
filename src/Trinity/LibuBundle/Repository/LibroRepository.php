@@ -78,7 +78,7 @@ class LibroRepository extends EntityRepository
         $parameters = array();
 
         $query = $this->getEntityManager()->createQuery(
-            "SELECT l.codigo, l.estatus, l.autor, l.titulo, l.isbn
+            "SELECT l
             FROM LibuBundle:Libro l
             ORDER BY l.codigo DESC"
         )->setParameters($parameters)

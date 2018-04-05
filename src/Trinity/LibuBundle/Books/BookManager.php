@@ -324,20 +324,28 @@ class BookManager implements ContainerAwareInterface  {
         }
     }
 */
+
+    public function validaLibro($libro) {
+        $libro->setAutor($this->validaAutor($libro->getAutor()));
+        $libro->setTitulo($this->validaTitulo($libro->getTitulo()));
+        $libro->setEditorial($this->validaEditorial($libro->getEditorial()));
+        return $libro; 
+    }
+
     public function validaEditorial($col) {
-    	$longEditorial = 30;
+    	$longEditorial = 40;
     	if (strlen($col) > $longEditorial) $col = substr($col, 0, $longEditorial); 
     	return $col;
     }
 
     public function validaAutor($col) {
-    	$longAutor = 40;
+    	$longAutor = 60;
     	if (strlen($col) > $longAutor) $col = substr($col, 0, $longAutor); 
     	return $col;
     }
 
     public function validaTitulo($col) {
-    	$longTitulo = 40;
+    	$longTitulo = 100;
     	if (strlen($col) > $longTitulo) $col = substr($col, 0, $longTitulo); 
     	return $col;
     }
