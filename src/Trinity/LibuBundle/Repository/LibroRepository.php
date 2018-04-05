@@ -54,7 +54,7 @@ class LibroRepository extends EntityRepository
 
 
     /*
-    *  Obtiene el código del último libro subido
+    *  Obtiene un array con todos los libros ordenados por el id
     */
     public function arrayLibrosOrdenados()
     {
@@ -70,4 +70,20 @@ class LibroRepository extends EntityRepository
     }
 
 
+    /*
+    *  Obtiene el ultimo libro
+    */
+    public function ultimoLibro()
+    {
+        $parameters = array();
+
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT l.codigo, l.estatus, l.autor, l.titulo, l.isbn
+            FROM LibuBundle:Libro l
+            ORDER BY l.codigo DESC"
+        )->setParameters($parameters)
+        ->setMaxResults(1);
+        $libros  = $query->getResult();  
+        return $libros[0];   
+    }
 }

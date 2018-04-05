@@ -39,17 +39,17 @@ class BookController extends Controller
         $bman = $this->get('app.books');
 
         // $ultlibro y $siglibro son el código del último libro guardado y el siguiente código
-        $ultlibro = $em->getRepository('LibuBundle:Libro')->arrayLibrosOrdenados();
+        $ultlibro = $em->getRepository('LibuBundle:Libro')->ultimoLibro();
 
         $cont_titulo = ""; $cont_autor = ""; $cont_isbn = "";
 
-        if ($ultlibro[0]['estatus'] == 'AGILB') {
-            $siglibro = ($ultlibro[0]['codigo']);   
-            $cont_autor = $ultlibro[0]['autor'];
-            $cont_titulo = $ultlibro[0]['titulo'];
-            $cont_isbn = $ultlibro[0]['isbn'];
+        if ($ultlibro['estatus'] == 'AGILB') {
+            $siglibro = ($ultlibro['codigo']);   
+            $cont_autor = $ultlibro['autor'];
+            $cont_titulo = $ultlibro['titulo'];
+            $cont_isbn = $ultlibro['isbn'];
         } else {
-            $siglibro = ($ultlibro[0]['codigo'] + 1);           
+            $siglibro = ($ultlibro['codigo'] + 1);           
         }
  
 
@@ -118,7 +118,7 @@ class BookController extends Controller
                     } else {
                         $texto = "El libro no se ha subido correctamente"; 
                     }
-                    return $this->redirectToRoute('bookagil');
+                    return $this->redirect($request->getUri());
                 }   
 
         } 
