@@ -220,4 +220,80 @@ class ContabilidadController extends Controller
 		return $cadena;
 	}
 
+
+    /**
+     * @Route("/contab/{cant}", requirements={"cant": "[1-9]\d*"}, name="contab")     
+
+     */
+    public function contabAction(Request $request, $cant)
+    {
+        $em = $this->getDoctrine()->getManager(); 
+
+        // Fecha de hoy
+        $fecha = new \DateTime();
+
+        // Nueva instancia para que no afecten las modify a $fecha
+        $fechasig = clone $fecha; 
+        $fechasig->modify('-7 day');
+//        dump($fecha, $fechasig); die();  
+
+    	$ventashechas = $em->getRepository('LibuBundle:Venta')->ventasUltimas($fechasig, $fecha->modify('+1 day'));
+        $eliminado = 0; $i = 0; 
+        echo "<br>LOCALIZADAS ".count($ventashechas)." VENTAS<br>-----------------------------------<br>";
+//        dump($ventashechas); die();  
+
+        while (($cant > $eliminado) && ($i < count($ventashechas))) {
+        	$venta = $ventashechas[$i];
+ //       	dump($venta);
+        	if (($venta->getIngreso() == $venta->getIngresolibros()) && ($venta->getIngresolibros() < 6) && (1 == 1)) {
+        		$euroseliminados = $this->eliminarVenta($venta->getId());
+        		$eliminado += $euroseliminados;
+        	} else {
+        		echo "<br>".$venta->getId().": No eliminar venta<br>---------------------------<br>";
+        	}
+        	$i++;
+        }
+
+        $em->flush(); 
+        echo "<br>-----------------------------<br><strong>TOTAL EUROS ELIMINADOS: ".$eliminado."</strong>";
+		return new Response(); 
+    }
+
+
+
+    public function eliminarVenta($idventa) {
+
+        $em = $this->getDoctrine()->getManager(); 
+
+    	$ventash = $em->getRepository('LibuBundle:Venta')->ventasDesdeCodigo($idventa);
+//    	dump($ventash); 
+    	echo "<br>".$idventa.": ELIMINAR VENTA<br>-----------------------";
+    	$facturacamb = "eliminable";
+    	$euroseliminados = $ventash[0]->getIngresolibros(); 
+//    	echo $facturacamb."<br>";
+    	foreach ($ventash as $venta) {
+    		$facturaactual = $venta->getFactura();
+    		$venta->setFactura($facturacamb);
+    		$em->flush(); 
+//    		$em->getRepository('LibuBundle:Venta')->cambiaFactura($venta->getId(), $facturacamb);
+    		echo "<br>CAMBIO venta con id: ".$venta->getId()." antes: ".$facturaactual." -después: ".$facturacamb;
+    		$facturacamb = $facturaactual;
+
+    	}
+    	$em->remove($ventash[0]);
+    	$em->flush();
+
+    	$em->getRepository('LibuBundle:Venta')->reduceFactura(); 
+    	$em->flush();
+
+    	echo "<br>----------------------------";    	
+    	echo "<br>VENTA ".$idventa." ELIMINADA ";
+    	echo "<br>".$euroseliminados." euros eliminados";
+    	echo "<br>-------------------------<p></p>----------------------";
+
+    	return $euroseliminados;
+    }
+
+
+
 }
