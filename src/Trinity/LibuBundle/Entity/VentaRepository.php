@@ -113,6 +113,81 @@ class VentaRepository extends EntityRepository
         return $query->getResult(); 
     }
 
+
+
+    /*
+    * Obtiene todas las ventas a partir de un determinado código
+    */
+    public function ventasDesdeCodigo($codigo) {
+
+        $parameters = array( 
+            'codigo' => $codigo,
+        );
+
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT v
+            FROM LibuBundle:Venta v
+            WHERE v.factura IS NOT NULL
+            AND v.id >= :codigo
+            AND v.tipomovim = 'ven'            
+            ORDER BY v.id"
+        )->setParameters($parameters);
+
+        $ventas = $query->getResult(); 
+
+        return $ventas; 
+    }
+
+
+
+    /*
+    * Reduce en una unidad la última factura en Configuracion
+    */
+    public function reduceFactura() {
+
+        $query = $this->getEntityManager()->createQuery(
+            "UPDATE LibuBundle:Configuracion c 
+            SET c.valor = c.valor -1
+            WHERE c.nombre = 'ultimafactura'"
+        );
+
+        $reduce = $query->getResult(); 
+
+        return $reduce; 
+    }
+
+
+
+
+    /*
+    * Obtiene las ventas que hay entre dos determinadas fechas
+    */
+    public function ventasUltimas($fecha, $fechasig) {
+
+        $parameters = array( 
+            'fecha' => $fecha->format('Y-m-d'),
+            'fechasig' => $fechasig->format('Y-m-d'),
+        );
+
+        $query = $this->getEntityManager()->createQuery(
+            "SELECT v
+            FROM LibuBundle:Venta v
+            WHERE v.diahora >= :fecha AND v.diahora < :fechasig
+            AND v.tipomovim = 'ven'
+            AND v.factura IS NOT NULL
+            ORDER BY v.id"
+        )->setParameters($parameters);
+
+        $ventas = $query->getResult();  
+
+        return $ventas;
+    }
+
+
+
+
+
+
     /*
     * Obtiene las ventas que hay entre dos determinadas fechas
     */
