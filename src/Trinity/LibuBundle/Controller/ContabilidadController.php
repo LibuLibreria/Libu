@@ -30,10 +30,10 @@ namespace Trinity\LibuBundle\Controller;
 // use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 // use Doctrine\Common\Collections\ArrayCollection;
 // 
-// use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 // use Symfony\Component\Form\Extension\Core\Type\TextType;
 // use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-// use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 // 
 // use Symfony\Component\Serializer\Serializer;
 // use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -46,7 +46,6 @@ class ContabilidadController extends Controller
     /**
      * @Route("/conta", name="conta")
      * @Route("/conta/{mes}", requirements={"mes": "[1-9]\d*"}, name="conta_fecha")     
-
      */
     public function contaAction(Request $request, $mes)
     {
@@ -222,22 +221,15 @@ class ContabilidadController extends Controller
 
 
     /**
-     * @Route("/contab/{cant}", requirements={"cant": "[1-9]\d*"}, name="contab")     
-
+     * @Route("/contabi/{cant}", requirements={"cant": "[1-9]\d*"}, name="contabi")     
      */
-    public function contabAction(Request $request, $cant)
+    public function contabiAction(Request $request, $cant)
     {
-        $em = $this->getDoctrine()->getManager(); 
 
-        // Fecha de hoy
-        $fecha = new \DateTime();
+        $em = $this->getDoctrine()->getManager(); 	
 
-        // Nueva instancia para que no afecten las modify a $fecha
-        $fechasig = clone $fecha; 
-        $fechasig->modify('-7 day');
-//        dump($fecha, $fechasig); die();  
+    	$ventashechas = $this->ultimasVentas(); 
 
-    	$ventashechas = $em->getRepository('LibuBundle:Venta')->ventasUltimas($fechasig, $fecha->modify('+1 day'));
         $eliminado = 0; $i = 0; 
         echo "<br>LOCALIZADAS ".count($ventashechas)." VENTAS<br>-----------------------------------<br>";
 //        dump($ventashechas); die();  
@@ -259,6 +251,86 @@ class ContabilidadController extends Controller
 		return new Response(); 
     }
 
+
+
+    /**
+     * @Route("/contab" , name="contab")     
+     */
+    public function contabAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager(); 	
+
+    	$ventashechas = $this->ultimasVentas(); 
+
+    	$i = 0; 
+
+        foreach ($ventashechas as $venta) {
+ //       	dump($venta);
+        	if (($venta->getIngreso() == $venta->getIngresolibros()) && ($venta->getIngresolibros() > 3) && (1 == 1)) {
+        		$ventascambiables[$i++] = $venta;
+        	} else {
+        	}
+        }   
+
+        $form = $this->createFormBuilder(array())
+            ->add('diasventas', ChoiceType::class, array(
+                'choices'  => $ventascambiables,
+                'expanded' => true,
+                'multiple' => true,
+                'choice_label' => function ($value, $key, $index) {
+                	return $value->getDiahora()->format('d/m/Y').
+        		" ---- FACTURA nº ".$value->getFactura()." - ---".$value->getIngreso()." euros"; 
+            	}
+            ))       
+            ->add('aceptar', SubmitType::class, array('label' => 'Aceptar'))            
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('aceptar')->isClicked()) {
+                $data = $form->getData();
+//                return $this->redirectToRoute('caja_fecha', array('dia' => $data['diasventas']));
+ 				
+            	$totaldescont = 0;
+
+                foreach ($data['diasventas'] as $ventacamb) {
+                	$totaldescont += $ventacamb->getIngreso() -3;
+//                	$venta = $em->getRepository('LibuBundle:Venta')->findOneBy(array())
+		    		$ventacamb->setIngreso(3);
+		    		$ventacamb->setIngresolibros(3);
+		    		$ventacamb->setLibros3(1);
+		    		$ventacamb->setLibros1(0);
+		    		$em->flush();
+
+                }
+                return new Response("Se han eliminado ".$totaldescont." euros");
+            }
+
+        }
+
+		return $this->render('LibuBundle:tabla:contab.html.twig', array(
+			'form' => $form->createView(),
+            'ventascambiables' => $ventascambiables,
+            'cabecera' => array('dia', 'hora', 'id', 'factura', 'ingreso'),
+			));         	   	
+	}
+
+    private function ultimasVentas() {
+        $em = $this->getDoctrine()->getManager(); 	
+
+        // Fecha de hoy
+        $fecha = new \DateTime();
+
+        // Nueva instancia para que no afecten las modify a $fecha
+        $fechasig = clone $fecha; 
+        $fechasig->modify('-7 day');
+//        dump($fecha, $fechasig); die();  
+
+    	$ventashechas = $em->getRepository('LibuBundle:Venta')->ventasUltimas($fechasig, $fecha->modify('+1 day'));
+
+    	return $ventashechas;
+    }
 
 
     public function eliminarVenta($idventa) {
