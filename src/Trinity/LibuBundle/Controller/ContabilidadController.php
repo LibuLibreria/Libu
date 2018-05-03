@@ -221,7 +221,7 @@ class ContabilidadController extends Controller
 
 
     /**
-     * @Route("/contabi/{cant}", requirements={"cant": "[1-9]\d*"}, name="contabi")     
+     * @Route("/libu/contabi/{cant}", requirements={"cant": "[1-9]\d*"}, name="contabi")     
      */
     public function contabiAction(Request $request, $cant)
     {
@@ -254,7 +254,7 @@ class ContabilidadController extends Controller
 
 
     /**
-     * @Route("/contab" , name="contab")     
+     * @Route("/libu/contab" , name="contab")     
      */
     public function contabAction(Request $request)
     {
