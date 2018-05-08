@@ -324,7 +324,7 @@ class ContabilidadController extends Controller
 
         // Nueva instancia para que no afecten las modify a $fecha
         $fechasig = clone $fecha; 
-        $fechasig->modify('-7 day');
+        $fechasig->modify('-60 day');
 //        dump($fecha, $fechasig); die();  
 
     	$ventashechas = $em->getRepository('LibuBundle:Venta')->ventasUltimas($fechasig, $fecha->modify('+1 day'));
