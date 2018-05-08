@@ -279,7 +279,7 @@ class ContabilidadController extends Controller
                 'multiple' => true,
                 'choice_label' => function ($value, $key, $index) {
                 	return $value->getDiahora()->format('d/m/Y').
-        		" ---- FACTURA nº ".$value->getFactura()." - ---".$value->getIngreso()." euros"; 
+        		" ---- FACTURA nº ".$value->getFactura()." - ---".(floatval($value->getIngreso())-3)." euros"; 
             	}
             ))       
             ->add('aceptar', SubmitType::class, array('label' => 'Aceptar'))            
