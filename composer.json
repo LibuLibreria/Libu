@@ -39,7 +39,8 @@
         "symfony/process": "^3.3",
         "symfony/filesystem": "^3.3",
         "fabpot/goutte": "^3.2",
-        "easycorp/easyadmin-bundle": "^1.17"
+        "easycorp/easyadmin-bundle": "^1.17",
+        "mike42/escpos-php": "^2.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
