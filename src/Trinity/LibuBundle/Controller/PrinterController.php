@@ -16,6 +16,9 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\Printer;
+
 
 class PrinterController extends Controller
 {
@@ -66,54 +69,48 @@ class PrinterController extends Controller
 
     public function escribeTicketAction(String $numfactura, Array $productos, Float $total) 
     {
-        $fs = new Filesystem();
-//        $resul = $fs->exists('./bundles/libu/templates/libu.txt') ? 'yes' : 'no'; 
-//        echo $resul; 
+        require __DIR__ . '/vendor/autoload.php';
 
-        $textoTicket = chr(27);        // Caracteres Spain
-        $textoTicket .= chr(82);
-        $textoTicket .= chr(7); 
-        $textoTicket .= chr(27);        // Coloca el TAB en n1, n2...
-        $textoTicket .= chr(68);
-        $textoTicket .= chr(35);       // n1 
-//        $textoTicket .= chr(30);        // n2
-        $textoTicket .= chr(0);      // fin
-        $textoTicket .= "              LIBRERIA LIBU\n";
-        $textoTicket .= "es un proyecto de ASOCIACION ZUBIETXE\n";       
-        $textoTicket .= "C/ Veintidos de diciembre, 1 bajo.\n";    
-        $textoTicket .= "Bilbao 48003\n"; 
-        $textoTicket .= "NIF/CIF: G-48545610\n\n";
-        $textoTicket .= "Factura Simplificada ".$numfactura."\n";
-        $textoTicket .= "Fecha: ".date("d-m-y")."   Hora: ".date("G:i")."\n";   
-        $textoTicket .= "========================================\n";  
+        $connector = new FilePrintConnector("ticket.txt");
+        $printer = new Printer($connector);
+
+        $printer -> setEmphasis(true);  
+        $printer -> text( "LIBRERIA LIBU LIBURUDENDA\n"); 
+        $printer -> setEmphasis(false);
+
+        $printer -> text( "es un proyecto de ASOCIACION ZUBIETXE\n");       
+        $printer -> text( "C/ Veintidos de diciembre, 1 bajo.\n");    
+        $printer -> text( "Bilbao 48003\n"); 
+        $printer -> text( "NIF/CIF: G-48545610\n");
+        $printer -> text( "Factura Simplificada ".$numfactura."\n");
+        $printer -> text( "Fecha: ".date("d-m-y")."   Hora: ".date("G:i")."\n");   
+
         foreach ($productos as $prod) 
         {
-           
-            $textoTicket .= $prod['prod'];         
-            $textoTicket .= chr(9);  
-            $textoTicket .= $prod['precio']."\n"; 
+            $printer -> text( $prod['prod']."           ");   
+            $printer -> setJustification(Printer::JUSTIFY_RIGHT);       
+            $printer -> text( $prod['precio']."\n"); 
         }
-        $textoTicket .= "----------------------------------------\n";  
-        $textoTicket .= "TOTAL";        
-        $textoTicket .= chr(9);  
-        $textoTicket .= number_format($total, 2, '.', '')."\n";
-        $textoTicket .= "       * * * IVA INCLUIDO * * *\n";
-        $textoTicket .= "========================================\n";  
+        $printer -> setJustification(Printer::JUSTIFY_LEFT);   
+        $printer -> text( "----------------------------------------\n");  
+        $printer -> setEmphasis(true);
+        $printer -> text( "TOTAL              ");       
+        $printer -> setJustification(Printer::JUSTIFY_RIGHT); 
+        $printer -> text(number_format($total, 2, '.', '')."\n");
+        $printer -> setJustification(Printer::JUSTIFY_LEFT);   
+        $printer -> setEmphasis(false);
+        $printer -> text( "========================================\n");  
 
-        $textoTicket .= "EL 100% DE LOS BENEFICIOS DE LA LIBRERIA\n"; 
-        $textoTicket .= "VAN DIRIGIDOS A PROYECTOS SOCIALES\n";        
-        $textoTicket .= "Conocenos en:  zubietxe.org  // libu.es\n"; 
-        $textoTicket .= chr(27);        // Pasa n líneas
-        $textoTicket .= chr(100);
-        $textoTicket .= chr(9);         // (Valor de n)
-        $textoTicket .= chr(27);        // Cortar
-        $textoTicket .= chr(109);
+        $printer -> text( "       * * * IVA INCLUIDO * * *\n");
+        $printer -> text( "========================================\n");  
 
-        try {
-            $fs->dumpFile('./bundles/libu/templates/libu.txt', $textoTicket); 
-        } catch (IOExceptionInterface $e) {
-            echo "Error al escribir el archivo en ".$e->getPath();
-        }
+        $printer -> text( "EL 100% DE LOS BENEFICIOS DE LA LIBRERIA\n"); 
+        $printer -> text( "VAN DIRIGIDOS A PROYECTOS SOCIALES\n");        
+        $printer -> text( "Conocenos en:  zubietxe.org  // libu.es\n"); 
+
+        $printer -> feed(2); 
+        $printer -> cut();
+        $printer -> close();
 
         return true; 
 
