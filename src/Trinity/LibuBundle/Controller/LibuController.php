@@ -414,7 +414,7 @@ class LibuController extends Controller
         return $this->render('LibuBundle:libu:facturar.html.twig',array(
             'form' => $form->createView(),
             'textopagos' => $textoPagos,
-            'url_tickets' => "http://".getenv('SERVER_NAME')."/libu/web/tickets.txt",
+            'url_tickets' => "http://".getenv('SERVER_NAME')."/Libu/web/tickets.txt",
             ));    
     }
 
