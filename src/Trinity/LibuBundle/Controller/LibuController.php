@@ -342,7 +342,6 @@ class LibuController extends Controller
     }
 
 
-
     /**
      * @Route("/libu/facturar", name="facturar")
      */
@@ -379,6 +378,12 @@ class LibuController extends Controller
         $textoPagos .= $calcproductos['texto'];
         $textoPagos .= "<h1>TOTAL: ".$calctotal." euros</h1>";
 
+        /*  Crea un fichero con el ticket, preparado para imprimir */
+        $printcon = new PrinterController();
+        $fact = strval(date("Y"))."/".strval($textfactura); 
+        $printcon->creaticketAction($fact, $ventaactual, $calcproductos['arrayproductos']); 
+
+
         // Creación del formulario
         $form = $this->createForm(FacturarType::class, array());
 
@@ -398,31 +403,8 @@ class LibuController extends Controller
                     $this->addFlash('error', 'Error al guardar los datos');
                 }
 
-                $printer = new PrinterController();
-                $fact = strval(date("Y"))."/".strval($textfactura); 
-                $printer->imprimirAction($fact, $ventaactual, $calcproductos['arrayproductos']); 
-
                 return $this->redirectToRoute('venta');
             }
-
-
-            if ($form->get('finalizar')->isClicked()) {
-                $ventaactual->setFactura($textfactura);
-                $ventaactual->setTipomovim("ven");
-
-                // Cambia el número de la última factura
-                $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
-                try{
-                    $em->persist($ventaactual);
-                    $em->flush();
-                } catch(\Doctrine\ORM\ORMException $e){
-                    $this->addFlash('error', 'Error al guardar los datos');
-                }
-
-                return $this->redirectToRoute('venta');
-            }
-
-
 
             if ($form->get('factura')->isClicked()) return $this->redirectToRoute('hazfactura');
 
@@ -432,6 +414,7 @@ class LibuController extends Controller
         return $this->render('LibuBundle:libu:facturar.html.twig',array(
             'form' => $form->createView(),
             'textopagos' => $textoPagos,
+            'url_tickets' => "http://".getenv('SERVER_NAME')."/libu/web/tickets.txt",
             ));    
     }
 

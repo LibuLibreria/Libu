@@ -10,9 +10,6 @@ use Trinity\LibuBundle\Entity\Venta;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
-
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
@@ -24,7 +21,7 @@ class PrinterController extends Controller
 {
 
 
-    public function imprimirAction(String $factura, Venta $venta, Array $arrayproductos)
+    public function creaticketAction(String $factura, Venta $venta, Array $arrayproductos)
     {
         $libros3 = $venta->getLibros3(); 
         $libros1 = $venta->getLibros1(); 
@@ -54,60 +51,78 @@ class PrinterController extends Controller
 
         $act = $this->escribeTicketAction($factura, $productos, $ingreso);
 
-        $process = new Process('lp ./bundles/libu/templates/libu.txt');
-        $process->run();
-
-        // executes after the command finishes
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        echo $process->getOutput();
         return new Response(""); 
     }
 
 
-    public function escribeTicketAction(String $numfactura, Array $productos, Float $total) 
+    public function escribeTicketAction(String $numfactura, Array $productos, Float $ingreso) 
     {
-        require __DIR__ . '/vendor/autoload.php';
+        require __DIR__ . '/../../../../vendor/autoload.php';
 
-        $connector = new FilePrintConnector("ticket.txt");
+
+        /* Tuneo de formato */
+        $total = new item("Total", number_format($ingreso, 2, '.', ''), true);
+
+        /* Crea el texto 'linea' aprovechando el item creado para el total */
+        $linea = $total->linea();
+
+        /* Prepara los datos de productos para ponerse en columnas */
+        foreach ($productos as $producto) {
+            $items[] = new item($producto['prod'], $producto['precio']);
+        }
+
+        /* Inicia */
+        $connector = new FilePrintConnector(__DIR__ . "/../../../../web/tickets.txt");
         $printer = new Printer($connector);
 
-        $printer -> setEmphasis(true);  
+        /* Margen izquierdo */
+        $printer -> setPrintLeftMargin(20);
+
+        /* Título */
+        $printer -> setJustification(Printer::JUSTIFY_CENTER);   
+        $printer -> setEmphasis(true);
+        $printer -> selectPrintMode(Printer::MODE_DOUBLE_HEIGHT);
         $printer -> text( "LIBRERIA LIBU LIBURUDENDA\n"); 
+        $printer -> selectPrintMode();
         $printer -> setEmphasis(false);
 
+        /* Datos librería */
         $printer -> text( "es un proyecto de ASOCIACION ZUBIETXE\n");       
         $printer -> text( "C/ Veintidos de diciembre, 1 bajo.\n");    
         $printer -> text( "Bilbao 48003\n"); 
         $printer -> text( "NIF/CIF: G-48545610\n");
+
+        /* Datos factura */
         $printer -> text( "Factura Simplificada ".$numfactura."\n");
-        $printer -> text( "Fecha: ".date("d-m-y")."   Hora: ".date("G:i")."\n");   
+        $printer -> text( "Fecha: ".date("d-m-y")."   Hora: ".date("G:i")."\n"); 
+        $printer -> feed(2);  
 
-        foreach ($productos as $prod) 
-        {
-            $printer -> text( $prod['prod']."           ");   
-            $printer -> setJustification(Printer::JUSTIFY_RIGHT);       
-            $printer -> text( $prod['precio']."\n"); 
+        /* Productos */
+        $printer -> setJustification(Printer::JUSTIFY_LEFT);   
+        foreach ($items as $item) {
+            $printer -> text($item);
         }
-        $printer -> setJustification(Printer::JUSTIFY_LEFT);   
-        $printer -> text( "----------------------------------------\n");  
-        $printer -> setEmphasis(true);
-        $printer -> text( "TOTAL              ");       
-        $printer -> setJustification(Printer::JUSTIFY_RIGHT); 
-        $printer -> text(number_format($total, 2, '.', '')."\n");
-        $printer -> setJustification(Printer::JUSTIFY_LEFT);   
-        $printer -> setEmphasis(false);
-        $printer -> text( "========================================\n");  
 
-        $printer -> text( "       * * * IVA INCLUIDO * * *\n");
-        $printer -> text( "========================================\n");  
+        /* Total */
+        $printer -> text($linea."\n");  
+        $printer -> selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+        $printer -> text($total);         
+        $printer -> selectPrintMode();
 
+
+        /* Nota IVA */
+        $printer -> setJustification(Printer::JUSTIFY_CENTER);   
+        $printer -> text($linea."\n");  
+        $printer -> text( "* * * IVA INCLUIDO * * *\n");
+         
+
+        /* Mensaje footer */
+        $printer -> feed(1);
         $printer -> text( "EL 100% DE LOS BENEFICIOS DE LA LIBRERIA\n"); 
         $printer -> text( "VAN DIRIGIDOS A PROYECTOS SOCIALES\n");        
         $printer -> text( "Conocenos en:  zubietxe.org  // libu.es\n"); 
 
+        /* Final */
         $printer -> feed(2); 
         $printer -> cut();
         $printer -> close();
@@ -117,3 +132,39 @@ class PrinterController extends Controller
     }
 
 }
+
+
+/* A wrapper to do organise item names & prices into columns */
+class item
+{
+    private $name;
+    private $price;
+    private $eurosign;
+    private $rightCols = 10;
+    private $leftCols = 36;
+
+    public function __construct($name = '', $price = '', $eurosign = false)
+    {
+        $this -> name = $name;
+        $this -> price = $price;
+        $this -> eurosign = $eurosign;
+    }
+    
+    public function __toString()
+    {
+        if ($this -> eurosign) {
+            $this->leftCols = $this->leftCols / 2 - $this->rightCols / 2 + 2;
+        }
+        $left = str_pad($this -> name, $this->leftCols) ;
+        
+        $sign = ($this -> eurosign ? '€ ' : '');
+        $right = str_pad($sign . $this -> price, $this->rightCols, ' ', STR_PAD_LEFT);
+        return "$left$right\n";
+    }
+
+    public function linea()
+    {
+        return str_pad("", ($this->rightCols + $this->leftCols), "-");
+    }
+}
+?>
