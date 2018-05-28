@@ -24,9 +24,9 @@ class FacturarType extends AbstractType
                     'label_attr' => array()
                 ))
  */
-            ->add('ticket', ButtonType::class, array(
+            ->add('ticket', SubmitType::class, array(
                 'label' => 'Finalizar venta',
-                'attr' => array("onclick" => "directPrintFile(printSocket);")
+ //               'attr' => array("onclick" => "directPrintFile(printSocket); return true")
                 ))         
 
             ->add('factura', SubmitType::class, array('label' => 'Hacer factura'))
