@@ -406,6 +406,22 @@ class LibuController extends Controller
                 return $this->redirectToRoute('venta');
             }
 
+            if ($form->get('finalizado')->isClicked()) {
+                $ventaactual->setFactura($textfactura);
+                $ventaactual->setTipomovim("ven");
+
+                // Cambia el número de la última factura
+                $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
+                try{
+                    $em->persist($ventaactual);
+                    $em->flush();
+                } catch(\Doctrine\ORM\ORMException $e){
+                    $this->addFlash('error', 'Error al guardar los datos');
+                }
+
+                return $this->redirectToRoute('venta');
+            }
+
             if ($form->get('factura')->isClicked()) return $this->redirectToRoute('hazfactura');
 
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
