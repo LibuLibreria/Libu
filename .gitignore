@@ -27,4 +27,4 @@ src/Trinity/LibuBundle/Resources/public/uploads/*
 /src/Trinity/LibuBundle/Resources/public/uploads/*
 src/Trinity/LibuBundle/Resources/public/templates/libu.txt
 /src/Trinity/LibuBundle/Resources/public/templates/libu.txt
-/web/tickets.txt
+web/tickets.txt
