@@ -113,14 +113,14 @@ class PrinterController extends Controller
         $printer -> text($linea."\n");  
         $printer -> text( "* * * IVA INCLUIDO * * *\n");
          
-
         /* Mensaje footer */
         $printer -> feed(1);
         $printer -> text( "EL 100% DE LOS BENEFICIOS DE LA LIBRERIA\n"); 
         $printer -> text( "VAN DIRIGIDOS A PROYECTOS SOCIALES\n");        
-
+        $printer -> feed(1);
+        
         /* Datos librería */
-        $printer -> setFont(Printer::FONT_C);
+        $printer -> setFont(Printer::FONT_B);
         $printer -> text( "LIBU es un proyecto de ASOCIACION ZUBIETXE:\n");       
         $printer -> text( "C/ Veintidos de diciembre, 1 bajo. Bilbao 48003\n");    
         $printer -> text( "NIF/CIF: G-48545610  ---  zubietxe.org\n");
