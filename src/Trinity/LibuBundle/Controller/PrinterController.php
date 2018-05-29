@@ -49,13 +49,13 @@ class PrinterController extends Controller
             }
         }
 
-        $act = $this->escribeTicketAction($factura, $productos, $ingreso);
+        $act = $this->simplificadaAction($factura, $productos, $ingreso);
 
         return new Response(""); 
     }
 
 
-    public function escribeTicketAction(String $numfactura, Array $productos, Float $ingreso) 
+    public function simplificadaAction(String $numfactura, Array $productos, Float $ingreso) 
     {
         require __DIR__ . '/../../../../vendor/autoload.php';
 
@@ -86,11 +86,9 @@ class PrinterController extends Controller
         $printer -> selectPrintMode();
         $printer -> setEmphasis(false);
 
-        /* Datos librería */
-        $printer -> text( "es un proyecto de ASOCIACION ZUBIETXE\n");       
-        $printer -> text( "C/ Veintidos de diciembre, 1 bajo.\n");    
-        $printer -> text( "Bilbao 48003\n"); 
-        $printer -> text( "NIF/CIF: G-48545610\n");
+        /* Datos Libu */
+        $printer -> text("C/ Carnicería Vieja, 7. Bilbao 48005.\n");
+        $printer -> text("libu.es  TF: 688 685 976\n");
 
         /* Datos factura */
         $printer -> text( "Factura Simplificada ".$numfactura."\n");
@@ -120,7 +118,12 @@ class PrinterController extends Controller
         $printer -> feed(1);
         $printer -> text( "EL 100% DE LOS BENEFICIOS DE LA LIBRERIA\n"); 
         $printer -> text( "VAN DIRIGIDOS A PROYECTOS SOCIALES\n");        
-        $printer -> text( "Conocenos en:  zubietxe.org  // libu.es\n"); 
+
+        /* Datos librería */
+        $printer -> setFont(Printer::FONT_C);
+        $printer -> text( "LIBU es un proyecto de ASOCIACION ZUBIETXE:\n");       
+        $printer -> text( "C/ Veintidos de diciembre, 1 bajo. Bilbao 48003\n");    
+        $printer -> text( "NIF/CIF: G-48545610  ---  zubietxe.org\n");
 
         /* Final */
         $printer -> feed(2); 
