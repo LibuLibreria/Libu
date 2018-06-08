@@ -1,37 +1,86 @@
-{# src/Trinity/LibuBundle/Resources/views/libu/ticket.html.twig #}
-{# extends 'LibuBundle:libu:layout-pdf.html.twig' #}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Web-based raw printing example</title>
+</head>
+<body>
+<h1>Web-based raw printing example</h1>
 
-	{% block stylesheets %}
-		<link rel="stylesheet" href="{{ absolute_url(asset('bundles/libu/css/ticket.css')) }}" />
-	{% endblock %}
+<p>This snippet forwards raw data to a local websocket.</p>
 
+<form>
+  <input type="button" onclick="directPrintBytes(printSocket, [0x1b, 0x40, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x0a, 0x1d, 0x56, 0x41, 0x03]);" value="Print test string"/>
+<!--   <button type="submit" id="facturar_ticket" name="facturar[ticket]" onclick="directPrintFile(printSocket);" class="btn-default btn">Ticket</button>   -->
+ <input type="button" id="facturar_ticket" name="facturar[ticket]"  onclick="directPrintFile(printSocket);" value="Load and print 'receipt-with-logo'" />   
+</form>
 
-{% block content %}
-	<div class="contenedor">
-		{% for ticket in tickets %}
-			<div class="ticket">
-				<img class="logolibu" src="{{ absolute_url(asset('bundles/libu/images/logo/Logo_pequeno.jpg')) }}" alt="Logo">
-				
-				<div class="texto">
-					<br><b>LIBRERÍA LIBU LIBURU-DENDA</b>
-					<br>(Asoc. Zubietxe / Zubietxe Elkartea)
-					<br>C/ Veintidos de Diciembre, 1 y 2 bajo, 
-					<br>Bilbao 48003
-					<br>C.I.F. G-48545610
-					<br>
-					<br>Factura simplificada nº LBS/{{ ticket.factura}}/{{facturaurtea}}
-					<br>Fecha: {{ ticket.diahora | localizeddate('full', 'none', app.request.locale ) }}
-					<br>
-					<br><table>
-					<tr><th>Uds</th><th>Concepto    </th><th>TOTAL</th></tr>
-					<tr><td> {{ ticket.libros3 + ticket.libros1 }} </td><td>Libro/s</td><td> {{ ticket.ingreso }} euros</td></tr>
-					</table>	
-					<br>4% IVA incluido
-					<br>
-					<br>Eskerrik asko zure bisitagatik
-					<br>Gracias por su visita
-				</div>
-			</div>
-		{% endfor %}
-	</div>
-{% endblock %}
+<script type="text/javascript">
+/**
+ * Retrieve binary data via XMLHttpRequest and print it.
+ */
+function directPrintFile(socket) {
+  // Get binary data
+  var req = new XMLHttpRequest();
+  path = "http://localhost/libu/web/tickets.txt";
+  req.open("GET", path, true);
+  req.responseType = "arraybuffer";
+  console.log("directPrintFile(): Making request for binary file");
+  req.onload = function (oEvent) {
+    console.log("directPrintFile(): Response received");
+    var arrayBuffer = req.response; // Note: not req.responseText
+    if (arrayBuffer) {
+      var result = directPrint(socket, arrayBuffer);
+      if(!result) {
+        alert('Failed, check the console for more info.');
+      }
+    }
+  };
+  req.send(null);
+}
+
+/**
+ * Extract binary data from a byte array print it.
+ */
+function directPrintBytes(socket, bytes) {
+  var result = directPrint(socket, new Uint8Array(bytes).buffer);
+  if(!result) {
+    alert('Failed, check the console for more info.');
+  }
+}
+
+/**
+ * Send ArrayBuffer of binary data.
+ */
+function directPrint(socket, printData) {
+  // Type check
+  if (!(printData instanceof ArrayBuffer)) {
+    console.log("directPrint(): Argument type must be ArrayBuffer.")
+    return false;
+  }
+  if(printSocket.readyState !== printSocket.OPEN) {
+    console.log("directPrint(): Socket is not open!");
+    return false;
+  }
+  // Serialise, send.
+  console.log("Sending " + printData.byteLength + " bytes of print data.");
+  printSocket.send(printData);
+  return true;
+}
+
+/**
+ * Connect to print server on startup.
+ */
+var printSocket = new WebSocket("ws://localhost:5555", ["binary"]);
+printSocket.binaryType = 'arraybuffer';
+printSocket.onopen = function (event) {
+  console.log("Socket is connected.");
+}
+printSocket.onerror = function(event) {
+  console.log('Socket error', event);
+};
+printSocket.onclose = function(event) {
+  console.log('Socket is closed');
+}
+</script>
+</body>
+</html>

@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 
 
 class FacturarType extends AbstractType
@@ -23,9 +24,12 @@ class FacturarType extends AbstractType
                     'label_attr' => array()
                 ))
  */
-            ->add('finalizar', SubmitType::class, array('label' => 'Finalizar venta')) 
+            ->add('ticket', SubmitType::class, array(
+                'label' => 'Ticket',
+                'attr' => array("onclick" => "directPrintFile(printSocket); return false;")
+                ))         
 
-            ->add('ticket', SubmitType::class, array('label' => 'Ticket'))         
+            ->add('finalizado', SubmitType::class, array('label' => 'REALIZAR VENTA'))
 
             ->add('factura', SubmitType::class, array('label' => 'Hacer factura'))
             
