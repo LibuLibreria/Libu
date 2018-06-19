@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Trinity\LibuBundle\Entity\Analisis" table="analisis"  repository-class="Trinity\LibuBundle\Repository\AnalisisRepository">
+    <indexes>
+      <index name="id_libro" columns="id_libro"/>                 
+    </indexes>
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="codigo" type="integer" column="codigo" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+
+    <field name="titulo" type="string" column="titulo" length="100" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="isbn" type="string" column="isbn" length="20" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="autor" type="string" column="autor" length="60" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="editorial" type="string" column="editorial" length="40" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="anno" type="string" column="anno" length="6" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="precio" type="float" column="precio" precision="6" scale="2" nullable="true"/>
+    <field name="otros" type="string" column="otros" length="50" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>    
+    <field name="fechaanalisis" type="datetime" column="fechaanalisis" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field> 
+    <field name="plataforma" type="string" column="plataforma" length="3" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>           
+    <many-to-one field="idLibro" target-entity="Libro" fetch="LAZY">
+      <join-columns>
+        <join-column name="id_libro" referenced-column-name="id_libro"/>
+      </join-columns>
+    </many-to-one>   
+  </entity>
+</doctrine-mapping>
