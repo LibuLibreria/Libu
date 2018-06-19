@@ -106,7 +106,7 @@ class BookController extends Controller
                     $librosub->setBalda($ultbalda); 
 
                                         
-                    $librointernet = $this->buscaIsbn($librosub->getIsbn(), "ESP");  
+                    $librointernet = $bman->buscaIsbn($librosub->getIsbn(), "ESP");  
                     if ($librointernet['datos'] == false) {
                         $librosub->setTitulo("(Libro no encontrado en Abebooks)"); 
                     } else {               
@@ -325,9 +325,9 @@ class BookController extends Controller
                 );
 
             $busqueda['abe_esp'] = array('definicion' => 'Libros en Abebooks España',
-                                        'ofertas' => $this->buscaIsbn($isbnact, "ESP"));
+                                        'ofertas' => $bman->buscaIsbn($isbnact, "ESP"));
             $busqueda['abe_int'] = array('definicion' => 'Libros en Abebooks General',
-                                        'ofertas' => $this->buscaIsbn($isbnact, "INT"));
+                                        'ofertas' => $bman->buscaIsbn($isbnact, "INT"));
 
             if ($busqueda['abe_esp']['ofertas'] !== false) {
                 $libro->setAutor($bman->validaAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']));
@@ -627,122 +627,6 @@ class BookController extends Controller
     }
 
 
-
-    public function buscaIsbn($isbn, $entorno) {
-//        $libreria_espana = true;
-
-        $LIMITE_LIBROS_ABEB = 20;
-
-        $esp = ($entorno == "ESP") ? '&n=200000228' : '';
-/*
-        // See http://php.net/manual/en/migration56.openssl.php
-        $streamContext = stream_context_create([
-            'ssl' => [
-                'verify_peer'      => false,
-                'verify_peer_name' => false
-            ]
-        ]);
-*/
-        $url_isbn = 'https://www.iberlibro.com/servlet/ShipRates?vid=63493145&cntry=ESP';
-
-/*        if (! $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext)) {
-            echo "Error. Probablemente no hay conexión a internet. Conecta y prueba de nuevo";
-        }
-*/
-        $client = new Client();
-
-
-
-        $crawler1 = $client->request('GET', $url_isbn);
-// dump($client->getCookieJar()->all()); die();
-        $cookieJar = $client->getCookieJar();
-
-
-        // you can get button by its label
-        $form = $crawler1->selectButton('button-apply')->form();
- //       $form['Aplicar']->tick();   
-
-        $crawler1 = $client->submit($form);  
-
-//        $cookie = $cookieJar->get('selectedShippingRate','/servlet','www.abebooks.com');
-//        $cookies = $client->getCookieJar()->all();
-
-
-        $newcookie = new Cookie('AbeShipTo', 'ESP', strtotime('+1 day'), '/', 'www.iberlibro.com', false, false);
-        $cookieJar->set($newcookie);
-//        $client = new Client();
-/*        foreach ($cookies as $cookie) {
-            $client->getCookieJar()->set($cookie);
-        }
-*/    
- //   dump($client->getCookieJar()->all()); die();
-//                dump($cookie); die();
-        $url_isbn = 'https://www.iberlibro.com/servlet/SearchResults?sortby=17'.$esp.'&isbn='.$isbn;
-/*       if (! $abebooks_isbn = file_get_contents($url_isbn, false, $streamContext)) {
-            echo "Error. Probablemente no hay conexión a internet. Conecta y prueba de nuevo";
-        }
-*/
-        $crawler = $client->request('GET', $url_isbn);
-
-/*
-        $crawler = new Crawler($abebooks_isbn);
-*/
-
-
-        if (! $crawler->filter('#pageHeader > h1')->count()) {
-            $datos = false;
-
-        } else {
-//            $header = $crawler->filter('#pageHeader > h1');
-//            echo "<h2>".$header->text()."</h2>";
-            $resultados = $crawler->filter('#topbar-search-result-count')->text();
-            for($i=1; $i <= $resultados; $i++) {
-                $filtro = '#book-'.$i;
-                $array_crawler = $crawler->filter($filtro);
-     //            echo "<br>Text: ".$crawler->filter('p')->last()->text();
-     //            echo "<br>Attr: ".$crawler->filter('p')->first()->attr('class');
-
-    //            foreach ($precios as $domElement) {
-
-    //                $array_crawler = new Crawler();
-    //                $array_crawler->add($domElement);
-
-                    $pr = explode(' ',$this->textocraw($array_crawler->filter('.item-price .price') ) );
-                    $datos['precio'] = end($pr); 
-                    
-                    $env = explode(' ', $this->textocraw($array_crawler->filter('.shipping .price')) ); 
-                    $datos['envio'] = end($env);                
-                    $datos['libreria'] = $this->textocraw($array_crawler->filter('.bookseller-info > p > a') );        
-                    $datos['titulo'] = $this->textocraw($array_crawler->filter('.result-detail > h2 > a') ); 
-                    $datos['autor'] = $this->textocraw($array_crawler->filter('.result-detail > p > strong') ); 
-                    $datos['editorial'] = $this->textocraw($array_crawler->filter('#publisher > span') );                                                 
-                    $datos['pais'] = explode(',',$this->textocraw($array_crawler->filter('.bookseller-info > p > span') ));         
-                    $datos['suma'] = (float)str_replace(',', '.', $datos['precio']) 
-                                    + (float)str_replace(',', '.', $datos['envio']);
-
-
-/*
-                    $form = $crawler->selectButton('validate')->form();
-                    $crawler = $client->submit($form);  
-  */                                         
-                    $datosarray[] = $datos; 
-
-     //               if (++$i == $LIMITE_LIBROS_ABEB ) break;
-            } 
-        return array('datos' => $datosarray, 'url' => $url_isbn); 
-        }
-    }
-
-
-
-    private function textocraw($craw) {
-
-                if ($craw->count() > 0) {
-                    return $craw->text(); 
-                } else {
-                    return ""; 
-                }
-    }
 
 
     /**

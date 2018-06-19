@@ -4,10 +4,11 @@ namespace Trinity\LibuBundle\Command;
 
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CrawlingCommand extends Command
+class CrawlingCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -33,8 +34,14 @@ class CrawlingCommand extends Command
 	        '',
 	    ]);
 
+        $bman = $this->getContainer()->get('app.books');
+
+        $librointernet = $bman->buscaIsbn('9788496246782', "ESP"); 
+
+        
+
 	    // outputs a message followed by a "\n"
-	    $output->writeln('Whoa!');
+	    $output->writeln($librointernet['datos'][0]['titulo']);
 
 	    // outputs a message without adding a "\n" at the end of the line
 	    $output->write('You are about to ');
