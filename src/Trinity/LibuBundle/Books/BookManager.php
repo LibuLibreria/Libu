@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Goutte\Client;
 use Symfony\Component\BrowserKit\Cookie;
 
+use Trinity\LibuBundle\Entity\Analisis;
+
+
 class BookManager implements ContainerAwareInterface  {
 
     use ContainerAwareTrait;
@@ -83,6 +86,19 @@ class BookManager implements ContainerAwareInterface  {
         );    
     }
 
+
+    public function persistAnalisis(Analisis $analisis) {
+
+        $em = $this->em;
+
+        try {
+            $em->persist($analisis);
+            $em->flush();
+        }
+        catch(\Doctrine\ORM\ORMException $e){
+            $this->addFlash('error', 'Error al guardar los datos de un libro');
+        } 
+    }
 
 
     public function leeConfig($nombre) {
