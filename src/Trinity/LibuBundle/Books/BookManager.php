@@ -100,6 +100,27 @@ class BookManager implements ContainerAwareInterface  {
         } 
     }
 
+    public function primeroSinPrecio() {
+        $repository = $this->em->getRepository('LibuBundle:Libro');
+        $query = $repository->createQueryBuilder('l')
+            ->where('l.estatus = :estatus')
+            ->setParameter('estatus', 'AGILP')
+            ->orderBy('l.estatus', 'ASC')
+            ->getQuery();
+        $result = $query->setMaxResults(1)->getOneOrNullResult();
+        $isbn = $result->getIsbn();        
+        $titulo = $result->getTitulo();
+        $codigo = $result->getCodigo(); 
+        return array('isbn' => $isbn, 'titulo' => $titulo, 'codigo' => $codigo); 
+    }
+
+
+    public function libroCrawleado($codigo) {
+        $query = $this->em->getRepository('LibuBundle:Libro')->findOneBy(array('codigo' => $codigo));
+        $this->persisteLibro($query, 'CRAWL');
+        return true;        
+    }
+
 
     public function leeConfig($nombre) {
         $query = $this->em->getRepository('LibuBundle:Configuracion')->findOneBy(array('nombre' => $nombre));

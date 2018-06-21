@@ -26,16 +26,14 @@ class CrawlingCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-	    // outputs multiple lines to the console (adding "\n" at the end of each line)
-	    $output->writeln([
-	        'Trinity Scraping',
-	        '================',
-	        '',
-	    ]);
 
         $bman = $this->getContainer()->get('app.books');
 
-        $isbn = '9788496246782';
+        $prim = $bman->primeroSinPrecio(); 
+        $output->writeln("SUBIENDO EL LIBRO CON CÓDIGO: ".$prim['codigo']);
+        $isbn = $prim['isbn'];
+        $codigo = $prim['codigo'];
+//        dump($prim); die(); 
 
         $librointernet = $bman->buscaIsbn($isbn, "ESP"); 
 //        dump($librointernet); die(); 
@@ -43,13 +41,15 @@ class CrawlingCommand extends ContainerAwareCommand
          
         $max_leidos = 6;
 
-        $fecha = new \DateTime();    
+        $fecha = new \DateTime();   
+
+
 
         for ($i=0; $i < $max_leidos; $i++) {
 //        foreach($librointernet['datos'] as $libro) {
         	$libro = $librointernet['datos'][$i];
 
-        	$analisis = $this->datosaAnalisis($libro, $isbn, $fecha);
+        	$analisis = $this->datosaAnalisis($libro, $isbn, $fecha, $codigo);
 
 //            $output->writeln($libro['titulo']);
    			dump($analisis); 
@@ -57,17 +57,19 @@ class CrawlingCommand extends ContainerAwareCommand
 
         }
 
+        $bman->libroCrawleado($codigo); 
+
 
 	    // outputs a message followed by a "\n"
 //	    $output->writeln($librointernet['datos'][0]['titulo']);
 
 	    // outputs a message without adding a "\n" at the end of the line
-	    $output->write('');
+	    $output->write('OK');
     }
 
 
 
-    public function datosaAnalisis($libro, $isbn, $fecha) {
+    public function datosaAnalisis($libro, $isbn, $fecha, $codigo) {
     	$analisis = new Analisis();
         $analisis->setTitulo($libro['titulo']);
 //        $analisis->setPrecio($libro['precio']);
@@ -80,7 +82,7 @@ class CrawlingCommand extends ContainerAwareCommand
  
 //        $analisis->setFecha("".$fecha->format('d-m-Y'))
         $analisis->setFechaanalisis($fecha); 
-
+        $analisis->setCodigo($codigo); 
         return $analisis;
     }
 }

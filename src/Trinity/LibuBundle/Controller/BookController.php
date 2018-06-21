@@ -444,6 +444,8 @@ class BookController extends Controller
 
         $librosp = $this->librosPorEstatus("AGILP");     
 
+        
+
         if (empty($librosp)) {
             return $this->vacioSinPrecio(); 
         }
