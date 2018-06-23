@@ -26,77 +26,77 @@ class Analisis
      *
      * @ORM\Column(name="titulo", type="string", length=100)
      */
-    private $titulo;
+    public $titulo;
 
     /**
      * @var string
      *
      * @ORM\Column(name="autor", type="string", length=60)
      */
-    private $autor;
+    public $autor;
 
     /**
      * @var float
      *
      * @ORM\Column(name="precio", type="float")
      */
-    private $precio;
+    public $precio;
 
     /**
      * @var string
      *
      * @ORM\Column(name="isbn", type="string", length=20, nullable=true)
      */
-    private $isbn;
+    public $isbn;
 
     /**
      * @var string
      *
      * @ORM\Column(name="libreria", type="string", length=100, nullable=true)
      */
-    private $libreria;
+    public $libreria;
 
     /**
      * @var string
      *
      * @ORM\Column(name="editorial", type="string", length=40, nullable=true)
      */
-    private $editorial;
+    public $editorial;
 
     /**
      * @var string
      *
      * @ORM\Column(name="anno", type="string", length=6, nullable=true)
      */
-    private $anno;
+    public $anno;
 
     /**
      * @var string
      *
      * @ORM\Column(name="otros", type="string", length=50, nullable=true)
      */
-    private $otros;
+    public $otros;
 
     /**
      * @var int
      *
      * @ORM\Column(name="codigo", type="integer")
      */
-    private $codigo;
+    public $codigo;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="fechaanalisis", type="datetime")
      */
-    private $fechaanalisis;
+    public $fechaanalisis;
 
     /**
      * @var string
      *
      * @ORM\Column(name="plataforma", type="string", length=3)
      */
-    private $plataforma;
+    public $plataforma;
 
 
     /**
@@ -372,5 +372,91 @@ class Analisis
     {
         return $this->plataforma;
     }
-}
+    /**
+     * @var \Trinity\LibuBundle\Entity\Libro
+     */
+    private $idLibro;
 
+
+    /**
+     * Set idLibro
+     *
+     * @param \Trinity\LibuBundle\Entity\Libro $idLibro
+     *
+     * @return Analisis
+     */
+    public function setIdLibro(\Trinity\LibuBundle\Entity\Libro $idLibro = null)
+    {
+        $this->idLibro = $idLibro;
+
+        return $this;
+    }
+
+    /**
+     * Get idLibro
+     *
+     * @return \Trinity\LibuBundle\Entity\Libro
+     */
+    public function getIdLibro()
+    {
+        return $this->idLibro;
+    }
+    /**
+     * @var string
+     */
+    private $ambito;
+
+    /**
+     * @var string
+     */
+    private $url;
+
+
+    /**
+     * Set ambito
+     *
+     * @param string $ambito
+     *
+     * @return Analisis
+     */
+    public function setAmbito($ambito)
+    {
+        $this->ambito = $ambito;
+
+        return $this;
+    }
+
+    /**
+     * Get ambito
+     *
+     * @return string
+     */
+    public function getAmbito()
+    {
+        return $this->ambito;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     *
+     * @return Analisis
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+}

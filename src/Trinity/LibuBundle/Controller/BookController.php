@@ -201,14 +201,17 @@ class BookController extends Controller
             echo "<br>Este es el formulario provisional. <br>Hay que poner el código del libro buscado en la barra del navegador, por ejemplo: .../book/libro/716<br>Solamente se puede utilizar el botón Guardar; el resto pueden dar error.<p>&nbsp;</p>";
         }
 
+        // Teóricamente no debería llegar un CSUB aquí, pero puede haber un error. 
+ //       if ($libro->getEstatus() == 'CSUB') $libro->setEstatus('AGILP');
 
-        if ( $accion == 'precio') {
 
-            $analisis = $this->analizaWebs($libro);
+        if (( $accion == 'precio') && ($libro->getEstatus() != 'CSUB')) {
+ //       if ( $accion == 'precio') {
+            $analisis = $this->renderizaPagina($libro);
+
+            // $arrayrender contiene todos los datos para elaborar las listas de libros: cabeceras, etc.
             $arrayrender = array_merge($arrayrender, $analisis['arrayrender']);
-            $libro = $analisis['libro'];
-
-        }
+        } 
 
         $form = $this->createForm(LibroType::class, $libro);      
 
@@ -217,76 +220,44 @@ class BookController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
 
             $libro = $form->getData();
+            $libro = $bman->validaLibro($libro);
  
             if ( $accion == 'precio' ) {
 
                 if ($form->get('save')->isClicked()) {
-
                     $nuevaref = $this->nuevaRefAbebooks($libro); 
-
                     $bman->AbebooksAdd($libro, $nuevaref); 
-
                     $libro->setRefabebooks($nuevaref); 
-
                 	$bman->persisteLibro($libro, "SUBID");
-
                 	return $this->siguientePrecio(); 
                 }
 
                 if ($form->get('descartar')->isClicked()) {
-                    
                     $bman->persisteLibro($libro, "DSCRT");
-
                     return $this->siguientePrecio(); 
-                                  
                 }  
 
                 if ($form->get('parar')->isClicked()) {
-
                     $bman->persisteLibro($libro, "AGILP"); 
-
                     return $this->redirectToRoute('bookprecio');                       
                 }      
 
         	} else if ( $accion == 'agil' ) {
-
                 if ($form->get('save')->isClicked()) {
-
                     $bman->persisteLibro($libro, "AGIL");
-
                     return $this->redirectToRoute('booklista', array(
                         'accion' => 'agil',
                     ));
                 }
-/*
-                if ($form->get('descartar')->isClicked()) {
-                    
-                    $bman->persisteLibro($libro, "DSCRT");
 
-                    return $this->siguientePrecio(); 
-                                  
-                }  
-
-                if ($form->get('parar')->isClicked()) {
-
-                    $bman->persisteLibro($libro, "AGILP"); 
-
-                    return $this->redirectToRoute('bookprecio');                       
-                }      
-*/
             } else {
-
                 if ($form->get('save')->isClicked()) {
- 
                     $bman->persisteLibro($libro);
-
-            		return $this->redirectToRoute('booklista', array(
+             		return $this->redirectToRoute('booklista', array(
                         'accion' => 'todos',
                     ));
-
                 }
         	}                    
-
         }   
 
         $arrayrender['form'] = $form->createView();
@@ -306,50 +277,86 @@ class BookController extends Controller
 
 
 
-    public function analizaWebs($libro) {
+    public function renderizaPagina($libro) {
             // Estas son las acciones que se desarrollan si es el listado para adjudicar precios
 
             // Subimos el libro con otro estatus para que no sea de nuevo leído tras ejecutar el formulario
 
             $bman = $this->get('app.books');
 
+            $estatus = $libro->getEstatus(); 
+
+            $libro = $bman->validaLibro($libro);
             $bman->persisteLibro($libro, "CSUB", true); 
 
-            $isbnact = $libro->getIsbn();
-
-            $craw = array(
-                'abe_esp' => array('definicion' => 'Libros en Abebooks España',
-                                    'id' => 'ESP'),
-                'abe_int' => array('definicion' => 'Libros en Abebooks General',
-                                    'id' => 'INT')
-                );
-
-            $busqueda['abe_esp'] = array('definicion' => 'Libros en Abebooks España',
-                                        'ofertas' => $bman->buscaIsbn($isbnact, "ESP"));
-            $busqueda['abe_int'] = array('definicion' => 'Libros en Abebooks General',
-                                        'ofertas' => $bman->buscaIsbn($isbnact, "INT"));
-
-            if ($busqueda['abe_esp']['ofertas'] !== false) {
-                $libro->setAutor($bman->validaAutor($busqueda['abe_esp']['ofertas']['datos'][0]['autor']));
-                $libro->setTitulo($bman->validaTitulo($busqueda['abe_esp']['ofertas']['datos'][0]['titulo']));
-                $libro->setEditorial($bman->validaEditorial($busqueda['abe_esp']['ofertas']['datos'][0]['editorial']));
-//              $libro->setPrecio( ($busqueda['abe_esp']['ofertas']['datos'][0]['suma']) - 1);
-            } else if ($busqueda['abe_int']['ofertas'] !== false) {
-                $libro->setAutor($bman->validaAutor($busqueda['abe_int']['ofertas']['datos'][0]['autor']));
-                $libro->setTitulo($bman->validaTitulo($busqueda['abe_int']['ofertas']['datos'][0]['titulo']));
-                $libro->setEditorial($bman->validaEditorial($busqueda['abe_int']['ofertas']['datos'][0]['editorial']));
-            } else {
-
+            if ($estatus == 'CRAWL'){
+                $busqueda = $this->creaFormularioCrawled($bman, $libro);
             }
+            else {
+                $busqueda = $this->creaFormularioBusquedas($bman, $libro); 
+            }
+
             $libro->setPrecio($this->ponerPrecio($busqueda));
-           
 
             $arrayrender['busquedas'] = $busqueda;
             $arrayrender['cabecera'] = array('Librería','Editorial', 'Título', 'Autor', 'Precio');
             $arrayrender['boton_descartar'] = true; 
 
             return array('libro' => $libro, 'arrayrender' => $arrayrender);
+    }   
+
+
+    private function creaFormularioCrawled($bman, &$libro) {
+        $em = $this->getDoctrine()->getManager();
+
+        $crawled = $em->getRepository('LibuBundle:Analisis')->buscaCrawled($libro->getCodigo());
+        $busqueda['abe_esp']['definicion'] = "Libros en Abebooks España"; 
+        $busqueda['abe_esp']['ofertas'] = false; 
+        foreach ($crawled as $analisis) {
+            $busqueda['abe_esp']['ofertas']['datos'][] = get_object_vars($analisis); 
+            $busqueda['abe_esp']['ofertas']['url'] = "";
         }
+        if ($busqueda['abe_esp']['ofertas'] !== false) {
+            $libro = $this->escogeLibroFormulario($bman, $libro, $busqueda['abe_esp']['ofertas']['datos']);
+        }
+        $busqueda['abe_int']['definicion'] = "--------";
+        $busqueda['abe_int']['ofertas'] = false;   // Temporalmente no lo lee        
+        return $busqueda; 
+    }
+
+
+
+    private function creaFormularioBusquedas($bman, &$libro)
+    {
+
+        $craw = array(
+            'abe_esp' => array('definicion' => 'Libros en Abebooks España',
+                                'id' => 'ESP'),
+            'abe_int' => array('definicion' => 'Libros en Abebooks General',
+                                'id' => 'INT')
+            );
+
+        foreach ($craw as $ambito => $cont) {
+            $busqueda[$ambito] = array('definicion' => $cont['definicion'],
+                                        'ofertas' => $bman->buscaIsbn($libro->getIsbn(), $cont['id']));
+        
+            if ($busqueda[$ambito]['ofertas'] !== false) {
+                $libro = $this->escogeLibroFormulario($bman, $libro, $busqueda[$ambito]['ofertas']['datos']);
+            }
+        }
+
+        return $busqueda; 
+    }
+
+
+
+    private function escogeLibroFormulario($bman, $libro, $datos) {
+            $libro->setAutor($bman->validaAutor($datos[0]['autor']));
+            $libro->setTitulo($bman->validaTitulo($datos[0]['titulo']));
+            $libro->setEditorial($bman->validaEditorial($datos[0]['editorial']));
+            return $libro; 
+    }
+
 
 
     private function ponerPrecio($busqueda){
@@ -358,20 +365,26 @@ class BookController extends Controller
         $DIF_ESP_INT = 4;
         $PRECIO_MIN = 1.9;
 
+
+        $craw = array(
+            'abe_esp' => array('definicion' => 'Libros en Abebooks España',
+                                'id' => 'ESP'),
+            'abe_int' => array('definicion' => 'Libros en Abebooks General',
+                                'id' => 'INT')
+            );
+
         // Si hay ofertas en Abebooks en librerías en España o el extranjero
         if ( (false !== $busqueda['abe_esp']['ofertas']) || (false !== $busqueda['abe_int']['ofertas']) ) {
 
             // En España 
-            $precio['esp'] = (false !== $busqueda['abe_esp']['ofertas']) ? ($busqueda['abe_esp']['ofertas']['datos'][0]['suma'] ) : 0;
+            $precio['esp'] = (false !== $busqueda['abe_esp']['ofertas']) ? ($busqueda['abe_esp']['ofertas']['datos'][0]['precio'] ) : 0;
 
             // En el extranjero
-            $precio['int'] = (false !== $busqueda['abe_int']['ofertas']) ? ($busqueda['abe_int']['ofertas']['datos'][0]['suma'] ) : 0;
-
+            $precio['int'] = (false !== $busqueda['abe_int']['ofertas']) ? ($busqueda['abe_int']['ofertas']['datos'][0]['precio'] ) : 0;
             // El precio de venta es el mayor de los dos; dando ventaja al de España
-            $prventa = ( ($precio['esp'] != 0) && ( $precio['esp'] <= ( $precio['int'] )) ) ? 
+            $prventa = ( ($precio['esp'] != 0) && (( $precio['esp'] - ( $precio['int'] )) >= 0 ) ) ? 
                     ( $precio['esp'] - $RESTA_POR_GASTOS ) : 
                     ( $precio['int'] - $RESTA_POR_GASTOS + $DIF_ESP_INT );
-
         // Si no hay ofertas 
         } else {
             $prventa = $PRECIO_MIN;
@@ -409,6 +422,8 @@ class BookController extends Controller
             'texto_previo' => "No hay libros sin poner precio",    
             'boton_final' => "Volver a venta", 
             'path_boton_final' => "venta",
+            'host' => $_SERVER['HTTP_HOST'],
+
             ));     
     
     }
@@ -417,7 +432,7 @@ class BookController extends Controller
 
     private function siguientePrecio() {
 
-        $librosagilp = $this->librosPorEstatus("AGILP");
+        $librosagilp = array_merge($this->librosPorEstatus("CRAWL"), $this->librosPorEstatus("AGILP") );
 
         if (empty($librosagilp)) {
             return $this->vacioSinPrecio(); 
@@ -442,11 +457,13 @@ class BookController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $librosp = $this->librosPorEstatus("AGILP");     
+        $librosp = $this->librosPorEstatus("CRAWL");     
 
-        
+        $libroscrawl = $this->librosPorEstatus("AGILP");   
 
-        if (empty($librosp)) {
+        $librospendientes = array_merge($librosp, $libroscrawl); 
+ 
+        if  ( (empty($librosp)) && (empty($libroscrawl)) ){
             return $this->vacioSinPrecio(); 
         }
 
@@ -470,7 +487,7 @@ class BookController extends Controller
             'form' => $form->createView(), 
             'titulo' => "Precios",
             'texto_previo' => "<p>Estos son los libros pendientes de poner precio</p><p>Pulsar Aceptar para comenzar la serie</p>", 
-            'tabla' => $librosp,    
+            'tabla' => $librospendientes,    
             'cabecera' => array('Código', 'Estatus',  'Referencia', 'Isbn', 'Tapas', 'Conservación', 'Estantería', 'Balda'),    
         	'accion' => 'precio',
             'host' => $_SERVER['HTTP_HOST'],

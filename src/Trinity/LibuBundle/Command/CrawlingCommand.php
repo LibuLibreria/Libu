@@ -30,6 +30,7 @@ class CrawlingCommand extends ContainerAwareCommand
         $bman = $this->getContainer()->get('app.books');
 
         $prim = $bman->primeroSinPrecio(); 
+        if ($prim == false) return false;
         $output->writeln("SUBIENDO EL LIBRO CON CÓDIGO: ".$prim['codigo']);
         $isbn = $prim['isbn'];
         $codigo = $prim['codigo'];
@@ -43,18 +44,17 @@ class CrawlingCommand extends ContainerAwareCommand
 
         $fecha = new \DateTime();   
 
-
-
-        for ($i=0; $i < $max_leidos; $i++) {
+        $i = 0;
+        while (($i < $max_leidos) && ($i < sizeof($librointernet['datos']))) {
+//        for ($i=0; $i < $max_leidos; $i++) {
 //        foreach($librointernet['datos'] as $libro) {
         	$libro = $librointernet['datos'][$i];
 
-        	$analisis = $this->datosaAnalisis($libro, $isbn, $fecha, $codigo);
+        	$analisis = $this->datosaAnalisis($bman, $libro, $isbn, $fecha, $codigo, $librointernet['url']);
 
-//            $output->writeln($libro['titulo']);
-   			dump($analisis); 
+            $output->writeln($libro['titulo']); 
             $bman->persistAnalisis($analisis); 
-
+            $i++;
         }
 
         $bman->libroCrawleado($codigo); 
@@ -69,16 +69,25 @@ class CrawlingCommand extends ContainerAwareCommand
 
 
 
-    public function datosaAnalisis($libro, $isbn, $fecha, $codigo) {
+    public function datosaAnalisis($bman, $libro, $isbn, $fecha, $codigo, $url) {
+    	$longTitulo = 100;
+    	$longAutor = 60;
+    	$longLibreria = 60;
+    	$longEditorial = 40;
+    	$longUrl = 100;
+
     	$analisis = new Analisis();
-        $analisis->setTitulo($libro['titulo']);
+        $analisis->setTitulo($bman->validaString($longTitulo, $libro['titulo']));
 //        $analisis->setPrecio($libro['precio']);
 //        $analisis->setPrecio('7,2');
-        $analisis->setPrecio($libro['suma']);
-        $analisis->setLibreria($libro['libreria']);
-        $analisis->setAutor($libro['autor']);
-        $analisis->setEditorial($libro['editorial']);
+        $analisis->setPrecio($libro['precio']);
+        $analisis->setLibreria($bman->validaString($longLibreria, $libro['libreria']));
+        $analisis->setAutor($bman->validaString($longAutor,$libro['autor']));
+        $analisis->setEditorial($bman->validaString($longEditorial,$libro['editorial']));
         $analisis->setIsbn($isbn);
+        $analisis->setUrl($bman->validaString($longUrl, $url));
+        $analisis->setAmbito('ESP');
+        $analisis->setPlataforma('ABE');
  
 //        $analisis->setFecha("".$fecha->format('d-m-Y'))
         $analisis->setFechaanalisis($fecha); 

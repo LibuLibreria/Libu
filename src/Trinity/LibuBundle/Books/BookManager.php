@@ -108,6 +108,7 @@ class BookManager implements ContainerAwareInterface  {
             ->orderBy('l.estatus', 'ASC')
             ->getQuery();
         $result = $query->setMaxResults(1)->getOneOrNullResult();
+        if (is_null($result)) return false;
         $isbn = $result->getIsbn();        
         $titulo = $result->getTitulo();
         $codigo = $result->getCodigo(); 
@@ -366,9 +367,13 @@ class BookManager implements ContainerAwareInterface  {
 */
 
     public function validaLibro($libro) {
-        $libro->setAutor($this->validaAutor($libro->getAutor()));
-        $libro->setTitulo($this->validaTitulo($libro->getTitulo()));
-        $libro->setEditorial($this->validaEditorial($libro->getEditorial()));
+        $longEditorial = 40;
+        $longAutor = 60;
+        $longTitulo = 100;
+
+        $libro->setAutor($this->validaString($longAutor, $libro->getAutor()));
+        $libro->setTitulo($this->validaString($longTitulo, $libro->getTitulo()));
+        $libro->setEditorial($this->validaString($longEditorial, $libro->getEditorial()));
         return $libro; 
     }
 
@@ -388,6 +393,12 @@ class BookManager implements ContainerAwareInterface  {
     	$longTitulo = 100;
     	if (strlen($col) > $longTitulo) $col = substr($col, 0, $longTitulo); 
     	return $col;
+    }
+
+
+    public function validaString($long, $col) {
+        if (strlen($col) > $long) $col = substr($col, 0, $long); 
+        return $col;
     }
 
     public function validaPrecio($col) {
@@ -703,7 +714,7 @@ class BookManager implements ContainerAwareInterface  {
     //                $array_crawler->add($domElement);
 
                     $pr = explode(' ',$this->textocraw($array_crawler->filter('.item-price .price') ) );
-                    $datos['precio'] = end($pr); 
+                    $datos['precioneto'] = end($pr); 
                     
                     $env = explode(' ', $this->textocraw($array_crawler->filter('.shipping .price')) ); 
                     $datos['envio'] = end($env);                
@@ -712,7 +723,7 @@ class BookManager implements ContainerAwareInterface  {
                     $datos['autor'] = $this->textocraw($array_crawler->filter('.result-detail > p > strong') ); 
                     $datos['editorial'] = $this->textocraw($array_crawler->filter('#publisher > span') );                                                 
                     $datos['pais'] = explode(',',$this->textocraw($array_crawler->filter('.bookseller-info > p > span') ));         
-                    $datos['suma'] = (float)str_replace(',', '.', $datos['precio']) 
+                    $datos['precio'] = (float)str_replace(',', '.', $datos['precioneto']) 
                                     + (float)str_replace(',', '.', $datos['envio']);
 
 

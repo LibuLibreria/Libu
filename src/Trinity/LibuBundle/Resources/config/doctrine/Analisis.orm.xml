@@ -53,7 +53,22 @@
       <options>
         <option name="fixed"/>
       </options>
-    </field>           
+    </field>  
+    <field name="libreria" type="string" column="libreria" length="60" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field> 
+    <field name="ambito" type="string" column="ambito" length="3" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field> 
+    <field name="url" type="string" column="url" length="100" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>     
     <many-to-one field="idLibro" target-entity="Libro" fetch="LAZY">
       <join-columns>
         <join-column name="id_libro" referenced-column-name="id_libro"/>

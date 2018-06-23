@@ -2,6 +2,8 @@
 
 namespace Trinity\LibuBundle\Repository;
 
+use Doctrine\ORM\EntityRepository;
+
 /**
  * AnalisisRepository
  *
@@ -10,4 +12,24 @@ namespace Trinity\LibuBundle\Repository;
  */
 class AnalisisRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    /*
+    *  Obtiene los resultados del análisis para determinado código
+    */
+
+    public function buscaCrawled($codigo)
+    {
+        $parameters = array( 
+            'codigo' => $codigo,
+        );
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT a
+            FROM LibuBundle:Analisis a
+            WHERE a.codigo = :codigo'
+        )->setParameters($parameters);
+        
+        $crawled  = $query->getResult();  
+        return $crawled;          
+    }
+
 }
