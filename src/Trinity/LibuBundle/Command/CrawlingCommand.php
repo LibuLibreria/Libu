@@ -36,6 +36,7 @@ class CrawlingCommand extends ContainerAwareCommand
         $codigo = $prim['codigo'];
 //        dump($prim); die(); 
 
+ 
         $librointernet = $bman->buscaIsbn($isbn, "ESP"); 
 //        dump($librointernet); die(); 
 
@@ -45,17 +46,19 @@ class CrawlingCommand extends ContainerAwareCommand
         $fecha = new \DateTime();   
 
         $i = 0;
-        while (($i < $max_leidos) && ($i < sizeof($librointernet['datos']))) {
-//        for ($i=0; $i < $max_leidos; $i++) {
-//        foreach($librointernet['datos'] as $libro) {
-        	$libro = $librointernet['datos'][$i];
-
-        	$analisis = $this->datosaAnalisis($bman, $libro, $isbn, $fecha, $codigo, $librointernet['url']);
-
-            $output->writeln($libro['titulo']); 
-            $bman->persistAnalisis($analisis); 
-            $i++;
-        }
+	if (!is_null($librointernet['datos'])) {
+	        while (($i < $max_leidos) && ($i < sizeof($librointernet['datos']))) {
+		//        for ($i=0; $i < $max_leidos; $i++) {
+		//        foreach($librointernet['datos'] as $libro) {
+	        	$libro = $librointernet['datos'][$i];
+	
+	        	$analisis = $this->datosaAnalisis($bman, $libro, $isbn, $fecha, $codigo, $librointernet['url']);
+	
+	            $output->writeln($libro['titulo']); 
+	            $bman->persistAnalisis($analisis); 
+	            $i++;
+	        }
+	}
 
         $bman->libroCrawleado($codigo); 
 
