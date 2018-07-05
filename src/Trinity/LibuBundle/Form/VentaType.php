@@ -14,8 +14,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-
-
+use Doctrine\ORM\EntityRepository;
 use Trinity\LibuBundle\Entity\Producto;
 
 
@@ -56,6 +55,11 @@ class VentaType extends AbstractType
             ->add('tematica', EntityType::class, array(
                 'class' => 'LibuBundle:Tematica',
                 'choice_label' => 'nombre',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('t')
+                        ->andWhere('t.activo = :activo')
+                        ->setParameter('activo', 'si');
+                },
                 'label' => 'Temática',
                 )) 
             ->add('responsable', EntityType::class, array(
