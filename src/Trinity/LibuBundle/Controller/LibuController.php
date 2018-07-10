@@ -352,41 +352,15 @@ class LibuController extends Controller
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
 
-        // Pone el siguiente identificador de factura
-        $ultfactura = $em->getRepository('LibuBundle:Venta')->findNumUltimaFactura(); 
-        $numfactura = 1 + $ultfactura; 
-        $textfactura = "L".str_pad(strval($numfactura), 7, "0", STR_PAD_LEFT)."-".date("Y");
 
-
-        // Recupera el identificador de la venta realizada. 
+        // Recupera la venta que tenemos entre manos (identificador guardado en session)
         $session = $request->getSession();
         $ultimoid = $session->get('ultimoid');
-
-        // $ventaactual es la instancia de la venta realizada
         $ventaactual = $em->getRepository('LibuBundle:Venta')->findOneById($ultimoid);
-
-        // Llama a la función sumaPagoLibros para el desglose del pago de libros
-        $calclibros = $this->sumaPagoLibros( $ventaactual->getLibros1(), $ventaactual->getLibros3());
-
-
-        // Llama a la función sumaPagoProductos para el desglose del pago de productos
-        $calcproductos = $this->sumaPagoProductos( $ventaactual, $em );
-        $calctotal = $ventaactual->getIngreso();
-
-        // Escribe el texto
-        $textoPagos = "<h2>Número de ticket: ".$textfactura."</h2>";
-        $textoPagos .= $calclibros['texto'];         
-        $textoPagos .= $calcproductos['texto'];
-        $textoPagos .= "<h1>TOTAL: ".$calctotal." euros</h1>";
-
-        /*  Crea un fichero con el ticket, preparado para imprimir */
-        $printcon = new PrinterController();
-        $fact = strval(date("Y"))."/".strval($textfactura); 
-        $printcon->creaticketAction("simplificada", $fact, $ventaactual, $calcproductos['arrayproductos']); 
-
 
         // Creación del formulario
         $form = $this->createForm(FacturarType::class, array());
+
 
         // Manejo de la respuesta
         $form->handleRequest($request);
@@ -401,8 +375,16 @@ class LibuController extends Controller
             $factura = ($form->get('factura')->isClicked()) ? true : false;
 
             if (($finalizado) || ($factura)) {
+
+                // Crea el identificador de factura y lo guarda en el objeto $ventaactual
+                $ultfactura = $em->getRepository('LibuBundle:Venta')->findNumUltimaFactura(); 
+                $numfactura = 1 + $ultfactura; 
+                $textfactura = "L".str_pad(strval($numfactura), 7, "0", STR_PAD_LEFT)."-".date("Y");
                 $ventaactual->setFactura($textfactura);
+
+                // Datos complementarios sobre el objeto $ventaactual
                 $ventaactual->setTipomovim("ven");
+
 
                 // Cambia el número de la última factura
                 $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
@@ -413,13 +395,41 @@ class LibuController extends Controller
                     $this->addFlash('error', 'Error al guardar los datos');
                 }
 
-                if ($finalizado) return $this->redirectToRoute('venta');
+                if ($finalizado) {
+
+                    /*  Crea un fichero con el ticket, preparado para imprimir */
+                    $printcon = new PrinterController();
+                    $printcon->creaticketAction(
+                        "simplificada", 
+                        $textfactura, 
+                        $ventaactual, 
+                        $this->sumaPagoProductos( $ventaactual, $em )['arrayproductos']
+                    ); 
+                    
+                    return $this->redirectToRoute('venta');
+                }
 
                 if ($factura) return $this->redirectToRoute('hazfactura', array( 'numfactura' => $textfactura));
             }
 
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
         }
+
+
+        // Llama a la función sumaPagoLibros para el desglose del pago de libros
+        $calclibros = $this->sumaPagoLibros( $ventaactual->getLibros1(), $ventaactual->getLibros3());
+
+
+        // Llama a la función sumaPagoProductos para el desglose del pago de productos
+        $calcproductos = $this->sumaPagoProductos( $ventaactual, $em );
+        $calctotal = $ventaactual->getIngreso();
+
+        // Escribe el texto
+//        $textoPagos = "<h2>Número de ticket: ".$textfactura."</h2>";
+        $textoPagos = $calclibros['texto'];  
+        $textoPagos .= $calcproductos['texto'];
+        $textoPagos .= "<h1>TOTAL: ".$calctotal." euros</h1>";
+
 
         return $this->render('LibuBundle:libu:facturar.html.twig',array(
             'form' => $form->createView(),

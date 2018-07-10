@@ -57,7 +57,7 @@ class PrinterController extends Controller
 
     public function renderizaAction(String $tipofact, String $numfactura, Array $productos, Float $ingreso, Array $cliente = array()) 
     {
-        dump($tipofact, $numfactura, $productos, $cliente); die(); 
+//        dump($tipofact, $numfactura, $productos, $cliente); die(); 
         require __DIR__ . '/../../../../vendor/autoload.php';
 
 
