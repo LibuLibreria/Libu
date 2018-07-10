@@ -100,6 +100,7 @@ class PrinterController extends Controller
             $printer -> text( $cliente['nombre']."\n");
             $printer -> text( $cliente['nifcif']."\n");
             $printer -> text( $cliente['direccion']."\n");
+            $printer -> feed(1);
         }
         $printer -> text( "Fecha: ".date("d-m-y")."   Hora: ".date("G:i")."\n"); 
         $printer -> feed(2);  
