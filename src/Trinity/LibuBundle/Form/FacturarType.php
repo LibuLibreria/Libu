@@ -31,7 +31,7 @@ class FacturarType extends AbstractType
 
             ->add('finalizado', SubmitType::class, array('label' => 'REALIZAR VENTA'))
 
-            ->add('factura', SubmitType::class, array('label' => 'Hacer factura'))
+            ->add('factura', SubmitType::class, array('label' => 'REALIZAR VENTA CON FACTURA'))
             
             ->add('menu', SubmitType::class, array('label' => 'Menú (sin venta)'))  
 

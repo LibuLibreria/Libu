@@ -21,7 +21,7 @@ class PrinterController extends Controller
 {
 
 
-    public function creaticketAction(String $factura, Venta $venta, Array $arrayproductos)
+    public function creaticketAction(String $tipofact, String $factura, Venta $venta, Array $arrayproductos, Array $cliente = array())
     {
         $libros3 = $venta->getLibros3(); 
         $libros1 = $venta->getLibros1(); 
@@ -49,14 +49,15 @@ class PrinterController extends Controller
             }
         }
 
-        $act = $this->simplificadaAction($factura, $productos, $ingreso);
+        $act = $this->renderizaAction($tipofact, $factura, $productos, $ingreso, $cliente);
 
         return new Response(""); 
     }
 
 
-    public function simplificadaAction(String $numfactura, Array $productos, Float $ingreso) 
+    public function renderizaAction(String $tipofact, String $numfactura, Array $productos, Float $ingreso, Array $cliente = array()) 
     {
+//        dump($tipofact, $numfactura, $productos, $cliente); die(); 
         require __DIR__ . '/../../../../vendor/autoload.php';
 
 
@@ -91,7 +92,16 @@ class PrinterController extends Controller
         $printer -> text("libu.es  TF: 688 685 976\n");
 
         /* Datos factura */
-        $printer -> text( "Factura Simplificada ".$numfactura."\n");
+        if ($tipofact =='simplificada') {
+            $printer -> text( "Factura Simplificada ".$numfactura."\n");
+        } else if ($tipofact == 'completa') {
+            $printer -> text( "FACTURA  ".$numfactura."\n");
+            $printer -> text( "CLIENTE: \n");
+            $printer -> text( $cliente['nombre']."\n");
+            $printer -> text( $cliente['nifcif']."\n");
+            $printer -> text( $cliente['direccion']."\n");
+            $printer -> feed(1);
+        }
         $printer -> text( "Fecha: ".date("d-m-y")."   Hora: ".date("G:i")."\n"); 
         $printer -> feed(2);  
 

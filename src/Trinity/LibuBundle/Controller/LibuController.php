@@ -17,6 +17,7 @@ use Trinity\LibuBundle\Form\FacturarType;
 use Trinity\LibuBundle\Form\MenuType;
 use Trinity\LibuBundle\Entity\Venta;
 use Trinity\LibuBundle\Entity\Cliente;
+use Trinity\LibuBundle\Entity\ClienteFactura;
 use Trinity\LibuBundle\Entity\Responsable;
 use Trinity\LibuBundle\Entity\Tematica;
 use Trinity\LibuBundle\Entity\Producto;
@@ -27,13 +28,13 @@ use Trinity\LibuBundle\Entity\Concepto;
 use Trinity\LibuBundle\Entity\VentaRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -351,18 +352,69 @@ class LibuController extends Controller
         // Abrimos un gestionador de repositorio para toda la función
         $em = $this->getDoctrine()->getManager();
 
-        // Pone el siguiente identificador de factura
-        $ultfactura = $em->getRepository('LibuBundle:Venta')->findNumUltimaFactura(); 
-        $numfactura = 1 + $ultfactura; 
-        $textfactura = "L".str_pad(strval($numfactura), 7, "0", STR_PAD_LEFT)."-".date("Y");
 
-
-        // Recupera el identificador de la venta realizada. 
+        // Recupera la venta que tenemos entre manos (identificador guardado en session)
         $session = $request->getSession();
         $ultimoid = $session->get('ultimoid');
-
-        // $ventaactual es la instancia de la venta realizada
         $ventaactual = $em->getRepository('LibuBundle:Venta')->findOneById($ultimoid);
+
+        // Creación del formulario
+        $form = $this->createForm(FacturarType::class, array());
+
+
+        // Manejo de la respuesta
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('ticket')->isClicked()) {
+
+                return $this->redirectToRoute('venta');
+            }
+
+            $finalizado = ($form->get('finalizado')->isClicked()) ? true : false;
+
+            $factura = ($form->get('factura')->isClicked()) ? true : false;
+
+            if (($finalizado) || ($factura)) {
+
+                // Crea el identificador de factura y lo guarda en el objeto $ventaactual
+                $ultfactura = $em->getRepository('LibuBundle:Venta')->findNumUltimaFactura(); 
+                $numfactura = 1 + $ultfactura; 
+                $textfactura = "L".str_pad(strval($numfactura), 7, "0", STR_PAD_LEFT)."-".date("Y");
+                $ventaactual->setFactura($textfactura);
+
+                // Datos complementarios sobre el objeto $ventaactual
+                $ventaactual->setTipomovim("ven");
+
+
+                // Cambia el número de la última factura
+                $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
+                try{
+                    $em->persist($ventaactual);
+                    $em->flush();
+                } catch(\Doctrine\ORM\ORMException $e){
+                    $this->addFlash('error', 'Error al guardar los datos');
+                }
+
+                if ($finalizado) {
+
+                    /*  Crea un fichero con el ticket, preparado para imprimir */
+                    $printcon = new PrinterController();
+                    $printcon->creaticketAction(
+                        "simplificada", 
+                        $textfactura, 
+                        $ventaactual, 
+                        $this->sumaPagoProductos( $ventaactual, $em )['arrayproductos']
+                    ); 
+                    
+                    return $this->redirectToRoute('venta');
+                }
+
+                if ($factura) return $this->redirectToRoute('hazfactura', array( 'numfactura' => $textfactura));
+            }
+
+            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+        }
+
 
         // Llama a la función sumaPagoLibros para el desglose del pago de libros
         $calclibros = $this->sumaPagoLibros( $ventaactual->getLibros1(), $ventaactual->getLibros3());
@@ -373,59 +425,11 @@ class LibuController extends Controller
         $calctotal = $ventaactual->getIngreso();
 
         // Escribe el texto
-        $textoPagos = "<h2>Número de ticket: ".$textfactura."</h2>";
-        $textoPagos .= $calclibros['texto'];         
+//        $textoPagos = "<h2>Número de ticket: ".$textfactura."</h2>";
+        $textoPagos = $calclibros['texto'];  
         $textoPagos .= $calcproductos['texto'];
         $textoPagos .= "<h1>TOTAL: ".$calctotal." euros</h1>";
 
-        /*  Crea un fichero con el ticket, preparado para imprimir */
-        $printcon = new PrinterController();
-        $fact = strval(date("Y"))."/".strval($textfactura); 
-        $printcon->creaticketAction($fact, $ventaactual, $calcproductos['arrayproductos']); 
-
-
-        // Creación del formulario
-        $form = $this->createForm(FacturarType::class, array());
-
-        // Manejo de la respuesta
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('ticket')->isClicked()) {
-                $ventaactual->setFactura($textfactura);
-                $ventaactual->setTipomovim("ven");
-
-                // Cambia el número de la última factura
-                $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
-                try{
-                    $em->persist($ventaactual);
-                    $em->flush();
-                } catch(\Doctrine\ORM\ORMException $e){
-                    $this->addFlash('error', 'Error al guardar los datos');
-                }
-
-                return $this->redirectToRoute('venta');
-            }
-
-            if ($form->get('finalizado')->isClicked()) {
-                $ventaactual->setFactura($textfactura);
-                $ventaactual->setTipomovim("ven");
-
-                // Cambia el número de la última factura
-                $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
-                try{
-                    $em->persist($ventaactual);
-                    $em->flush();
-                } catch(\Doctrine\ORM\ORMException $e){
-                    $this->addFlash('error', 'Error al guardar los datos');
-                }
-
-                return $this->redirectToRoute('venta');
-            }
-
-            if ($form->get('factura')->isClicked()) return $this->redirectToRoute('hazfactura');
-
-            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
-        }
 
         return $this->render('LibuBundle:libu:facturar.html.twig',array(
             'form' => $form->createView(),
@@ -438,10 +442,17 @@ class LibuController extends Controller
 
 
     /**
-     * @Route("/libu/hazfactura", name="hazfactura")
+     * @Route("/libu/hazfactura/{numfactura}", 
+     *       name="hazfactura",
+     *       defaults = {"factura": "none"},
+     *       )
      */
-    public function hazFacturaAction(Request $request)
+    public function hazFacturaAction(Request $request, $numfactura)
     {
+
+        // Abrimos un gestionador de repositorio para toda la función
+        $em = $this->getDoctrine()->getManager();
+
         $cliente = new Cliente(); 
         $form = $this->createForm(ClienteType::class, $cliente);
 
@@ -455,7 +466,43 @@ class LibuController extends Controller
             }
             catch(\Doctrine\ORM\ORMException $e){
                 $this->addFlash('error', 'Error al guardar los datos de un cliente');
-            }             
+            }       
+
+
+            // Ahora guarda también los datos de la factura correspondida con el cliente.
+            $clientefactura = new ClienteFactura();
+            $clientefactura->setNumfactura($numfactura);
+            $clientefactura->setCliente($cliente);
+            $fecha = new \Datetime();  
+            $clientefactura->setDiahora($fecha);
+            try {
+                $em->persist($clientefactura);
+                $em->flush();
+            }
+            catch(\Doctrine\ORM\ORMException $e){
+                $this->addFlash('error', 'Error al guardar los datos de factura del cliente');
+            } 
+
+
+            /*  Crea un fichero con el ticket, preparado para imprimir */
+            $datoscliente = array(
+                    'nombre' => $cliente->getNombre(),
+                    'nifcif' => $cliente->getNifCif(),
+                    'direccion' => $cliente->getDireccion(),
+                );
+
+            // Localiza la venta con el numero de factura
+            $ventaactual = $em->getRepository('LibuBundle:Venta')->findOneByFactura($numfactura); 
+            $calcproductos = $this->sumaPagoProductos( $ventaactual, $em );
+
+            $printcon = new PrinterController();
+            $printcon->creaticketAction("completa", $numfactura, $ventaactual, 
+                $calcproductos['arrayproductos'], $datoscliente); 
+
+
+            return $this->render('LibuBundle:libu:ticketyredirige.html.twig',array(
+                'url_tickets' => "http://".getenv('SERVER_NAME')."/Libu/web/tickets.txt",
+                ));             
         }       
 
 
