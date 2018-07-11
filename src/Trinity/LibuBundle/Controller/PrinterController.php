@@ -121,7 +121,7 @@ class PrinterController extends Controller
         /* Nota IVA */
         $printer -> setJustification(Printer::JUSTIFY_CENTER);   
         $printer -> text($linea."\n");  
-        $printer -> text( "* * * IVA INCLUIDO * * *\n");
+        $printer -> text( "* * * 4%  IVA INCLUIDO * * *\n");
          
         /* Mensaje footer */
         $printer -> feed(1);
