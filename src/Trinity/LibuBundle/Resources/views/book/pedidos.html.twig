@@ -73,61 +73,64 @@
 
         {% for numped, pedido in datospedido %}
 
-        <div class="card card-inverse card-info">
-            <div class="card-header">
+            <div class="card card-inverse card-info">
+                <div class="card-header">
 
-                <h3 class="card-title">Pedido {{ pedido.idpedido }}</h3>
+                    <h3 class="card-title">Pedido {{ pedido.idpedido }}</h3>
 
-                {% if pedido.purchaseMethod != 'CC' %}
-                    <p class="card-atencion">ATENCIÓN: LIBRO NO COBRADO AUTOMÁTICAMENTE<br></p>
-                {% endif %}
+                    {% if pedido.purchaseMethod != 'CC' %}
+                        <p class="card-atencion">ATENCIÓN: LIBRO NO COBRADO AUTOMÁTICAMENTE<br></p>
+                    {% endif %}
 
-                Comprador/a: {{ pedido.comprador.name }}
-                <p>Email: {{ pedido.direccionmail }}</p>
-                {% if pedido.comprador.country != 'Spain' %}
-                    <p class="card-atencion">ATENCIÓN: LIBRO COMPRADO DESDE EL EXTRANJERO</p>
-                {% endif %}
+                    Comprador/a: {{ pedido.comprador.name }}
+                    <p>Email: {{ pedido.direccionmail }}</p>
+                    {% if pedido.comprador.country != 'Spain' %}
+                        <p class="card-atencion">ATENCIÓN: LIBRO COMPRADO DESDE EL EXTRANJERO</p>
+                    {% endif %}
 
-                {#  <br><strong>En el pedido hay {{ pedido.numlibrospedido }} libro/s</strong>  #}
-            </div>
-
-            {% for numlib, libro in pedido.libro %}
-
-                <div class="card-block">
-                    <h3 class="card-title">{{ libro.title }}</h3>
-                    <h4>{{ libro.author }}</h4>
-                    <br>Identificador del libro: {{ libro.vendorKey }}
-                    <br>ISBN: {{ libro.isbn }}
-
-                {% if libro.codigo is defined %}
-
-                    <br>Precio: {{ libro.precio }}
-                    <br>Estantería: {{ libro.estanteria }}
-                    <br>Balda: {{ libro.balda }}
-                    <br>Código: {{ libro.codigo }}
-
+                    {#  <br><strong>En el pedido hay {{ pedido.numlibrospedido }} libro/s</strong>  #}
                 </div>
 
-                <div class="card-footer">
-                    <br><a href="{{ path('delete_abebooks', {'id': libro.vendorKey, 'order': libro.orden }) }}" target="_blank"  class="btn btn-info" role="button" >Subir</a>   
-                    {# <br><a href='https://www.abebooks.com/servlet/OrderUpdate?abepoid= {{ libro.orden }}' target="_blank"  class="btn btn-info btn-lg" role="button">Vender en Abebooks</a> #}
-                </div>
+                {% for numlib, libro in pedido.libro %}
+
+                    <div class="card-block">
+                        <h3 class="card-title">{{ libro.title }}</h3>
+                        <h4>{{ libro.author }}</h4>
+                        <br>Identificador del libro: {{ libro.vendorKey }}
+                        <br>ISBN: {{ libro.isbn }}
+
+                    {% if libro.codigo is defined %}
+
+                            <br>Precio: {{ libro.precio }}
+                            <br>Estantería: {{ libro.estanteria }}
+                            <br>Balda: {{ libro.balda }}
+                            <br>Código: {{ libro.codigo }}
+
+                            </div>
+
+                            <div class="card-footer">
+                                <br><a href="{{ path('delete_abebooks', {'id': libro.vendorKey, 'order': libro.orden }) }}" target="_blank"  class="btn btn-info" role="button" >Subir</a>   
+                                {# <br><a href='https://www.abebooks.com/servlet/OrderUpdate?abepoid= {{ libro.orden }}' target="_blank"  class="btn btn-info btn-lg" role="button">Vender en Abebooks</a> #}
+                            </div>
+
+
+
+                    {% else  %}
+
+                            <br><strong>No se ha encontrado un libro con referencia {{ libro.vendorKey }}.
+                            <br>No se puede proceder a la venta. 
+                            <br>Hacer cambios desde Abebooks y avisar al administrador de Trinity </strong>
+                            <br>
+                        </div>  
+
+                    {% endif %}
+
+                {% endfor %}
 
             </div>
 
-            {% else  %}
+            <p>&nbsp;</p>
 
-                <br><strong>No se ha encontrado un libro con referencia {{ libro.vendorKey }}.
-                <br>No se puede proceder a la venta. 
-                <br>Hacer cambios desde Abebooks y avisar al administrador de Trinity </strong>
-                <br>
-            </div>  
-
-            {% endif %}
-
-            {% endfor %}
-</div>
-<p>&nbsp;</p>
         {% endfor %}
 
     {% else %}
