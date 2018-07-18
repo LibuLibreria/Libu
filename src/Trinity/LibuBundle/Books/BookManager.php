@@ -97,7 +97,9 @@ class BookManager implements ContainerAwareInterface  {
         }
         catch(\Doctrine\ORM\ORMException $e){
             $this->addFlash('error', 'Error al guardar los datos de un libro');
+            return false;
         } 
+        return true; 
     }
 
     public function primeroSinPrecio() {
@@ -458,6 +460,12 @@ class BookManager implements ContainerAwareInterface  {
             } 
         } 
         return $repetidos; 
+    }
+
+
+    public function findLibroPorCodigo($codigo) {
+        $em = $this->em;
+        return $em->getRepository('LibuBundle:Libro')->findOneByCodigo($codigo);
     }
 
 
