@@ -15,6 +15,11 @@ use Symfony\Component\BrowserKit\Cookie;
 
 use Trinity\LibuBundle\Entity\Analisis;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\ORMException;
+use PDOException;
+
+
 
 class BookManager implements ContainerAwareInterface  {
 
@@ -94,11 +99,29 @@ class BookManager implements ContainerAwareInterface  {
         try {
             $em->persist($analisis);
             $em->flush();
+        } catch (DBALException $e) {
+            $message = sprintf('DBALException [%i]: %s','error', 'Error al guardar los datos de un analisis');
+            return array('resul' => false, 'message' => '$message'); 
+        } catch (PDOException $e) {
+            $message = sprintf('PDOException [%i]: %s', 'error', 'Error al guardar los datos de un analisis');
+            return array('resul' => false, 'message' => '$message'); 
+        } catch (ORMException $e) {
+            $message = sprintf('ORMException [%i]: %s', 'error', 'Error al guardar los datos de un analisis');
+            return array('resul' => false, 'message' => '$message'); 
+        } catch (\Doctrine\ORM\ORMException $e) {
+            $message = sprintf('Exception [%i]: %s', 'error', 'Error al guardar los datos de un analisis');
+            return array('resul' => false, 'message' => '$message'); 
         }
+
+        return array('resul' => true, 'message' => ''); 
+
+
+
+   /*     
         catch(\Doctrine\ORM\ORMException $e){
             $this->addFlash('error', 'Error al guardar los datos de un libro');
             return false;
-        } 
+        } */
         return true; 
     }
 
@@ -492,12 +515,20 @@ class BookManager implements ContainerAwareInterface  {
         try {
             $em->persist($libro);
             $em->flush();
+        } catch (DBALException $e) {
+            $message = sprintf('DBALException [%i]: %s','error', 'Error al guardar los datos de un libro');
+            return array('resul' => false, 'message' => '$message'); 
+        } catch (PDOException $e) {
+            $message = sprintf('PDOException [%i]: %s', 'error', 'Error al guardar los datos de un libro');
+            return array('resul' => false, 'message' => '$message'); 
+        } catch (ORMException $e) {
+            $message = sprintf('ORMException [%i]: %s', 'error', 'Error al guardar los datos de un libro');
+            return array('resul' => false, 'message' => '$message'); 
+        } catch (\Doctrine\ORM\ORMException $e) {
+            $message = sprintf('Exception [%i]: %s', 'error', 'Error al guardar los datos de un libro');
+            return array('resul' => false, 'message' => '$message'); 
         }
-        catch(\Doctrine\ORM\ORMException $e){
-            $this->addFlash('error', 'Error al guardar los datos de un libro');
-        } 
-
-        return true; 
+        return array('resul' => true, 'message' => ''); 
     }
 
 

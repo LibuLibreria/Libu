@@ -31,7 +31,7 @@ class CrawlingCommand extends ContainerAwareCommand
 
         $prim = $bman->primeroSinPrecio(); 
         if ($prim == false) return false;
-        $output->writeln("SUBIENDO EL LIBRO CON CÓDIGO: ".$prim['codigo']);
+        $output->write("SUBIENDO EL LIBRO CON CÓDIGO: ".$prim['codigo']."  ");
         $isbn = $prim['isbn'];
         $codigo = $prim['codigo'];
 //        dump($prim); die(); 
@@ -54,10 +54,13 @@ class CrawlingCommand extends ContainerAwareCommand
     	
     	        	$analisis = $this->datosaAnalisis($bman, $libro, $isbn, $fecha, $codigo, $librointernet['url']);
     	
-    	            $output->writeln($libro['titulo']); 
+//    	            $output->writeln($libro['titulo']); 
     	            $subeanalisis = $bman->persistAnalisis($analisis); 
-                    if (!$subeanalisis) {
+// dump($subeanalisis); die();                     
+                    if (!$subeanalisis['resul']) {
                         $libroerror = $bman->findLibroPorCodigo($prim['codigo']);
+                        $output->writeln('---> OK');
+                        $output->writeln($subeanalisis['message']);
                         $bman->persisteLibro($libroerror, 'ERROR');
                     }
     	            $i++;
@@ -71,7 +74,7 @@ class CrawlingCommand extends ContainerAwareCommand
 //	    $output->writeln($librointernet['datos'][0]['titulo']);
 
 	    // outputs a message without adding a "\n" at the end of the line
-	    $output->write('OK');
+	    $output->writeln('---> OK');
     }
 
 
