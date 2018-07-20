@@ -217,17 +217,24 @@
 
 
                     <div class="tab-pane fade in active" id="tab_opciones"> 
-                        <h2>Caja: </h2>   
+                        <h3>Caja: </h3>   
                         {{ form_widget(form.caja) }}     
                         {{ form_widget(form.mensual) }}     
                         {{ form_widget(form.gastomensual) }}                         
                         {{ form_widget(form.proveedores) }} 
+                        
                         {% if is_granted('ROLE_ADMIN') %}
+                            <h3>Administración:</h3>
                             <a href= {{ path('easyadmin')}} class="btn btn-info" role="button">Admin</a>
                         {% endif %} 
+
                         {% if is_granted('ROLE_BOOK') %}
+                            <h3>Acceso a librería online:</h3>
                             <a href= {{ path('bookpedidos')}} class="btn btn-info" role="button">Online</a>
-                        {% endif %}                         
+                        {% endif %} 
+                        <p>&nbsp;</p>
+                        <h3>Manual de ayuda para la Líbrería Libu</h3>
+                        <a href= 'http://207.154.209.77/wiki' class='btn btn-info' role='button'>Ayuda / Manual</a>
                     </div>
 
                     {{ form_row(form._token) }}
