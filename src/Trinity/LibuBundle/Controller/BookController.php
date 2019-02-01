@@ -194,7 +194,8 @@ class BookController extends Controller
         $arrayrender = array(
 	            'titulo' => 'Libro',
 	            'mensaje' => '',
-	            'horizontal' => true,        		
+	            'horizontal' => true,   
+                'busquedas' => array(),     		
         	);
 
         if ($cod == 1) {
@@ -207,6 +208,9 @@ class BookController extends Controller
 
         if (( $accion == 'precio') && ($libro->getEstatus() != 'CSUB')) {
  //       if ( $accion == 'precio') {
+
+            $arrayrender['titulo_almacen'] =$libro->getTitulo()." - ".$libro->getAutor();
+//dump($arrayrender); dump($libro); die(); 
             $analisis = $this->renderizaPagina($libro);
 
             // $arrayrender contiene todos los datos para elaborar las listas de libros: cabeceras, etc.
@@ -262,7 +266,7 @@ class BookController extends Controller
 
         $arrayrender['form'] = $form->createView();
         $arrayrender['accion'] = $accion; 
-
+//dump($arrayrender); die();
         return $this->render('LibuBundle:libu:libro.html.twig', $arrayrender ); 
     }
 

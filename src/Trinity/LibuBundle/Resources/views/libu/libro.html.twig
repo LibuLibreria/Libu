@@ -117,6 +117,7 @@
 
 			{% if accion == 'precio' %}
 
+
 				{% if boton_descartar is defined %}
 				    <div class= 'row'>	
 						{{ form_widget(form.descartar) }}
@@ -128,6 +129,16 @@
 
 				<hr>
 				<p>&nbsp;</p>
+
+
+				{% if titulo_almacen is defined %}
+					<div class = 'titulo_almacen'>
+						<strong>Título en el almacén: </strong>{{ titulo_almacen }}
+					</div>
+					<hr>
+				{% endif %}
+
+				{% if busquedas is defined %}
 
 	              {% for busqueda in busquedas %}   
 
@@ -167,6 +178,7 @@
 	                {% endif %}
 	                <hr>
 	              {% endfor %}  
+              {% endif %}
 
           	{% endif %}
 
