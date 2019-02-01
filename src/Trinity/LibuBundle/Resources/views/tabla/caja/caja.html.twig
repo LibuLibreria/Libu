@@ -8,10 +8,11 @@
 
 
 		{% block contenido %}
-
+Contenido
 		    {% for vent in ventasdia.ventas %}
 		    	<tr>
 		        	<td>{{ vent['hora'] | localizeddate('none', 'short', app.request.locale ) }}</td>
+		        	<td>{{ vent['factura']}} </td>
 		        	<td>{{ vent['ingreso'] }} euros</td>
 		        	<td>{{ vent['ingresolibros'] |round(1,'common') }} euros</td>
 		        	<td>{{ vent['ingresoprods'] |round(1,'common') }} euros </td>

@@ -108,12 +108,12 @@ class CajaController extends Controller
             }
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
         }
-
+//dump($ventas);die();
         return $this->render('LibuBundle:tabla/caja:caja.html.twig',array(
             'form' => $form->createView(),
             'ventasdia' => $ventas,
             'fecha' => $fecha,
-            'cabecera' => array('Hora','Ingreso','Libros','Productos','Cliente','Lista prods'),
+            'cabecera' => array('Hora', 'Nº Fact.', 'Ingreso','Libros','Productos','Cliente','Lista prods'),
             ));    
     }
 
