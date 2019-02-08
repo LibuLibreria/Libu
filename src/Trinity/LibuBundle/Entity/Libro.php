@@ -64,9 +64,9 @@ class Libro
     /**
      * @var string
      *
-     * @ORM\Column(name="editorial", type="string", length=30, nullable=true)
+     * @ORM\Column(name="editorial", type="string", length=40, nullable=true)
      * @Assert\Length(
-     *     max = 30,
+     *     max = 40,
      *     maxMessage = "Máximo {{ limit }} caracteres."
      * )       
      */
@@ -166,6 +166,8 @@ class Libro
 
     /**
      * @var string
+     *
+     * @ORM\Column(name="descripcion", type="string", length=500, nullable=true)
      */
     private $descripcion;
 
@@ -186,9 +188,9 @@ class Libro
         if (isset($valores['idventa'])) $this->setIdVenta($valores['idventa']); 
         if (isset($valores['balda'])) $this->setBalda($valores['balda']);   
         if (isset($valores['estanteria'])) $this->setEstanteria($valores['estanteria']);         
-        if (isset($valores['abebooks'])) $this->setEstanteria($valores['abebooks']);                                                                                            
-        if (isset($valores['estatus'])) $this->setEstanteria($valores['estatus']);                                                                                            
-
+        if (isset($valores['abebooks'])) $this->setAbebooks($valores['abebooks']);
+        if (isset($valores['descripcion'])) $this->setDescripcion($valores['descripcion']);               
+        if (isset($valores['estatus'])) $this->setEstatus($valores['estatus']);                                                                                            
     }
 
 
