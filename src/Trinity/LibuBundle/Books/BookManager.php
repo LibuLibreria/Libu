@@ -752,10 +752,10 @@ class BookManager implements ContainerAwareInterface  {
     //                $array_crawler = new Crawler();
     //                $array_crawler->add($domElement);
 
-                    $pr = explode(' ',$this->textocraw($array_crawler->filter('.item-price .price') ) );
+                    $pr = explode(' ',$this->textocraw($array_crawler->filter('.srp-item-price') ) );
                     $datos['precioneto'] = end($pr); 
                     
-                    $env = explode(' ', $this->textocraw($array_crawler->filter('.shipping .price')) ); 
+                    $env = explode(' ', $this->textocraw($array_crawler->filter('.srp-item-price-shipping')) ); 
                     $datos['envio'] = end($env);                
                     $datos['libreria'] = $this->textocraw($array_crawler->filter('.bookseller-info > p > a') );        
                     $datos['titulo'] = $this->textocraw($array_crawler->filter('.result-detail > h2 > a') ); 
