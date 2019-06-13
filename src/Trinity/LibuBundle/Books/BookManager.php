@@ -101,16 +101,16 @@ class BookManager implements ContainerAwareInterface  {
             $em->flush();
         } catch (DBALException $e) {
             $message = sprintf('DBALException [%i]: %s','error', 'Error al guardar los datos de un analisis');
-            return array('resul' => false, 'message' => '$message'); 
+            return array('resul' => false, 'message' => $message); 
         } catch (PDOException $e) {
             $message = sprintf('PDOException [%i]: %s', 'error', 'Error al guardar los datos de un analisis');
-            return array('resul' => false, 'message' => '$message'); 
+            return array('resul' => false, 'message' => $message); 
         } catch (ORMException $e) {
             $message = sprintf('ORMException [%i]: %s', 'error', 'Error al guardar los datos de un analisis');
-            return array('resul' => false, 'message' => '$message'); 
+            return array('resul' => false, 'message' => $message); 
         } catch (\Doctrine\ORM\ORMException $e) {
             $message = sprintf('Exception [%i]: %s', 'error', 'Error al guardar los datos de un analisis');
-            return array('resul' => false, 'message' => '$message'); 
+            return array('resul' => false, 'message' => $message); 
         }
 
         return array('resul' => true, 'message' => ''); 
