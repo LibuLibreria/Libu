@@ -623,7 +623,7 @@ class BookManager implements ContainerAwareInterface  {
                     <firstEdition></firstEdition>
                     <signed>false</signed>
                     <booksellerCatalogue></booksellerCatalogue>
-                    <description>'.$this->changeCharset($book->getDescripcion()).'</description>
+                    <description>Los beneficios de la venta de este libro se dirigen en un 100% a proyectos a favor de personas en exclusion social. '.$this->changeCharset($book->getDescripcion()).'</description>
                     <bookCondition>'.$this->valores_conservacion[$book->getConservacion()->getCodigo()].'</bookCondition>
                     <size></size>
                     <jacketCondition></jacketCondition>
