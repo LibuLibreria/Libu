@@ -46,8 +46,9 @@ class CrawlingCommand extends ContainerAwareCommand
         $fecha = new \DateTime();   
 
         $i = 0;
+        $errorcrawl = false; 
     	if (!is_null($librointernet['datos'])) {
-    	        while (($i < $max_leidos) && ($i < sizeof($librointernet['datos']))) {
+    	        while (($i < $max_leidos) && ($i < sizeof($librointernet['datos'])) && !$errorcrawl ) {
     		//        for ($i=0; $i < $max_leidos; $i++) {
     		//        foreach($librointernet['datos'] as $libro) {
     	        	$libro = $librointernet['datos'][$i];
@@ -62,19 +63,17 @@ class CrawlingCommand extends ContainerAwareCommand
                         $output->writeln('---> OK');
                         $output->writeln($subeanalisis['message']);
                         $bman->persisteLibro($libroerror, 'ERROR');
+                        $errorcrawl = true; 
                     }
     	            $i++;
     	        }
     	}
 
-        $bman->libroCrawleado($codigo); 
-
-
-	    // outputs a message followed by a "\n"
-//	    $output->writeln($librointernet['datos'][0]['titulo']);
-
-	    // outputs a message without adding a "\n" at the end of the line
-	    $output->writeln('---> OK');
+        if(!$errorcrawl) {
+            $bman->libroCrawleado($codigo); 
+    	    // outputs a message without adding a "\n" at the end of the line
+    	    $output->writeln('---> OK');
+        }
     }
 
 
