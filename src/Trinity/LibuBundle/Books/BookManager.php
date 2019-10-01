@@ -137,7 +137,7 @@ class BookManager implements ContainerAwareInterface  {
         $isbn = $result->getIsbn();        
         $titulo = $result->getTitulo();
         $codigo = $result->getCodigo(); 
-        return array('isbn' => $isbn, 'titulo' => $titulo, 'codigo' => $codigo); 
+        return array('libro' => $result,'isbn' => $isbn, 'titulo' => $titulo, 'codigo' => $codigo); 
     }
 
 

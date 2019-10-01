@@ -128,15 +128,21 @@
 				{% endif %}
 
 				<hr>
-				<p>&nbsp;</p>
-
 
 				{% if titulo_almacen is defined %}
 					<div class = 'titulo_almacen'>
 						<strong>Título en el almacén: </strong>{{ titulo_almacen }}
 					</div>
+				{% endif %}
+
+				{% if enlaces is defined %}
+					<div class = 'enlaces'>
+						<a target="_blank" href='https://www.abebooks.com/servlet/SearchResults?cm_sp=SearchF-_-topnav-_-Results&ds=20&kn={{ enlaces }}'>ABE ISBN - </a>
+						<a target="_blank" href='https://www.amazon.es/s?k={{ enlaces }}'>AMZ ISBN</a>						
+					</div>
 					<hr>
 				{% endif %}
+
 
 				{% if busquedas is defined %}
 

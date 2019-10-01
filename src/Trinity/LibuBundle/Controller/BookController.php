@@ -210,11 +210,14 @@ class BookController extends Controller
  //       if ( $accion == 'precio') {
 
             $arrayrender['titulo_almacen'] =$libro->getTitulo()." - ".$libro->getAutor();
-//dump($arrayrender); dump($libro); die(); 
+
+            $arrayrender['enlaces'] = $libro->getIsbn(); 
+
             $analisis = $this->renderizaPagina($libro);
 
             // $arrayrender contiene todos los datos para elaborar las listas de libros: cabeceras, etc.
             $arrayrender = array_merge($arrayrender, $analisis['arrayrender']);
+// dump($arrayrender); dump($libro); die();             
         } 
 
         $form = $this->createForm(LibroType::class, $libro);      
@@ -355,12 +358,112 @@ class BookController extends Controller
 
 
     private function escogeLibroFormulario($bman, $libro, $datos) {
-            $libro->setAutor($bman->validaAutor($datos[0]['autor']));
-            $libro->setTitulo($bman->validaTitulo($datos[0]['titulo']));
-            $libro->setEditorial($bman->validaEditorial($datos[0]['editorial']));
+        $puntosFigurar = array(); 
+        $longarray = array(); 
+        foreach ($datos as $libroventa) {
+            $puntosFigurar['autor'][] = $this->puntuaAutor($libroventa['autor']);
+            $puntosFigurar['titulo'][] = $this->puntuaTitulo($libroventa['titulo']);
+            $puntosFigurar['editorial'][] = $this->puntuaEditorial($libroventa['editorial']);
+            $longarray['titulo'][] = strlen($libroventa['titulo']);
+        }
+        // Ordena los resultados según las puntuaciones más altas; se obtiene una matriz ordenada
+    	$libro = $this->escogeElementoAdecuado('autor', $puntosFigurar, $libro, $bman, $datos, $longarray);
+
+    	$libro = $this->escogeElementoAdecuado('editorial', $puntosFigurar, $libro, $bman, $datos, $longarray);
+
+        $maxs['titulo'] = $this->elementosMaximaPuntuacion('titulo', $puntosFigurar);
+        $libro->setTitulo($bman->validaTitulo($datos[$maxs['titulo'][0]]['titulo']));
+
+
+//dump($libro);die();  
             return $libro; 
     }
 
+
+    private function escogeElementoAdecuado($columna, $puntosFigurar, $libro, $bman, $datos, $longarray){
+	        // Crea un array ordenado, poniendo en primer lugar las puntuaciones mas altas
+	        $maxs = $this->elementosMaximaPuntuacion($columna, $puntosFigurar);
+
+        	$adecuado = $maxs[0];	        	
+	        switch ($columna){
+        		case 'autor':
+        			$libro->setAutor($bman->validaAutor($datos[$adecuado][$columna])); 
+	        	case 'titulo':
+	        		$adecuado = $this->escogeCorto($maxs, $longarray['titulo']);
+	        		$libro->setTitulo($bman->validaTitulo($datos[$adecuado][$columna])); 
+    			case 'editorial':
+    				$libro->setEditorial($bman->validaEditorial($datos[$adecuado][$columna])); 
+	        }
+            return $libro;    	
+    }
+
+    private function escogeCorto($array, $longarray){
+    	$lenfinal = $longarray[$array[0]];
+    	$keyfinal = $array[0];
+    	foreach($array as $key => $elemento){
+    		$leng = $longarray[$elemento]; 
+    		if ($leng < $lenfinal) {
+    			$lenfinal = $leng; 
+    			$keyfinal = $elemento;
+    		}
+    	}
+//dump($array, $longarray, $lenfinal, $keyfinal); die();     	
+    	return $keyfinal; 
+    }
+
+
+    private function elementosMaximaPuntuacion($columna, $puntosFigurar) {
+    	return array_keys($puntosFigurar[$columna], max($puntosFigurar[$columna]));
+    }
+
+    private function puntuaAutor($texto) {
+        $suma = 0 + 
+            $this->compruebaAcentos($texto) + 
+            $this->compruebaComas($texto) + 
+            $this->compruebaMinusculas($texto) + 
+            $this->compruebaComaYEspacio($texto);
+        return $suma;
+    }
+
+
+    private function puntuaTitulo($texto) {
+        $suma = 0 + 
+            $this->compruebaAcentos($texto) + 
+            $this->compruebaMinusculas($texto);
+        return $suma;
+    }
+
+    private function puntuaEditorial($texto) {
+        $suma = 0 + 
+            $this->compruebaAcentos($texto) + 
+            $this->compruebaMinusculas($texto);
+        return $suma;
+    }
+
+
+    private function compruebaMinusculas($texto) {
+        $valor_minusculas = 4; 
+        $minusculas = ($texto == strtoupper($texto)) ? 0 : $valor_minusculas;
+        return $minusculas;
+    }
+
+    private function compruebaComas($texto) {
+        $valor_comas = 1;
+        $comas = (preg_match("/[,]/",$texto)) ? $valor_comas : 0;
+        return $comas;
+    }
+
+    private function compruebaComaYEspacio($texto) {
+        $valor_coma_esp = 1; 
+        $comas = (preg_match("/(, )/",$texto)) ? $valor_coma_esp : 0;
+        return $comas;
+    }
+
+    private function compruebaAcentos($texto) {
+        $valor_acento = 1; 
+        $acento = (preg_match("/[áéíóúÁÉÍÓÚ]/",$texto)) ? $valor_acento : 0;
+        return $acento;
+    }
 
 
     private function ponerPrecio($busqueda){
@@ -393,9 +496,14 @@ class BookController extends Controller
         } else {
             $prventa = $PRECIO_MIN;
         }
-        $prventa = ( $prventa < $PRECIO_MIN ) ? $PRECIO_MIN : $prventa; 
 
-        return $prventa; 
+        // Redondea hacia abajo, a enteros o mitades. 
+        $prredondeo = round(( 2 * $prventa ) -0.5 )/2 ;
+
+        // Se asegura de que no queda por debajo del precio mínimo.
+        $prfinal = ( $prredondeo < $PRECIO_MIN ) ? $PRECIO_MIN : $prredondeo; 
+
+        return $prfinal; 
     }
 
 
