@@ -39,6 +39,11 @@
         <option name="unsigned"/>
       </options>
     </field>
+    <field name="pagotarjeta" type="string" column="pagotarjeta" length="1" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
     <many-to-one field="tipocliente" target-entity="TipoCliente" fetch="LAZY">
       <join-columns>
         <join-column name="tipocliente" referenced-column-name="id_cli"/>

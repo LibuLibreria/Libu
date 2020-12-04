@@ -483,4 +483,33 @@ class Venta
     {
         return $this->cliente;
     }
+    /**
+     * @var char
+     */
+    private $pagotarjeta;
+
+
+    /**
+     * Set pagotarjeta
+     *
+     * @param \char $pagotarjeta
+     *
+     * @return Venta
+     */
+    public function setPagotarjeta(\char $pagotarjeta)
+    {
+        $this->pagotarjeta = $pagotarjeta;
+
+        return $this;
+    }
+
+    /**
+     * Get pagotarjeta
+     *
+     * @return \char
+     */
+    public function getPagotarjeta()
+    {
+        return $this->pagotarjeta;
+    }
 }

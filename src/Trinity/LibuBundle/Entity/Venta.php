@@ -121,6 +121,16 @@ class Venta
     private $responsable;
 
 
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="pagotarjeta", type="string", length=1, nullable=true)
+     */
+    private $pagotarjeta;
+
+
+
     public function __toString() {
         return "venta";
     }
@@ -482,5 +492,34 @@ class Venta
     public function getCliente()
     {
         return $this->cliente;
+    }
+    /**
+     * @var char
+     */
+    private $pagotarjeta;
+
+
+    /**
+     * Set pagotarjeta
+     *
+     * @param \char $pagotarjeta
+     *
+     * @return Venta
+     */
+    public function setPagotarjeta(\char $pagotarjeta)
+    {
+        $this->pagotarjeta = $pagotarjeta;
+
+        return $this;
+    }
+
+    /**
+     * Get pagotarjeta
+     *
+     * @return \char
+     */
+    public function getPagotarjeta()
+    {
+        return $this->pagotarjeta;
     }
 }
