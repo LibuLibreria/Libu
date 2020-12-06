@@ -373,10 +373,10 @@ class LibuController extends Controller
             }
 */
             if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
-            
+
             $task = $form->getData();
 
-            $tarjeta = $task['tarjeta'][0];
+            $tarjeta = (isset($task['tarjeta'][0]) && $task['tarjeta'][0] == "S") ? true : false ;
 
             // Si se pulsa Realizar venta, con o sin factura (factura y finalizado respectivamente)
             $finalizado = ($form->get('finalizado')->isClicked()) ? true : false;
@@ -395,10 +395,11 @@ class LibuController extends Controller
                 $ventaactual->setTipomovim("ven");
 
                 // Si hay venta con tarjeta, se graba el dato de ingreso como pagotarjeta
-                if ($tarjeta == 'S') $ventaactual->setPagotarjetaHoy();
+                if ($tarjeta) $ventaactual->setPagotarjetaHoy();
 
                 // Cambia el número de la última factura
-                $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
+                $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);  
+ //  dump($ventaactual); die();                            
                 try{
                     $em->persist($ventaactual);
                     $em->flush();

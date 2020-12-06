@@ -39,7 +39,7 @@
         <option name="unsigned"/>
       </options>
     </field>
-    <field name="pagotarjeta" type="string" column="pagotarjeta" length="1" nullable="true">
+    <field name="pagotarjeta" type="float" column="pagotarjeta" precision="10" scale="0" nullable="true">
       <options>
         <option name="unsigned"/>
       </options>

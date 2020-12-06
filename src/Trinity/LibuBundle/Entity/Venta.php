@@ -498,11 +498,11 @@ class Venta
     /**
      * Set pagotarjeta
      *
-     * @param string $pagotarjeta
+     * @param float $pagotarjeta
      *
      * @return Venta
      */
-    public function setPagotarjeta(string $pagotarjeta)
+    public function setPagotarjeta(float $pagotarjeta)
     {
         $this->pagotarjeta = $pagotarjeta;
 
@@ -512,7 +512,7 @@ class Venta
     /**
      * Get pagotarjeta
      *
-     * @return string
+     * @return float
      */
     public function getPagotarjeta()
     {
