@@ -113,7 +113,7 @@ class CajaController extends Controller
             'form' => $form->createView(),
             'ventasdia' => $ventas,
             'fecha' => $fecha,
-            'cabecera' => array('Hora', 'Nº Fact.', 'Ingreso','Libros','Productos','Cliente','Lista prods'),
+            'cabecera' => array('Hora', 'Nº Fact.', 'Ingreso', 'Con tarjeta', 'Libros','Productos','Cliente','Lista prods'),
             ));    
     }
 
@@ -184,7 +184,7 @@ class CajaController extends Controller
             'ventasdia' => $ventas,
             'fecha' => $fechatit,
             'mesescast' => $this->mesescast,
-            'cabecera' => array('Día','Ingreso','Libros','Productos'),          
+            'cabecera' => array('Día','Ingreso', 'Con tarjeta', 'Libros','Productos'),          
             ));    
     }
 

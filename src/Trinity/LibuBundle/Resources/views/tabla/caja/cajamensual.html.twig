@@ -12,13 +12,21 @@
 		        	<td><a href= "{{ path('caja_fecha', { 'dia' : vent['fechalink'] }) }}">
 		        		{{ vent['dia'] | localizeddate('full', 'none', app.request.locale ) }}</a></td>		    	
 		        	<td>{{ vent['ingreso']  |round(1,'common') }} euros</td>
+					<td>{{ vent['ingresotarjeta'] | round(1, 'common') }} euros </td>
 		        	<td>{{ vent['ingresolibros']  |round(1,'common') }} euros</td>
 		        	<td>{{ (vent['ingreso'] - vent['ingresolibros'])  |round(1,'common') }} euros </td>
 	        	</tr>
 		    {% endfor %}
 		    <tr><td><b> Total:</b></td><td><b>{{ ventasdia.ingreso  |round(1,'common') }} euros</b></td>
+				<td><b>{{ ventasdia.ingresotarjeta  |round(1,'common') }} euros</b></td>
 		    	<td><b>{{ ventasdia.ingresolibros  |round(1,'common') }} euros</b></td>
-		    	<td><b>{{ (ventasdia.ingreso - ventasdia.ingresolibros)  |round(1,'common') }} euros</b></td><td></tr>
+		    	<td><b>{{ (ventasdia.ingreso - ventasdia.ingresolibros)  |round(1,'common') }} euros</b></td>
+			</tr>
+			<tr style = 'color:red'>
+				<td><b>CAJA MENSUAL sin tarjeta (incluye productos): </b></td>
+				<td><b>{{ventasdia.ingreso - ventasdia.ingresotarjeta}} euros </b></td>
+
+			</tr>
     	{% endblock %}
 
 

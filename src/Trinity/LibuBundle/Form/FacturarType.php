@@ -8,6 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 
 class FacturarType extends AbstractType
@@ -24,25 +25,25 @@ class FacturarType extends AbstractType
                     'label_attr' => array()
                 ))
  */
-            ->add('ticket', SubmitType::class, array(
+ /*           ->add('ticket', SubmitType::class, array(
                 'label' => 'Ticket',
                 'attr' => array("onclick" => "directPrintFile(printSocket); return false;")
                 ))         
+*/
+            ->add('tarjeta',ChoiceType::class,
+                array(
+                    'label' => ' ',
+                    'choices' => array(
+                        '¿Pago con tarjeta?' => 'S',
+                        ),
+                    'multiple'=>true,'expanded'=>true))
 
             ->add('finalizado', SubmitType::class, array('label' => 'REALIZAR VENTA'))
 
             ->add('factura', SubmitType::class, array('label' => 'REALIZAR VENTA CON FACTURA'))
             
             ->add('menu', SubmitType::class, array('label' => 'Menú (sin venta)'))     
-            /*
-            ->add('answer1',ChoiceType::class,
-            array('choices' => array(
-                    'answer1' => '1',
-                    'answer2' => '2',
-                    'answer3' => '3',
-                    'answer4' => '4'),
-            'choices_as_values' => true,'multiple'=>false,'expanded'=>true))
-*/
+        
             ->getForm(); 
     }
     

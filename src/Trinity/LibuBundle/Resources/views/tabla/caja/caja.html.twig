@@ -14,6 +14,7 @@ Contenido
 		        	<td>{{ vent['hora'] | localizeddate('none', 'short', app.request.locale ) }}</td>
 		        	<td>{{ vent['factura']}} </td>
 		        	<td>{{ vent['ingreso'] }} euros</td>
+					<td>{{ vent['ingresotarjeta'] |round(1,'common') }} euros</td>
 		        	<td>{{ vent['ingresolibros'] |round(1,'common') }} euros</td>
 		        	<td>{{ vent['ingresoprods'] |round(1,'common') }} euros </td>
 		        	<td>{{ vent['tipocliente'] }} </td>
@@ -28,8 +29,20 @@ Contenido
 	        	</tr>
 		    {% endfor %}
 
-		    <tr><td><b> Total:</b></td><td><b>{{ ventasdia.ingreso }} euros</b></td><td><b>{{ ventasdia.ingresolibros }} euros </b>
-		    	</td><td><b>{{ ventasdia.ingreso - ventasdia.ingresolibros }} euros</b></td><td></td><td></td></tr>
+		    <tr>
+				<td><b> Total:</b></td>
+				<td>&nbsp;</td>
+				<td><b>{{ ventasdia.ingreso }} euros</b></td>
+				<td><b>{{ ventasdia.ingresotarjeta }} euros</b></td>
+				<td><b>{{ ventasdia.ingresolibros }} euros </b>
+		    	</td><td><b>{{ ventasdia.ingreso - ventasdia.ingresolibros }} euros</b></td><td></td><td></td>
+			</tr>
+			<tr style = 'color:red'>
+				<td><b>CAJA sin tarjeta: </b></td>
+				<td></td>
+				<td><b>{{ventasdia.ingreso - ventasdia.ingresotarjeta}} euros </b></td>
+
+			</tr>			
 		{% endblock %}		    
 
 

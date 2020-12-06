@@ -1,6 +1,8 @@
 {% extends "LibuBundle::libu/base.html.twig" %}
 {# libu/Resources/views/libu/venta.html.twig #}
 
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
 {% block stylesheets %}
 	<script type="text/javascript">
 	/**
@@ -80,7 +82,24 @@
 			{{ textopagos | raw}}
 		</div>
 	    <div class = 'col-sm-4 form-inline'>
-	        {{ form(form) }}
+
+			{{ form_start(form) }}
+				{{ form_label(form.tarjeta) }}
+	            {{ form_errors(form.tarjeta) }}
+	            {{ form_widget(form.tarjeta) }}
+			<br>
+				{{ form_label(form.finalizado) }}
+	            {{ form_widget(form.finalizado) }}
+			<br>
+				{{ form_label(form.factura) }}
+	            {{ form_widget(form.factura) }}
+			<br>
+				{{ form_label(form.menu) }}
+	            {{ form_widget(form.menu) }}
+
+			{{ form_row(form._token) }}
+		    {{ form_end(form)}}  
+
 	    </div>
 	</div>
 {% endblock %}

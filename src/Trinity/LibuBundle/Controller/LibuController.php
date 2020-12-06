@@ -365,11 +365,20 @@ class LibuController extends Controller
         // Manejo de la respuesta
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+/*
+            // Si se pulsa el botón ticket, redirige a venta
             if ($form->get('ticket')->isClicked()) {
 
                 return $this->redirectToRoute('venta');
             }
+*/
+            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+            
+            $task = $form->getData();
 
+            $tarjeta = $task['tarjeta'][0];
+
+            // Si se pulsa Realizar venta, con o sin factura (factura y finalizado respectivamente)
             $finalizado = ($form->get('finalizado')->isClicked()) ? true : false;
 
             $factura = ($form->get('factura')->isClicked()) ? true : false;
@@ -385,6 +394,8 @@ class LibuController extends Controller
                 // Datos complementarios sobre el objeto $ventaactual
                 $ventaactual->setTipomovim("ven");
 
+                // Si hay venta con tarjeta, se graba el dato de ingreso como pagotarjeta
+                if ($tarjeta == 'S') $ventaactual->setPagotarjetaHoy();
 
                 // Cambia el número de la última factura
                 $em->getRepository('LibuBundle:Venta')->cambiaNumUltimaFactura($ultfactura + 1);                
@@ -395,6 +406,7 @@ class LibuController extends Controller
                     $this->addFlash('error', 'Error al guardar los datos');
                 }
 
+                // Caso sin factura
                 if ($finalizado) {
 
                     /*  Crea un fichero con el ticket, preparado para imprimir */
@@ -409,10 +421,11 @@ class LibuController extends Controller
                     return $this->redirectToRoute('venta');
                 }
 
+                // Caso con factura
                 if ($factura) return $this->redirectToRoute('hazfactura', array( 'numfactura' => $textfactura));
             }
 
-            if ($form->get('menu')->isClicked()) return $this->redirectToRoute('venta');
+
         }
 
 

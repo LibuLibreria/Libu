@@ -200,7 +200,9 @@ class VentaRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery(
             "SELECT v.id as id, v.diahora as hora, v.ingreso as ingreso, v.ingresolibros as ingresolibros,
-                v.libros3, v.libros1, v.factura as factura, c.nombre as tipocliente, (v.ingreso - v.ingresolibros) as ingresoprods
+                v.libros3, v.libros1, v.factura as factura, c.nombre as tipocliente, 
+                (v.ingreso - v.ingresolibros) as ingresoprods,
+                v.pagotarjeta as ingresotarjeta
             FROM LibuBundle:Venta v, LibuBundle:TipoCliente c
             WHERE v.diahora >= :fecha AND v.diahora < :fechasig
             AND c.idCli = v.tipocliente
@@ -222,6 +224,7 @@ class VentaRepository extends EntityRepository
         return array(
             'ventas' => $ventas,
             'ingreso' => $this->SumaColumna($ventas, 'ingreso'), 
+            'ingresotarjeta' => $this->SumaColumna($ventas, 'ingresotarjeta'), 
             'ingresolibros' => $this->SumaColumna($ventas, 'ingresolibros'),
         );
     }
@@ -280,7 +283,7 @@ class VentaRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery(
             "SELECT SUBSTRING(v.diahora,1,10) as dia, 
-            SUM(v.ingreso) as ingreso, SUM(v.ingresolibros) AS ingresolibros
+            SUM(v.ingreso) as ingreso, SUM(v.ingresolibros) AS ingresolibros, SUM(v.pagotarjeta) AS ingresotarjeta
             FROM LibuBundle:Venta v
             WHERE v.diahora >= :fecha AND v.diahora < :fechasig
             AND v.factura IS NOT NULL
@@ -299,6 +302,7 @@ class VentaRepository extends EntityRepository
             'ventas' => $ventas,
             'ingreso' => $this->SumaColumna($ventas, 'ingreso'), 
             'ingresolibros' => $this->SumaColumna($ventas, 'ingresolibros'),
+            'ingresotarjeta' => $this->SumaColumna($ventas, 'ingresotarjeta')
         );
     }
 
