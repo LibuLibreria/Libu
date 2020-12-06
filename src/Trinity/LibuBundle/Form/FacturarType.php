@@ -33,8 +33,16 @@ class FacturarType extends AbstractType
 
             ->add('factura', SubmitType::class, array('label' => 'REALIZAR VENTA CON FACTURA'))
             
-            ->add('menu', SubmitType::class, array('label' => 'Menú (sin venta)'))  
-
+            ->add('menu', SubmitType::class, array('label' => 'Menú (sin venta)'))     
+            /*
+            ->add('answer1',ChoiceType::class,
+            array('choices' => array(
+                    'answer1' => '1',
+                    'answer2' => '2',
+                    'answer3' => '3',
+                    'answer4' => '4'),
+            'choices_as_values' => true,'multiple'=>false,'expanded'=>true))
+*/
             ->getForm(); 
     }
     

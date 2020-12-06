@@ -493,10 +493,6 @@ class Venta
     {
         return $this->cliente;
     }
-    /**
-     * @var char
-     */
-    private $pagotarjeta;
 
 
     /**
