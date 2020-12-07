@@ -13,12 +13,15 @@
 		        		{{ vent['dia'] | localizeddate('full', 'none', app.request.locale ) }}</a></td>		    	
 		        	<td>{{ vent['ingreso']  |round(1,'common') }} euros</td>
 					<td>{{ vent['ingresotarjeta'] | round(1, 'common') }} euros </td>
+					<td>{{ (vent['ingreso'] - vent['ingresotarjeta']) | round(1, 'common') }} euros </td>
 		        	<td>{{ vent['ingresolibros']  |round(1,'common') }} euros</td>
 		        	<td>{{ (vent['ingreso'] - vent['ingresolibros'])  |round(1,'common') }} euros </td>
 	        	</tr>
 		    {% endfor %}
-		    <tr><td><b> Total:</b></td><td><b>{{ ventasdia.ingreso  |round(1,'common') }} euros</b></td>
+			<tr><td><b> Total:</b></td>
+				<td><b>{{ ventasdia.ingreso  |round(1,'common') }} euros</b></td>
 				<td><b>{{ ventasdia.ingresotarjeta  |round(1,'common') }} euros</b></td>
+				<td><b>{{ (ventasdia.ingreso - ventasdia.ingresotarjeta)  |round(1,'common') }} euros</b></td>
 		    	<td><b>{{ ventasdia.ingresolibros  |round(1,'common') }} euros</b></td>
 		    	<td><b>{{ (ventasdia.ingreso - ventasdia.ingresolibros)  |round(1,'common') }} euros</b></td>
 			</tr>

@@ -184,7 +184,7 @@ class CajaController extends Controller
             'ventasdia' => $ventas,
             'fecha' => $fechatit,
             'mesescast' => $this->mesescast,
-            'cabecera' => array('Día','Ingreso', 'Con tarjeta', 'Libros','Productos'),          
+            'cabecera' => array('Día','Ingreso', 'Con tarjeta', 'Sin tarjeta', 'Libros','Productos'),          
             ));    
     }
 
